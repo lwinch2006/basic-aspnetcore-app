@@ -2,9 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp", "Dka.AspNetCore.BasicWebApp\src\Dka.AspNetCore.BasicWebApp.csproj", "{7D1F1F26-13C9-418F-A77F-D6B88F82611F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp.Api", "Dka.AspNetCore.BasicWebApp.Api\Dka.AspNetCore.BasicWebApp.Api.csproj", "{2A485829-AB6D-4748-A0F7-4389D8C4F0BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp.Api", "Dka.AspNetCore.BasicWebApp.Api\src\Dka.AspNetCore.BasicWebApp.Api.csproj", "{2A485829-AB6D-4748-A0F7-4389D8C4F0BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp.Common", "Dka.AspNetCore.BasicWebApp.Common\Dka.AspNetCore.BasicWebApp.Common.csproj", "{D8F68EA3-7EEA-47FF-9B51-67F9F6F9EA87}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp.Common", "Dka.AspNetCore.BasicWebApp.Common\src\Dka.AspNetCore.BasicWebApp.Common.csproj", "{D8F68EA3-7EEA-47FF-9B51-67F9F6F9EA87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
