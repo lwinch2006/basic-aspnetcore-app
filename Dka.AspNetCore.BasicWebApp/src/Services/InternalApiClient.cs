@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Dka.AspNetCore.BasicWebApp.Services
 {
-    public class InternalApiClient
+    public class InternalApiClient : IInternalApiClient
     {
         private readonly HttpClient _httpClient;
         public InternalApiClient(HttpClient httpClient)

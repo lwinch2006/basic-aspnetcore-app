@@ -6,9 +6,9 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly InternalApiClient _internalApiClient;
+        private readonly IInternalApiClient _internalApiClient;
         
-        public HomeController(InternalApiClient internalApiClient)
+        public HomeController(IInternalApiClient internalApiClient)
         {
             _internalApiClient = internalApiClient;
         }

@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Logic" />
       <Folder Include="Models" />
       <Folder Include="Repositories" />
     </ItemGroup>

@@ -6,6 +6,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp.Common", "Dka.AspNetCore.BasicWebApp.Common\src\Dka.AspNetCore.BasicWebApp.Common.csproj", "{D8F68EA3-7EEA-47FF-9B51-67F9F6F9EA87}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{05C08C5F-A199-46BF-9015-420F38412BC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp.UnitTests", "Dka.AspNetCore.BasicWebApp.UnitTests\Dka.AspNetCore.BasicWebApp.UnitTests.csproj", "{5C9CE560-88A8-4DAD-BFD0-72FFD56A90CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp.IntegrationTests", "Dka.AspNetCore.BasicWebApp.IntegrationTests\Dka.AspNetCore.BasicWebApp.IntegrationTests.csproj", "{548C9049-722A-499E-B83B-A9F5CFF58519}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +30,17 @@ Global
 		{D8F68EA3-7EEA-47FF-9B51-67F9F6F9EA87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8F68EA3-7EEA-47FF-9B51-67F9F6F9EA87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8F68EA3-7EEA-47FF-9B51-67F9F6F9EA87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C9CE560-88A8-4DAD-BFD0-72FFD56A90CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C9CE560-88A8-4DAD-BFD0-72FFD56A90CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C9CE560-88A8-4DAD-BFD0-72FFD56A90CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C9CE560-88A8-4DAD-BFD0-72FFD56A90CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{548C9049-722A-499E-B83B-A9F5CFF58519}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{548C9049-722A-499E-B83B-A9F5CFF58519}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{548C9049-722A-499E-B83B-A9F5CFF58519}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{548C9049-722A-499E-B83B-A9F5CFF58519}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5C9CE560-88A8-4DAD-BFD0-72FFD56A90CF} = {05C08C5F-A199-46BF-9015-420F38412BC9}
+		{548C9049-722A-499E-B83B-A9F5CFF58519} = {05C08C5F-A199-46BF-9015-420F38412BC9}
 	EndGlobalSection
 EndGlobal

@@ -1,4 +1,6 @@
 using System;
+using System.Net.Http;
+using Dka.AspNetCore.BasicWebApp.Common.Logic;
 using Dka.AspNetCore.BasicWebApp.Configurations;
 using Dka.AspNetCore.BasicWebApp.Services;
 using Microsoft.AspNetCore.Builder;
@@ -21,11 +23,17 @@ namespace Dka.AspNetCore.BasicWebApp
             var apiConfiguration = new ApiConfiguration();
             _configuration.GetSection("api").Bind(apiConfiguration);
             
-            services.AddHttpClient();
-            services.AddHttpClient<InternalApiClient>(client =>
+            var httpClientHandler = new HttpClientHandler();
+            
+            if (EnvironmentLogic.IsDevelopment())
+            {
+                httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true; 
+            }
+            
+            services.AddHttpClient<IInternalApiClient, InternalApiClient>(client =>
             {
                 client.BaseAddress = new Uri(apiConfiguration.Url);
-            });
+            }).ConfigurePrimaryHttpMessageHandler(() => httpClientHandler);
             services.AddControllersWithViews();
             services.AddRazorPages();
         }

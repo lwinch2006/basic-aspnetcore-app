@@ -15,23 +15,27 @@ namespace Dka.AspNetCore.BasicWebApp
             webHost.Run();
         }
 
-        private static IHost BuildWebHost(string[] args)
+        public static IHostBuilder CreateHostBuilder(string[] args)
         {
             var configuration = BuildConfiguration();
 
             var webHostConfiguration = new WebHostConfiguration();
             configuration.GetSection("webHost").Bind(webHostConfiguration);
             
-            var webHost = Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webHostBuilder =>
+            var webHostBuilder = Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webHostConfigurator =>
                 {
-                    webHostBuilder.UseConfiguration(configuration);
-                    webHostBuilder.UseStartup<Startup>();
-                    webHostBuilder.UseUrls(webHostConfiguration.Urls);
-                })
-                .Build();
+                    webHostConfigurator.UseConfiguration(configuration);
+                    webHostConfigurator.UseStartup<Startup>();
+                    webHostConfigurator.UseUrls(webHostConfiguration.Urls);
+                });
 
-            return webHost;
+            return webHostBuilder;
+        }
+
+        private static IHost BuildWebHost(string[] args)
+        {
+            return CreateHostBuilder(args).Build();
         }
 
         private static IConfiguration BuildConfiguration()
