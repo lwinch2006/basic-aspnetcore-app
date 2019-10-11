@@ -5,7 +5,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services
 {
     public class InternalApiClient : IInternalApiClient
     {
-        private readonly HttpClient _httpClient;
+        protected readonly HttpClient _httpClient;
         public InternalApiClient(HttpClient httpClient)
         {
             _httpClient = httpClient;

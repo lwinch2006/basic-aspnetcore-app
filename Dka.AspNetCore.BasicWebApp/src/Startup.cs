@@ -11,7 +11,7 @@ namespace Dka.AspNetCore.BasicWebApp
 {
     public class Startup
     {
-        private readonly IConfiguration _configuration;
+        protected readonly IConfiguration _configuration;
 
         public Startup(IConfiguration configuration)
         {
@@ -20,20 +20,8 @@ namespace Dka.AspNetCore.BasicWebApp
         
         public void ConfigureServices(IServiceCollection services)
         {
-            var apiConfiguration = new ApiConfiguration();
-            _configuration.GetSection("api").Bind(apiConfiguration);
-            
-            var httpClientHandler = new HttpClientHandler();
-            
-            if (EnvironmentLogic.IsDevelopment())
-            {
-                httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true; 
-            }
-            
-            services.AddHttpClient<IInternalApiClient, InternalApiClient>(client =>
-            {
-                client.BaseAddress = new Uri(apiConfiguration.Url);
-            }).ConfigurePrimaryHttpMessageHandler(() => httpClientHandler);
+            AddInternalApiClient(services);
+
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
@@ -49,6 +37,24 @@ namespace Dka.AspNetCore.BasicWebApp
                 configure.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 configure.MapRazorPages();
             });
+        }
+
+        protected virtual void AddInternalApiClient(IServiceCollection services)
+        {
+            var apiConfiguration = new ApiConfiguration();
+            _configuration.GetSection("api").Bind(apiConfiguration);
+            
+            var httpClientHandler = new HttpClientHandler();
+            
+            if (EnvironmentLogic.IsDevelopment())
+            {
+                httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true; 
+            }
+            
+            services.AddHttpClient<IInternalApiClient, InternalApiClient>(client =>
+            {
+                client.BaseAddress = new Uri(apiConfiguration.Url);
+            }).ConfigurePrimaryHttpMessageHandler(() => httpClientHandler);
         }
     }
 }
