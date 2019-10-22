@@ -7,9 +7,9 @@ using Xunit;
 
 namespace Dka.AspNetCore.BasicWebApp.SeleniumTests
 {
-    public class HomeControllerTests : IClassFixture<SeleniumServerFactory<Startup>>, IClassFixture<BasicWebAppApiSeleniumServerFactory<Api.Startup>>
+    public class HomeControllerTests : IClassFixture<BasicWebAppSeleniumServerFactory<Startup>>
     {
-        private SeleniumServerFactory<Startup> Server { get; }
+        private BasicWebAppSeleniumServerFactory<Startup> Server { get; }
         
         private IWebDriver Browser { get; }
         
@@ -17,13 +17,8 @@ namespace Dka.AspNetCore.BasicWebApp.SeleniumTests
         
         private ILogs Logs { get; }
 
-        private BasicWebAppApiSeleniumServerFactory<Api.Startup> ApiServer { get; }
-
-        private HttpClient ApiClient { get; }
-
         public HomeControllerTests(
-            SeleniumServerFactory<Startup> server, 
-            BasicWebAppApiSeleniumServerFactory<Api.Startup> apiServer)
+            BasicWebAppSeleniumServerFactory<Startup> server)
         {
             Server = server;
             Client = Server.CreateClient();
@@ -35,9 +30,6 @@ namespace Dka.AspNetCore.BasicWebApp.SeleniumTests
             var driver = new RemoteWebDriver(chromeOptions);
             Browser = driver;
             Logs = new RemoteLogs(driver);
-
-            ApiServer = apiServer;
-            ApiClient = ApiServer.CreateClient();
         }
         
         [Fact]
