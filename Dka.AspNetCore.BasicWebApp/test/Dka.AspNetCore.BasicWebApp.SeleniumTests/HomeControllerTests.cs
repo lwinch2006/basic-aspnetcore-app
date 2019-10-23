@@ -1,4 +1,3 @@
-using System;
 using System.Net.Http;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -7,9 +6,9 @@ using Xunit;
 
 namespace Dka.AspNetCore.BasicWebApp.SeleniumTests
 {
-    public class HomeControllerTests : IClassFixture<BasicWebAppSeleniumServerFactory<Startup>>
+    public class HomeControllerTests : IClassFixture<BasicWebAppServerFactory<StartupTest>>
     {
-        private BasicWebAppSeleniumServerFactory<Startup> Server { get; }
+        private BasicWebAppServerFactory<StartupTest> Server { get; }
         
         private IWebDriver Browser { get; }
         
@@ -18,13 +17,13 @@ namespace Dka.AspNetCore.BasicWebApp.SeleniumTests
         private ILogs Logs { get; }
 
         public HomeControllerTests(
-            BasicWebAppSeleniumServerFactory<Startup> server)
+            BasicWebAppServerFactory<StartupTest> server)
         {
             Server = server;
             Client = Server.CreateClient();
 
             var chromeOptions = new ChromeOptions();
-            //chromeOptions.AddArgument("--headless"); 
+            chromeOptions.AddArgument("--headless"); 
             chromeOptions.SetLoggingPreference(LogType.Browser, LogLevel.All);
 
             var driver = new RemoteWebDriver(chromeOptions);
@@ -33,10 +32,23 @@ namespace Dka.AspNetCore.BasicWebApp.SeleniumTests
         }
         
         [Fact]
-        public void LoadHomePage_ShouldPass()
+        public void LoadHomePage_CheckPageTitle_ShouldPass()
         {
             Browser.Navigate().GoToUrl(Server.RootUri);
-            Assert.StartsWith("Home", Browser.Title);
+            
+            Assert.Equal("Home", Browser.Title);
+            
+            Browser.Close();
         }
+        
+        [Fact]
+        public void LoadHomePage_CheckPageTitle_ShouldNotPass()
+        {
+            Browser.Navigate().GoToUrl(Server.RootUri);
+            
+            Assert.NotEqual("About", Browser.Title);
+            
+            Browser.Close();
+        }        
     }
 }

@@ -1,33 +1,28 @@
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Configurations;
-using Dka.AspNetCore.BasicWebApp.SeleniumTests.Services;
-using Dka.AspNetCore.BasicWebApp.Services;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Moq;
 
 namespace Dka.AspNetCore.BasicWebApp.SeleniumTests
 {
-    public class BasicWebAppSeleniumServerFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
+    public class BasicWebAppServerFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {
         private const string EnvironmentName = "Test";
 
         private readonly Process _process;
+        
         private IWebHost _host;
 
-        public string RootUri { get; set; }
+        public string RootUri { get; private set; }
         
-        public BasicWebAppSeleniumServerFactory()
+        public BasicWebAppServerFactory()
         {
             _process = new Process() {
                 StartInfo = new ProcessStartInfo {
@@ -60,12 +55,8 @@ namespace Dka.AspNetCore.BasicWebApp.SeleniumTests
             builder
                 .UseEnvironment(EnvironmentName)
                 .UseConfiguration(configuration)
-                .UseStartup<Startup>()
-                .UseUrls(webHostConfiguration.Urls)
-                .ConfigureTestServices(testServices =>
-                {
-                    testServices.AddHttpClient<IInternalApiClient, TestInternalApiClient>();
-                });
+                .UseStartup<TStartup>()
+                .UseUrls(webHostConfiguration.Urls);
         }
         
         protected override TestServer CreateServer(IWebHostBuilder builder)
@@ -83,7 +74,8 @@ namespace Dka.AspNetCore.BasicWebApp.SeleniumTests
             
             if (disposing) {
                 _host?.Dispose();
-                _process?.CloseMainWindow(); 
+                _process?.CloseMainWindow();
+                _process?.Close(); 
             }
         }
         
