@@ -15,7 +15,6 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-
             ViewData["PageNameFromApi"] = await _internalApiClient.GetPageNameAsync("Home");
             
             return View();
