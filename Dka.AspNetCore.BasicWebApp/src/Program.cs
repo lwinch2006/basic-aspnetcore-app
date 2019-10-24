@@ -17,10 +17,12 @@ namespace Dka.AspNetCore.BasicWebApp
 
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
+            var assemblyName = typeof(Startup).Assembly.GetName().Name;
+            
             var configuration = BuildConfiguration();
 
             var webHostConfiguration = new WebHostConfiguration();
-            configuration.GetSection("webHost").Bind(webHostConfiguration);
+            configuration.GetSection($"{assemblyName}:webHost").Bind(webHostConfiguration);
             
             var webHostBuilder = Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webHostConfigurator =>

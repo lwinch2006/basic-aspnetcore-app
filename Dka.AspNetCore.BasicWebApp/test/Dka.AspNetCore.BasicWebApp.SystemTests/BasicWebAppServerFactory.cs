@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Dka.AspNetCore.BasicWebApp.Configurations;
@@ -10,30 +9,15 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
-namespace Dka.AspNetCore.BasicWebApp.SeleniumTests
+namespace Dka.AspNetCore.BasicWebApp.SystemTests
 {
     public class BasicWebAppServerFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {
         private const string EnvironmentName = "Test";
 
-        private readonly Process _process;
-        
         private IWebHost _host;
 
         public string RootUri { get; private set; }
-        
-        public BasicWebAppServerFactory()
-        {
-            _process = new Process() {
-                StartInfo = new ProcessStartInfo {
-                    FileName = "selenium-standalone",
-                    Arguments = "start",
-                    UseShellExecute = true
-                }
-            };
-            
-            _process.Start();            
-        }
 
         protected override IHostBuilder CreateHostBuilder()
         {
@@ -79,8 +63,6 @@ namespace Dka.AspNetCore.BasicWebApp.SeleniumTests
             
             if (disposing) {
                 _host?.Dispose();
-                _process?.CloseMainWindow();
-                _process?.Close(); 
             }
         }
         

@@ -31,10 +31,12 @@ namespace Dka.AspNetCore.BasicWebApp.IntegrationTests
         
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            var assemblyName = typeof(TStartup).Assembly.GetName().Name;
+            
             var configuration = BuildConfiguration();
 
             var webHostConfiguration = new WebHostConfiguration();
-            configuration.GetSection("webHost").Bind(webHostConfiguration);
+            configuration.GetSection($"{assemblyName}:webHost").Bind(webHostConfiguration);
             
             builder
                 .UseEnvironment(EnvironmentName)
@@ -49,7 +51,10 @@ namespace Dka.AspNetCore.BasicWebApp.IntegrationTests
             _host.Start();
             RootUri = _host.ServerFeatures.Get<IServerAddressesFeature>().Addresses.LastOrDefault();
             
-            return new TestServer(new WebHostBuilder().UseStartup<TStartup>());
+            var webHostBuilder = new WebHostBuilder();
+            ConfigureWebHost(webHostBuilder);
+            
+            return new TestServer(webHostBuilder);
         }
         
         protected override void Dispose(bool disposing) 

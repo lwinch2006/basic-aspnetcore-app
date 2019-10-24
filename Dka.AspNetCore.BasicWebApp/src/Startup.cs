@@ -6,15 +6,19 @@ using Dka.AspNetCore.BasicWebApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Dka.AspNetCore.BasicWebApp
 {
     public class Startup
     {
+        protected readonly string _applicationName;
+        
         protected readonly IConfiguration _configuration;
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostEnvironment env)
         {
+            _applicationName = env.ApplicationName;
             _configuration = configuration;
         }
         
@@ -42,7 +46,7 @@ namespace Dka.AspNetCore.BasicWebApp
         protected virtual void AddInternalApiClient(IServiceCollection services)
         {
             var apiConfiguration = new ApiConfiguration();
-            _configuration.GetSection("api").Bind(apiConfiguration);
+            _configuration.GetSection($"{_applicationName}:api").Bind(apiConfiguration);
             
             var httpClientHandler = new HttpClientHandler();
             
