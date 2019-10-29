@@ -1,0 +1,50 @@
+@using System.Collections
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants
+@{
+    ViewData["Title"] = "Tenant list";
+}
+
+<div class="row">
+    <div class="col-sm-12 text-center">
+        <h1>Tenant list</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>
+                    #
+                </th>
+                <th>
+                    Alias
+                </th>
+                <th>
+                    Name
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            @{
+                var tenants = (List<Tenant>) ViewData["Tenants"];
+
+                for (var i = 0; i < tenants?.Count(); i++)
+                {
+                    <tr>
+                        <td>
+                            @(i + 1)
+                        </td>
+                        <td>
+                            @tenants[i].Alias
+                        </td>
+                        <td>
+                            @tenants[i].Name
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

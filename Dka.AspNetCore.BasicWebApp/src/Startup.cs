@@ -38,6 +38,7 @@ namespace Dka.AspNetCore.BasicWebApp
             
             app.UseEndpoints(configure =>
             {
+                configure.MapControllerRoute("administration", "Administration/{controller=Home}/{action=Index}/{id?}");
                 configure.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 configure.MapRazorPages();
             });

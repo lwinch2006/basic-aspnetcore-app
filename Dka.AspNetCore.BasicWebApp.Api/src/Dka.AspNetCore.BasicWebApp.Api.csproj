@@ -7,4 +7,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Dka.AspNetCore.BasicWebApp.Common\src\Dka.AspNetCore.BasicWebApp.Common.csproj" />
+    </ItemGroup>
+
 </Project>
