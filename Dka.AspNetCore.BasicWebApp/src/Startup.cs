@@ -35,6 +35,8 @@ namespace Dka.AspNetCore.BasicWebApp
             app.UseHsts();
             app.UseHttpsRedirection();
             app.UseRouting();
+
+            app.UseStaticFiles();
             
             app.UseEndpoints(configure =>
             {

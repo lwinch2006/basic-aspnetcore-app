@@ -1,0 +1,19 @@
+html,
+body,
+.dka-layout-container,
+.dka-layout-row,
+.dka-layout-col {
+    height: 100%;
+}
+
+.dka-adjustable-rows-container {
+    display: flex;
+    flex-direction: column;
+}
+.dka-fill-all-height-column {
+    flex: 1;
+}
+
+.dka-layout-footer {
+    padding-bottom: 15px;
+}
