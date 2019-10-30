@@ -1,4 +1,4 @@
-using Dka.AspNetCore.BasicWebApp.Services;
+using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

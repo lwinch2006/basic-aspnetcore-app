@@ -1,7 +1,6 @@
-using System;
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Controllers;
-using Dka.AspNetCore.BasicWebApp.Services;
+using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;

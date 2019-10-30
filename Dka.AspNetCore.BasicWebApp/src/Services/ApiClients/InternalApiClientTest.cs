@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
 
-namespace Dka.AspNetCore.BasicWebApp.Services
+namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 {
     public class InternalApiClientTest : IInternalApiClient
     {

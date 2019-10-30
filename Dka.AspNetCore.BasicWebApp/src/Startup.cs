@@ -1,12 +1,13 @@
 using System;
 using System.Net.Http;
 using Dka.AspNetCore.BasicWebApp.Common.Logic;
-using Dka.AspNetCore.BasicWebApp.Configurations;
-using Dka.AspNetCore.BasicWebApp.Services;
+using Dka.AspNetCore.BasicWebApp.Models.Configurations;
+using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Dka.AspNetCore.BasicWebApp
 {
@@ -26,12 +27,15 @@ namespace Dka.AspNetCore.BasicWebApp
         {
             AddInternalApiClient(services);
 
+            services.AddHttpContextAccessor();
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, ILogger<Startup> logger)
         {
+            logger.LogInformation("Web application initialised");
+            
             app.UseHsts();
             app.UseHttpsRedirection();
             app.UseRouting();
@@ -44,6 +48,8 @@ namespace Dka.AspNetCore.BasicWebApp
                 configure.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 configure.MapRazorPages();
             });
+            
+            
         }
 
         protected virtual void AddInternalApiClient(IServiceCollection services)

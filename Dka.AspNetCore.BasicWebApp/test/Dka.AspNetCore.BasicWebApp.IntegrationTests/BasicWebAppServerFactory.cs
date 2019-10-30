@@ -1,6 +1,6 @@
 using System.IO;
 using System.Linq;
-using Dka.AspNetCore.BasicWebApp.Configurations;
+using Dka.AspNetCore.BasicWebApp.Models.Configurations;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;

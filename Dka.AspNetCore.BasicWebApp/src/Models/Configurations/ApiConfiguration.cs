@@ -1,4 +1,4 @@
-namespace Dka.AspNetCore.BasicWebApp.Configurations
+namespace Dka.AspNetCore.BasicWebApp.Models.Configurations
 {
     public class ApiConfiguration
     {

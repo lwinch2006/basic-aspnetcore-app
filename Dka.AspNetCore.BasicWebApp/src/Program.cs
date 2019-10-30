@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
-using Dka.AspNetCore.BasicWebApp.Configurations;
+using Dka.AspNetCore.BasicWebApp.Models.Configurations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Dka.AspNetCore.BasicWebApp
 {
@@ -37,7 +38,14 @@ namespace Dka.AspNetCore.BasicWebApp
 
         private static IHost BuildWebHost(string[] args)
         {
-            return CreateHostBuilder(args).Build();
+            // Configuring web host defaults.
+            var hostBuilder = CreateHostBuilder(args);
+            
+            // Configuring web host logging.
+            ConfigureLogging(hostBuilder);
+            
+            // Building web host.
+            return hostBuilder.Build();
         }
 
         private static IConfiguration BuildConfiguration()
@@ -51,12 +59,17 @@ namespace Dka.AspNetCore.BasicWebApp
             return configuration;
         }
 
-        private static void ConfigureLogging()
+        private static void ConfigureLogging(IHostBuilder hostBuilder)
         {
+            var assemblyName = typeof(Startup).Assembly.GetName().Name;
+            var configuration = BuildConfiguration();
             
-            
-            
-            
+            hostBuilder.ConfigureLogging(loggingBuilder =>
+            {
+                loggingBuilder.AddConfiguration(configuration.GetSection($"{assemblyName}:Logging"));
+                loggingBuilder.ClearProviders();
+                loggingBuilder.AddConsole();
+            });
         }
     }
 }

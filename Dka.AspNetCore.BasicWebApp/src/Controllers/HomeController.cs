@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Dka.AspNetCore.BasicWebApp.Services;
+using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dka.AspNetCore.BasicWebApp.Controllers
