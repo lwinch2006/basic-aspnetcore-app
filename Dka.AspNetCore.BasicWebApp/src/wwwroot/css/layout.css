@@ -17,3 +17,10 @@ body,
 .dka-layout-footer {
     padding-bottom: 15px;
 }
+
+.dka-environment-messagebox {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    margin: 0;
+}

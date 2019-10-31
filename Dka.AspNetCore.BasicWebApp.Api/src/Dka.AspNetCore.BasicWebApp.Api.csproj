@@ -11,4 +11,9 @@
       <ProjectReference Include="..\..\Dka.AspNetCore.BasicWebApp.Common\src\Dka.AspNetCore.BasicWebApp.Common.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="3.0.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
+    </ItemGroup>
+
 </Project>

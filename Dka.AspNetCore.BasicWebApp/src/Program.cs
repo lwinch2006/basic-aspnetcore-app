@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Models.Configurations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -53,7 +54,7 @@ namespace Dka.AspNetCore.BasicWebApp
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", false, true)
-                .AddJsonFile($"appsettings.{ Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production" }.json", true, true)
+                .AddJsonFile($"appsettings.{ Environment.GetEnvironmentVariable(EnvironmentVariableNames.EnvironmentName) ?? "Production" }.json", true, true)
                 .Build();
 
             return configuration;

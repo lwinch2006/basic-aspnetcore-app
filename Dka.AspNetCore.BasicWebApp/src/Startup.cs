@@ -28,7 +28,7 @@ namespace Dka.AspNetCore.BasicWebApp
             AddInternalApiClient(services);
 
             services.AddHttpContextAccessor();
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
         }
 
