@@ -15,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Models\ExceptionProcessing" />
       <Folder Include="ViewModels" />
     </ItemGroup>
 

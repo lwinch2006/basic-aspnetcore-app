@@ -24,3 +24,18 @@ body,
     left: 30px;
     margin: 0;
 }
+
+.dka-circle-status {
+    margin: auto;
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 10px;
+}
+
+.dka-green-circle-status {
+    background-color: green;
+}
+.dka-red-circle-status {
+    background-color: red;
+}

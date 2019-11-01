@@ -1,20 +1,11 @@
 using System;
-using Dka.AspNetCore.BasicWebApp.Models.ExceptionProcessing;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ExceptionProcessing;
 using Newtonsoft.Json.Serialization;
 
 namespace Dka.AspNetCore.BasicWebApp.Models.ApiClients
 {
-    public class InternalApiClientException : Exception, IBasicWebAppException
+    public class InternalApiClientException : BasicWebAppException
     {
-        public new string Message 
-        {
-            get { return base.Message; }
-        }
-
-        public new object StackTrace {
-            get { return base.StackTrace; }
-        }
-
         public InternalApiClientException(string message)
             : base(message)
         {}

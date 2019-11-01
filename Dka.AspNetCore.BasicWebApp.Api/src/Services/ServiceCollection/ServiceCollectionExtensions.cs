@@ -3,7 +3,7 @@ using Dka.AspNetCore.BasicWebApp.Common.Models.Configurations;
 using Dka.AspNetCore.BasicWebApp.Common.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Dka.AspNetCore.BasicWebApp.Api.Extensions
+namespace Dka.AspNetCore.BasicWebApp.Api.Services.ServiceCollection
 {
     public static class ServiceCollectionExtensions
     {

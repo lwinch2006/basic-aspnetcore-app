@@ -22,5 +22,20 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 
             return dummyTenants;
         }
+
+        public Task<bool> CheckApiOverallStatus()
+        {
+            return Task.FromResult(true);
+        }
+
+        public Task<bool> CheckApiReadyStatus()
+        {
+            return Task.FromResult(true);
+        }
+
+        public Task<bool> CheckApiLiveStatus()
+        {
+            return Task.FromResult(true);
+        }
     }
 }

@@ -1,0 +1,9 @@
+database:
+  container_name: basic-web-app
+  image: microsoft/mssql-server-linux:2017-latest
+  ports:
+    - "1533:1433"
+  environment:
+    - ACCEPT_EULA=Y
+    - SA_PASSWORD=<Yg!P0rdWde77>
+  

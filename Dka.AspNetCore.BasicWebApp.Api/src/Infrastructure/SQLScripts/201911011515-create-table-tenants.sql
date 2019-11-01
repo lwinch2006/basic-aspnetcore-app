@@ -1,0 +1,4 @@
+CREATE TABLE Tenants (
+    Id INT NOT NULL,
+    PRIMARY KEY (Id)
+);

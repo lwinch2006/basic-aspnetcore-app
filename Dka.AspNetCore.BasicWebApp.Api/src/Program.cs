@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Dka.AspNetCore.BasicWebApp.Api.Configurations;
+using Dka.AspNetCore.BasicWebApp.Api.Models.Configurations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;

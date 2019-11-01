@@ -1,8 +1,9 @@
+@using Dka.AspNetCore.BasicWebApp.Models.Constants
 
 @{
-    ViewData["Title"] = ViewData["PageNameFromApi"];
-    ViewData["MainPageTitle"] = "About";
-    ViewData["ActiveNavLinkName"] = "about";
+    ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = ViewData[ViewDataKeys.HtmlPageNameReceivedFromApi];
+    ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "About";
+    ViewData[ViewDataKeys.ActiveNavigationLink] = "about";
 }
 
 <div class="row">

@@ -10,5 +10,11 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
         Task<string> GetPageNameAsync(string pageName);
 
         Task<IEnumerable<Tenant>> GetTenants();
+
+        Task<bool> CheckApiOverallStatus();
+
+        Task<bool> CheckApiReadyStatus();
+
+        Task<bool> CheckApiLiveStatus();
     }
 }

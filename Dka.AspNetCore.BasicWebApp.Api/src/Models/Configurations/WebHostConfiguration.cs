@@ -1,4 +1,4 @@
-namespace Dka.AspNetCore.BasicWebApp.Api.Configurations
+namespace Dka.AspNetCore.BasicWebApp.Api.Models.Configurations
 {
     public class WebHostConfiguration
     {

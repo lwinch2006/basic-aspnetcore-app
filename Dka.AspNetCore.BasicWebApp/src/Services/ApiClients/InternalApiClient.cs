@@ -54,11 +54,26 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             }
         }
 
-        public async Task<bool> IsApiUpAndRunning()
+        public async Task<bool> CheckApiOverallStatus()
+        {
+            return await CheckApiHealthByUrl("/health");
+        }
+        
+        public async Task<bool> CheckApiReadyStatus()
+        {
+            return await CheckApiHealthByUrl("/health/ready");
+        }
+        
+        public async Task<bool> CheckApiLiveStatus()
+        {
+            return await CheckApiHealthByUrl("/health/live");
+        }
+
+        private async Task<bool> CheckApiHealthByUrl(string url)
         {
             try
             {
-                var response = await _httpClient.GetAsync("/health");
+                var response = await _httpClient.GetAsync(url);
 
                 response.EnsureSuccessStatusCode();
 
@@ -68,8 +83,8 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             }
             catch (Exception ex)
             {
-                throw new InternalApiClientException("Internal API client exception", ex);
-            }
+                return false;
+            }            
         }
     }
 }
