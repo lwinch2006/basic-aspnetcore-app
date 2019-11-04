@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Dka.AspNetCore.BasicWebApp
 {
@@ -26,14 +27,16 @@ namespace Dka.AspNetCore.BasicWebApp
         public void ConfigureServices(IServiceCollection services)
         {
             AddInternalApiClient(services);
-
+            
             services.AddHttpContextAccessor();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
         }
 
-        public void Configure(IApplicationBuilder app, ILogger<Startup> logger)
+        public void Configure(IApplicationBuilder app, ILogger<Startup> logger, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddSerilog();
+            
             logger.LogInformation("Web application initialised");
             
             app.UseHsts();

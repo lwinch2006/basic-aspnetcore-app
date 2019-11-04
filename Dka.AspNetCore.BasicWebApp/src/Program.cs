@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Exceptions;
+using Serilog.Sinks.Elasticsearch;
 
 namespace Dka.AspNetCore.BasicWebApp
 {
@@ -17,7 +20,7 @@ namespace Dka.AspNetCore.BasicWebApp
             webHost.Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
+        private static IHostBuilder CreateHostBuilder(string[] args)
         {
             var assemblyName = typeof(Startup).Assembly.GetName().Name;
             
@@ -45,6 +48,9 @@ namespace Dka.AspNetCore.BasicWebApp
             // Configuring web host logging.
             ConfigureLogging(hostBuilder);
             
+            // Configuring Serilog logging;
+            ConfigureSerilogLogging();
+            
             // Building web host.
             return hostBuilder.Build();
         }
@@ -71,6 +77,25 @@ namespace Dka.AspNetCore.BasicWebApp
                 loggingBuilder.ClearProviders();
                 loggingBuilder.AddConsole();
             });
+        }
+
+        private static void ConfigureSerilogLogging()
+        {
+            var assemblyName = typeof(Startup).Assembly.GetName().Name;
+            var configuration = BuildConfiguration();
+            var elasticUri = configuration[$"{assemblyName}:ElasticConfiguration:Uri"];
+            var indexFormat = configuration[$"{assemblyName}:ElasticConfiguration:Index"];
+            
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration.GetSection($"{assemblyName}"))
+                .Enrich.FromLogContext()
+                .Enrich.WithExceptionDetails()
+                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
+                {
+                    AutoRegisterTemplate = true,
+                    IndexFormat = indexFormat
+                })
+                .CreateLogger();
         }
     }
 }
