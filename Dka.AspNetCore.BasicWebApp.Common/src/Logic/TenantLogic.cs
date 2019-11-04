@@ -16,9 +16,9 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Logic
 
         public async Task<IEnumerable<Tenant>> GetAll()
         {
-            var dummyTenants = await _tenantRepository.GetAll();
+            var tenants = await _tenantRepository.GetAll();
 
-            return dummyTenants;
+            return tenants;
         }
     }
 }

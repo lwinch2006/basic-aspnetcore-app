@@ -23,6 +23,11 @@
 
     <ItemGroup>
       <EmbeddedResource Include="Infrastructure\SQLScripts\201911011515-updating-create-table-tenants-script-and-checking.sql" />
+      <EmbeddedResource Include="Infrastructure\SQLScripts\201911040745-updating-table-tenants-adding-name-and-alias-columns.sql" />
+      <EmbeddedResource Include="Infrastructure\SQLScripts\201911040800-updating-table-tenants-adding-externalid-column.sql" />
+      <EmbeddedResource Include="Infrastructure\SQLScripts\201911040806-updating-table-tenants-changing-id-column.sql" />
+      <EmbeddedResource Include="Infrastructure\SQLScripts\201911040833-dropping-table-tenants.sql" />
+      <EmbeddedResource Include="Infrastructure\SQLScripts\201911040837-adding-table-tenants-again.sql" />
       <None Remove="Infrastructure\SQLScripts\201911011515-create-table-tenants.sql" />
       <EmbeddedResource Include="Infrastructure\SQLScripts\201911011515-create-table-tenants.sql" />
     </ItemGroup>

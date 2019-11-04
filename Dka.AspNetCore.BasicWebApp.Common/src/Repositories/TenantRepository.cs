@@ -1,8 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Configurations;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
+using Dapper;
 
 namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
 {
@@ -17,9 +20,17 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
 
         internal async Task<IEnumerable<Tenant>> GetAll()
         {
-            var dummyTenants = await Tenant.GetDummyTenantSet();
+            await using (var connection = new SqlConnection(_databaseConfiguration.ConnectionString))
+            {
+                const string query = @"
+                    SELECT [Id], [Name], [Alias], [ExternalId]
+                    FROM [Tenants]
+                ";
 
-            return dummyTenants;
+                var tenants = await connection.QueryAsync<Tenant>(query);
+
+                return tenants;
+            }
         }
     }
 }
