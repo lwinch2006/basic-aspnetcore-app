@@ -1,0 +1,17 @@
+{
+  "name": "unleash-docker",
+  "description": "Docker images for unleash.",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENV=production node index.js",
+    "test:ci": "echo 'no tests for unleash-docker';"
+  },
+  "engines": {
+    "node": ">=8"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "unleash-server": "^3.2.14"
+  }
+}

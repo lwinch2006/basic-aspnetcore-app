@@ -3,6 +3,7 @@ using System.Net.Http;
 using Dka.AspNetCore.BasicWebApp.Common.Logic;
 using Dka.AspNetCore.BasicWebApp.Models.Configurations;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
+using Dka.AspNetCore.BasicWebApp.Services.Unleash;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +30,8 @@ namespace Dka.AspNetCore.BasicWebApp
             AddInternalApiClient(services);
             
             services.AddHttpContextAccessor();
+            services.AddUnleashClient();
+            
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
         }
@@ -36,14 +39,13 @@ namespace Dka.AspNetCore.BasicWebApp
         public void Configure(IApplicationBuilder app, ILogger<Startup> logger, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddSerilog();
-            
             logger.LogInformation("Web application initialised");
-            
+
             app.UseHsts();
             app.UseHttpsRedirection();
             app.UseRouting();
-
             app.UseStaticFiles();
+            app.UseUnleashMiddleware();
             
             app.UseEndpoints(configure =>
             {
@@ -51,8 +53,6 @@ namespace Dka.AspNetCore.BasicWebApp
                 configure.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 configure.MapRazorPages();
             });
-            
-            
         }
 
         protected virtual void AddInternalApiClient(IServiceCollection services)

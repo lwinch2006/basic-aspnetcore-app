@@ -1,6 +1,11 @@
 using System.Threading.Tasks;
+using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
+using Dka.AspNetCore.BasicWebApp.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
+using Dka.AspNetCore.BasicWebApp.Services.ExceptionProcessing;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Dka.AspNetCore.BasicWebApp.Controllers
 {
@@ -8,14 +13,32 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
     {
         private readonly IInternalApiClient _internalApiClient;
         
-        public HomeController(IInternalApiClient internalApiClient)
+        private readonly ILogger<HomeController> _logger;
+
+        private readonly HttpContext _httpContext;        
+        
+        public HomeController(IInternalApiClient internalApiClient, IHttpContextAccessor httpContextAccessor, ILogger<HomeController> logger)
         {
             _internalApiClient = internalApiClient;
+            _httpContext = httpContextAccessor.HttpContext;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
         {
-            ViewData["PageNameFromApi"] = await _internalApiClient.GetPageNameAsync("Home");
+            var pageName = string.Empty;
+
+            try
+            {
+                pageName = await _internalApiClient.GetPageNameAsync("Home");
+            }
+            catch (InternalApiClientException ex)
+            {
+                // Logging exception and showing UI message to the user.
+                ExceptionProcessor.Process(_logger, _httpContext, ex);
+            }
+
+            ViewData[ViewDataKeys.HtmlPageNameReceivedFromApi] = pageName;
             
             return View();
         }

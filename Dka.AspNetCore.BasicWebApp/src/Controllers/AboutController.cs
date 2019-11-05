@@ -1,7 +1,6 @@
-using System;
 using System.Threading.Tasks;
-using Dka.AspNetCore.BasicWebApp.Common.Models.Toastr;
 using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
+using Dka.AspNetCore.BasicWebApp.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Services.ExceptionProcessing;
 using Microsoft.AspNetCore.Http;
@@ -39,7 +38,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
                 ExceptionProcessor.Process(_logger, _httpContext, ex);
             }
 
-            ViewData["PageNameFromApi"] = pageName;
+            ViewData[ViewDataKeys.HtmlPageNameReceivedFromApi] = pageName;
 
             return View();
         }

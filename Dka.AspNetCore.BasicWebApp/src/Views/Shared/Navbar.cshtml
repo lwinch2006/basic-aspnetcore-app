@@ -1,3 +1,6 @@
+@using Dka.AspNetCore.BasicWebApp.Services.Unleash
+@inject UnleashClient unleashClient
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
         <span class="navbar-toggler-icon"></span>
@@ -14,11 +17,14 @@
                 <a id="nav-link-about" class="nav-link" href="~/About/">About</a>
             </li>
         </ul>
-        <ul class="navbar-nav ml-md-auto">
-            <li class="nav-item">
-                <a id="nav-link-administration" class="nav-link" href="~/Administration/Tenants/">Administration<span class="sr-only">(current)</span></a>
-            </li>
-        </ul>
+        @if (unleashClient.AdministrationMenuEnabled)
+        {
+            <ul class="navbar-nav ml-md-auto">
+                <li class="nav-item">
+                    <a id="nav-link-administration" class="nav-link" href="~/Administration/Tenants/">Administration<span class="sr-only">(current)</span></a>
+                </li>
+            </ul>            
+        }
     </div>
 </nav>
 

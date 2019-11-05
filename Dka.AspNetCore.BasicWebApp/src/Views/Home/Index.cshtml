@@ -1,10 +1,11 @@
+@using Dka.AspNetCore.BasicWebApp.Models.Constants
 
 @{
-    ViewData["Title"] = ViewData["PageNameFromApi"];
-    ViewData["MainPageTitle"] = "Home";
-    ViewData["ActiveNavLinkName"] = "home";
+    ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = ViewData[ViewDataKeys.HtmlPageNameReceivedFromApi];
+    ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "Home";
+    ViewData[ViewDataKeys.ActiveNavigationLink] = "home";
 }
 
 <p>
-    Page name is <span id="PageNameContainer">@ViewData["PageNameFromApi"]</span>
+    Page name is <span id="PageNameContainer">@ViewData[ViewDataKeys.HtmlPageNameReceivedFromApi]</span>
 </p>
