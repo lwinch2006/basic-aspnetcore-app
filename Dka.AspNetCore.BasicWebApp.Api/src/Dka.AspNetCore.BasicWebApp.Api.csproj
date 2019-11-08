@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="3.0.0" />
+      <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
       <PackageReference Include="dbup" Version="4.2.0" />
       <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
     </ItemGroup>
@@ -28,6 +29,9 @@
       <EmbeddedResource Include="Infrastructure\SQLScripts\201911040806-updating-table-tenants-changing-id-column.sql" />
       <EmbeddedResource Include="Infrastructure\SQLScripts\201911040833-dropping-table-tenants.sql" />
       <EmbeddedResource Include="Infrastructure\SQLScripts\201911040837-adding-table-tenants-again.sql" />
+      <EmbeddedResource Include="Infrastructure\SQLScripts\201911060801-update-table-tenants-rename-externalid-column.sql" />
+      <EmbeddedResource Include="Infrastructure\SQLScripts\201911060837-update-table-tenants-rename-externalid-column.sql" />
+      <EmbeddedResource Include="Infrastructure\SQLScripts\201911060838-update-table-tenants-rename-externalid-column.sql" />
       <None Remove="Infrastructure\SQLScripts\201911011515-create-table-tenants.sql" />
       <EmbeddedResource Include="Infrastructure\SQLScripts\201911011515-create-table-tenants.sql" />
     </ItemGroup>

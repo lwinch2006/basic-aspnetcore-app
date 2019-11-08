@@ -1,0 +1,44 @@
+@using Dka.AspNetCore.BasicWebApp.Models.Constants
+@model Dka.AspNetCore.BasicWebApp.ViewModels.Tenants.Tenant
+@{
+    ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "Tenant details";
+    ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "Tenant details";
+    ViewData[ViewDataKeys.ActiveNavigationLink] = "administration";
+}
+
+@if (Model != null)
+{
+    <div class="row mb-3 mb-sm-2">
+        <div class="col-sm-6 text-sm-right">
+            <label asp-for="Alias" class="font-weight-bold"></label>
+        </div>
+        <div class="col-sm-6">
+            @Model.Alias
+        </div>
+    </div>
+    <div class="row mb-3 mb-sm-2">
+        <div class="col-sm-6 text-sm-right">
+            <label asp-for="Name" class="font-weight-bold"></label>
+        </div>
+        <div class="col-sm-6">
+            @Model.Name
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 text-sm-center">
+            <a asp-controller="Tenants" asp-action="index" class="btn btn-outline-secondary dka-btn">Back</a>
+            <a asp-controller="Tenants" asp-action="edit" asp-route-guid="@Model.Guid" class="btn btn-outline-secondary dka-btn">Edit</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row mb-3 mb-sm-2">
+        <div class="col-sm-12 text-sm-center">
+            <p>
+                Tenant not found
+            </p>
+            <a asp-action="index" class="btn btn-outline-secondary dka-btn">Back</a>
+        </div>
+    </div>
+}

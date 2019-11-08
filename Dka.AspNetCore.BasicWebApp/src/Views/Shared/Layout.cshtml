@@ -4,9 +4,8 @@
     <title>@ViewData["Title"]</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha256-+N4/V/SbAFiW1MPBCXnfnP9QSN3+Keu+NlB+0ev/YKQ=" crossorigin="anonymous" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" integrity="sha384-R334r6kryDNB/GWs2kfB6blAOyWPCxjdHSww/mo7fel+o5TM/AOobJ0QpGRXSDh4" crossorigin="anonymous"/>
     <link href="~/css/layout.css" rel="stylesheet"/>
     
@@ -23,7 +22,9 @@
             <div class="dka-adjustable-rows-container h-100">
                 @(await Html.PartialAsync("Navbar"))
                 @(await Html.PartialAsync("PageHeader"))
-                @RenderBody()
+                <div style="padding: 15px;">
+                    @RenderBody()
+                </div>
                 @(await Html.PartialAsync("PageFooter"))
                 @(await Html.PartialAsync("EnvironmentMessageBox"))
             </div>
@@ -32,3 +33,11 @@
 </div>
 </body>
 </html>
+
+
+
+
+
+
+
+

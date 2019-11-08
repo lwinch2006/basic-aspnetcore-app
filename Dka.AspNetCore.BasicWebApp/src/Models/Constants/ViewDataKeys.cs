@@ -11,5 +11,11 @@ namespace Dka.AspNetCore.BasicWebApp.Models.Constants
         public static string HtmlPageNameReceivedFromApi = "PageNameFromApi";
         
         public static string ActiveNavigationLink = "ActiveNavLinkName";
+
+        public static string Tenants = "Tenants";
+        
+        public static string TenantDetails = "TenantDetails";
+        
+        
     }
 }

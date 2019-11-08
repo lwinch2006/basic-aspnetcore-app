@@ -1,0 +1,39 @@
+@using Dka.AspNetCore.BasicWebApp.Models.Constants
+@model Dka.AspNetCore.BasicWebApp.ViewModels.Tenants.NewTenant
+@{
+    ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "New tenant";
+    ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "New tenant";
+    ViewData[ViewDataKeys.ActiveNavigationLink] = "administration";
+}
+
+<form asp-controller="Tenants" asp-action="details" method="post">
+    <div class="row">
+        <div class="col-sm-12 text-sm-center">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-6 text-sm-right">
+            <label asp-for="Alias" class="font-weight-bold"></label>
+        </div>
+        <div class="col-sm-6">
+            <input asp-for="Alias" class="form-control"/>
+            <span asp-validation-for="Alias" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-6 text-sm-right">
+            <label asp-for="Name" class="font-weight-bold"></label>
+        </div>
+        <div class="col-sm-6">
+            <input asp-for="Name" class="form-control"/>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-sm-12 text-sm-center">
+            <a asp-controller="Tenants" asp-action="index" class="btn btn-outline-secondary dka-btn">Cancel</a>
+            <button type="submit" asp-controller="Tenants" asp-action="new" class="btn btn-outline-secondary dka-btn">Save</button>
+        </div>
+    </div>
+</form>

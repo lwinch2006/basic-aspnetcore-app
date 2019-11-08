@@ -1,11 +1,12 @@
-@using System.Collections
 @using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants
+@using Dka.AspNetCore.BasicWebApp.Models.Constants
+@model IEnumerable<Tenant>
 @{
-    ViewData["Title"] = "Tenant list";
-    ViewData["MainPageTitle"] = "Tenant list";
-    ViewData["ActiveNavLinkName"] = "administration";
+    ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "Tenant list";
+    ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "Tenant list";
+    ViewData[ViewDataKeys.ActiveNavigationLink] = "administration";
 }
-<div class="row">
+<div class="row mb-2">
     <div class="col-sm-12">
         <table class="table">
             <thead>
@@ -19,28 +20,40 @@
                 <th>
                     Name
                 </th>
+                <th>
+                </th>
             </tr>
             </thead>
             <tbody>
             @{
-                var tenants = (List<Tenant>) ViewData["Tenants"];
-
-                for (var i = 0; i < tenants?.Count(); i++)
+                for (var i = 0; i < Model?.Count(); i++)
                 {
                     <tr>
                         <td>
                             @(i + 1)
                         </td>
                         <td>
-                            @tenants[i].Alias
+                            @Model.ElementAt(i).Alias
                         </td>
                         <td>
-                            @tenants[i].Name
+                            @Model.ElementAt(i).Name
+                        </td>
+                        <td>
+                            <a asp-controller="Tenants" asp-action="details" asp-route-guid="@Model.ElementAt(i).Guid">details</a>
                         </td>
                     </tr>
                 }
             }
             </tbody>
         </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="d-flex">
+            <a asp-controller="Administration" asp-action="Index" class="btn btn-outline-secondary">Back</a>
+
+            <a asp-controller="Tenants" asp-action="new" class="btn btn-outline-secondary ml-auto">Add new tenant</a>
+        </div>
     </div>
 </div>

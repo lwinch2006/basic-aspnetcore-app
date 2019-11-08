@@ -1,30 +1,41 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ExceptionProcessing;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
 using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
+using Dka.AspNetCore.BasicWebApp.Models.Constants;
+using Dka.AspNetCore.BasicWebApp.Models.Tenants;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Services.ExceptionProcessing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using AutoMapper;
 
 namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
 {
+    [Route("Administration/[controller]/{action=Index}")]
     public class TenantsController : Controller
     {
         private readonly IInternalApiClient _internalApiClient;
         
         private readonly ILogger<TenantsController> _logger;
 
-        private readonly HttpContext _httpContext;  
+        private readonly HttpContext _httpContext;
+
+        private readonly IMapper _mapper;
         
-        public TenantsController(IInternalApiClient internalApiClient, IHttpContextAccessor httpContextAccessor, ILogger<TenantsController> logger)
+        public TenantsController(
+            IInternalApiClient internalApiClient, 
+            IHttpContextAccessor httpContextAccessor, 
+            ILogger<TenantsController> logger,
+            IMapper mapper)
         {
             _internalApiClient = internalApiClient;
             _httpContext = httpContextAccessor.HttpContext;
             _logger = logger;
+            _mapper = mapper;
         }
         
         [HttpGet]
@@ -42,17 +53,152 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
                 ExceptionProcessor.Process(_logger, _httpContext, ex);
             }
 
-            ViewData["Tenants"] = tenants;
+            return View("~/Views/Administration/Tenants/TenantList.cshtml", tenants);
+        }
 
-            return View("~/Views/Administration/Tenants/TenantList.cshtml");
+        [HttpGet("{guid}")]
+        [ActionName("details")]
+        public async Task<IActionResult> GetByGuid([FromRoute]Guid guid)
+        {
+            ViewModels.Tenants.Tenant tenantVm = null;
+
+            try
+            {
+                var tenantBo = await _internalApiClient.GetTenantByGuid(guid);
+
+                if (tenantBo == null)
+                {
+                    throw new TenantNotFoundException("Tenant not found");
+                }
+
+                tenantVm = _mapper.Map<ViewModels.Tenants.Tenant>(tenantBo);
+            }
+            catch (BasicWebAppException ex)
+            {
+                ExceptionProcessor.Process(_logger, _httpContext, ex);
+            }
+
+            return View("~/Views/Administration/Tenants/TenantDetails.cshtml", tenantVm);
         }
 
         [HttpGet]
-        [ActionName("index/{id}")]
-        public async Task<IActionResult> GetByGuid(Guid guid)
+        [ActionName("new")]
+        public async Task<IActionResult> CreateNewTenant()
         {
-            return Ok();
+            var newTenant = new ViewModels.Tenants.NewTenant();
+
+            return await Task.FromResult(View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenant));
         }
         
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        [ActionName("new")]
+        public async Task<IActionResult> CreateNewTenant([Bind("Alias", "Name")] ViewModels.Tenants.NewTenant newTenant)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenant);
+            }
+
+            try
+            {
+                var newTenantApiContract = _mapper.Map<Common.Models.ApiContracts.NewTenant>(newTenant);
+
+                var newTenantGuid = await _internalApiClient.CreateNewTenant(newTenantApiContract);
+
+                return RedirectToAction("details", new { Guid = newTenantGuid });
+            }
+            catch (BasicWebAppException ex)
+            {
+                ExceptionProcessor.Process(_logger, _httpContext, ex);
+            }
+
+            return View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenant);
+        }
+        
+        [HttpGet("{guid}")]
+        [ActionName("edit")]
+        public async Task<IActionResult> EditTenantDetails([FromRoute]Guid guid)
+        {
+            ViewModels.Tenants.Tenant tenantVm = null;
+
+            try
+            {
+                var tenantBo = await _internalApiClient.GetTenantByGuid(guid);
+                
+                if (tenantBo == null)
+                {
+                    throw new TenantNotFoundException("Tenant not found");
+                }
+                
+                tenantVm = _mapper.Map<ViewModels.Tenants.Tenant>(tenantBo);
+            }
+            catch (BasicWebAppException ex)
+            {
+                ExceptionProcessor.Process(_logger, _httpContext, ex);
+            }
+
+            return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantVm);
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost("{guid}")]
+        [ActionName("edit")]
+        public async Task<IActionResult> EditTenantDetails([FromRoute] Guid guid, [Bind("Alias", "Name", "Guid")] ViewModels.Tenants.Tenant tenantVm)
+        {
+            try
+            {
+                if (guid != tenantVm.Guid)
+                {
+                    throw new TenantNotFoundException("Tenant not found");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantVm);
+                }
+
+                var tenantApiContract = _mapper.Map<Common.Models.ApiContracts.Tenant>(tenantVm);
+                
+                await _internalApiClient.UpdateTenant(tenantApiContract);
+
+                return RedirectToAction("index");
+            }
+            catch (BasicWebAppException ex)
+            {
+                ExceptionProcessor.Process(_logger, _httpContext, ex);
+            }
+
+            return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantVm);
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost("{guid}")]
+        [ActionName("delete")]
+        public async Task<IActionResult> RemoveTenant([FromRoute]Guid guid, [Bind("Alias", "Name", "Guid")] ViewModels.Tenants.Tenant tenantToDeleteVm)
+        {
+            try
+            {
+                if (guid != tenantToDeleteVm.Guid)
+                {
+                    throw new TenantNotFoundException("Tenant not found");
+                }
+                
+                if (!ModelState.IsValid)
+                {
+                    return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToDeleteVm);
+                }
+
+                await _internalApiClient.DeleteTenant(guid);
+
+                return RedirectToAction("index");
+            }
+            catch (BasicWebAppException ex)
+            {
+                ExceptionProcessor.Process(_logger, _httpContext, ex);
+            }
+            
+            return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToDeleteVm);
+        }
     }
 }

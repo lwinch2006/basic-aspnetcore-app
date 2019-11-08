@@ -1,3 +1,4 @@
+@using Dka.AspNetCore.BasicWebApp.Models.Constants
 @using Dka.AspNetCore.BasicWebApp.Services.Unleash
 @inject UnleashClient unleashClient
 
@@ -11,7 +12,7 @@
                 <a id="nav-link-home" class="nav-link" href="~/">Home<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a id="nav-link-about" class="nav-link" href="~/Status/">Status</a>
+                <a id="nav-link-status" class="nav-link" href="~/Status/">Status</a>
             </li>            
             <li class="nav-item">
                 <a id="nav-link-about" class="nav-link" href="~/About/">About</a>
@@ -21,7 +22,7 @@
         {
             <ul class="navbar-nav ml-md-auto">
                 <li class="nav-item">
-                    <a id="nav-link-administration" class="nav-link" href="~/Administration/Tenants/">Administration<span class="sr-only">(current)</span></a>
+                    <a id="nav-link-administration" class="nav-link" href="~/Administration/">Administration<span class="sr-only">(current)</span></a>
                 </li>
             </ul>            
         }
@@ -30,7 +31,7 @@
 
 <script type="text/javascript">
    $(".nav").find(".active").removeClass("active");
-   $("#nav-link-@(ViewData["ActiveNavLinkName"])").addClass("active");
+   $("#nav-link-@(ViewData[ViewDataKeys.ActiveNavigationLink])").addClass("active");
 </script>
 
 

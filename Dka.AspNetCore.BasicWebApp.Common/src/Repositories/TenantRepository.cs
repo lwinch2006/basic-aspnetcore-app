@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -23,13 +24,47 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
             await using (var connection = new SqlConnection(_databaseConfiguration.ConnectionString))
             {
                 const string query = @"
-                    SELECT [Id], [Name], [Alias], [ExternalId]
+                    SELECT [Id], [Name], [Alias], [Guid]
                     FROM [Tenants]
                 ";
 
                 var tenants = await connection.QueryAsync<Tenant>(query);
 
                 return tenants;
+            }
+        }
+
+        internal async Task<Tenant> GetByGuid(Guid guid)
+        {
+            await using (var connection = new SqlConnection(_databaseConfiguration.ConnectionString))
+            {
+                const string query = @"
+                    SELECT [Id], [Name], [Alias], [Guid]
+                    FROM [Tenants]
+                    WHERE [Guid] = @Guid
+                ";
+
+                var tenant = await connection.QuerySingleOrDefaultAsync<Tenant>(query, new { @Guid = guid });
+
+                return tenant;
+            }
+        }
+
+        internal async Task<Guid> CreateNewTenant(Tenant newTenantBo)
+        {
+            await using (var connection = new SqlConnection(_databaseConfiguration.ConnectionString))
+            {
+                newTenantBo.Guid = Guid.NewGuid();
+                
+                const string query = @"
+                    INSERT INTO [Tenants] ([Alias], [Name], [Guid])
+                    VALUES (@Alias, @Name, @Guid);
+                ";
+
+                await connection.ExecuteAsync(query,
+                    new {@Alias = newTenantBo.Alias, @Name = newTenantBo.Name, @Guid = newTenantBo.Guid});
+
+                return newTenantBo.Guid;
             }
         }
     }

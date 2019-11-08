@@ -20,8 +20,8 @@ body,
 
 .dka-environment-messagebox {
     position: fixed;
-    bottom: 30px;
-    left: 30px;
+    bottom: 40px;
+    left: 40px;
     margin: 0;
 }
 
@@ -38,4 +38,7 @@ body,
 }
 .dka-red-circle-status {
     background-color: red;
+}
+.dka-btn {
+    min-width: 80px;
 }

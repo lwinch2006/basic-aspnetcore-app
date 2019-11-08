@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Api.Services.ServiceCollection;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Configurations;
 using Microsoft.AspNetCore.Builder;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using DbUp;
+using Dka.AspNetCore.BasicWebApp.Api.Models.AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Api.Models.ExceptionProcessing;
 using Microsoft.Extensions.Logging;
 
@@ -37,7 +39,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api
                 .AddHealthChecks()
                 .AddSqlServer(_databaseConfiguration.ConnectionString, null, "Database", null, new[] {"db-status-check"}, null)
                 .AddCheck("Memory", () => HealthCheckResult.Healthy(), new [] { "memory-status-check" });
-            
+            services.AddAutoMapper(typeof(BasicWebAppApiProfile));
             
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -53,7 +55,6 @@ namespace Dka.AspNetCore.BasicWebApp.Api
             
             app.UseEndpoints(configure =>
             {
-                configure.MapControllerRoute("administration", "Administration/{controller=Home}/{action=Index}/{id?}");
                 configure.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 configure.MapHealthChecks("/health");
                 configure.MapHealthChecks("/health/database", new HealthCheckOptions
