@@ -4,6 +4,10 @@ using Dka.AspNetCore.BasicWebApp.Api.Models.Configurations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Exceptions;
+using Serilog.Sinks.Elasticsearch;
 
 namespace Dka.AspNetCore.BasicWebApp.Api
 {
@@ -37,7 +41,17 @@ namespace Dka.AspNetCore.BasicWebApp.Api
         
         private static IHost BuildWebHost(string[] args)
         {
-            return CreateHostBuilder(args).Build();
+            // Configuring web host defaults.
+            var hostBuilder = CreateHostBuilder(args);
+            
+            // Configuring web host logging.
+            ConfigureLogging(hostBuilder);
+            
+            // Configuring Serilog logging;
+            ConfigureSerilogLogging();
+            
+            // Building web host.
+            return hostBuilder.Build();
         }
 
         private static IConfiguration BuildConfiguration()
@@ -51,12 +65,36 @@ namespace Dka.AspNetCore.BasicWebApp.Api
             return configuration;
         }
 
-        private static void ConfigureLogging()
+        private static void ConfigureLogging(IHostBuilder hostBuilder)
         {
+            var assemblyName = typeof(Startup).Assembly.GetName().Name;
+            var configuration = BuildConfiguration();
             
+            hostBuilder.ConfigureLogging(loggingBuilder =>
+            {
+                loggingBuilder.AddConfiguration(configuration.GetSection($"{assemblyName}:Logging"));
+                loggingBuilder.ClearProviders();
+                loggingBuilder.AddConsole();
+            });            
+        }
+        
+        private static void ConfigureSerilogLogging()
+        {
+            var assemblyName = typeof(Startup).Assembly.GetName().Name;
+            var configuration = BuildConfiguration();
+            var elasticUri = configuration[$"{assemblyName}:ElasticConfiguration:Uri"];
+            var indexFormat = configuration[$"{assemblyName}:ElasticConfiguration:Index"];
             
-            
-            
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration.GetSection($"{assemblyName}"))
+                .Enrich.FromLogContext()
+                .Enrich.WithExceptionDetails()
+                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
+                {
+                    AutoRegisterTemplate = true,
+                    IndexFormat = indexFormat
+                })
+                .CreateLogger();
         }        
     }
 }

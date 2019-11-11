@@ -42,7 +42,6 @@ namespace Dka.AspNetCore.BasicWebApp
         public void Configure(IApplicationBuilder app, ILogger<Startup> logger, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddSerilog();
-            logger.LogInformation("Web application initialised");
 
             app.UseHsts();
             app.UseHttpsRedirection();
@@ -55,6 +54,8 @@ namespace Dka.AspNetCore.BasicWebApp
                 configure.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 configure.MapRazorPages();
             });
+            
+            logger.LogInformation("Web application initialised");
         }
 
         protected virtual void AddInternalApiClient(IServiceCollection services)

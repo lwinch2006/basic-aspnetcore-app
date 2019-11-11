@@ -1,13 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Net.Mime;
 using System.Threading.Tasks;
 using AutoMapper;
+using Dka.AspNetCore.BasicWebApp.Api.Services.ExceptionProcessing;
 using Dka.AspNetCore.BasicWebApp.Common.Logic;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ExceptionProcessing;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
 {
@@ -18,10 +18,13 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
 
         private readonly IMapper _mapper;
 
-        public TenantsController(TenantLogic tenantLogic, IMapper mapper)
+        private readonly ILogger<TenantsController> _logger;
+
+        public TenantsController(TenantLogic tenantLogic, IMapper mapper, ILogger<TenantsController> logger)
         {
             _tenantLogic = tenantLogic;
             _mapper = mapper;
+            _logger = logger;
         }
         
         [HttpGet]
@@ -57,9 +60,9 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
                 newTenantBo.Guid = await _tenantLogic.CreateNewTenant(newTenantBo);
                 return Ok(newTenantBo.Guid);
             }
-            catch (Exception ex)
+            catch (BasicWebAppException ex)
             {
-                // TODO: implement exception processing.
+                ExceptionProcessor.Process(_logger, ex);
             }
 
             return StatusCode(StatusCodes.Status500InternalServerError);
@@ -80,10 +83,16 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
                 await _tenantLogic.EditTenant(tenantToEditBo);
                 return NoContent();
             }
-            catch (Exception ex)
+            catch (BasicWebAppException ex)
             {
-                // TODO: implement exception processing.
-                // TODO: implement returning not exist response.
+                ExceptionProcessor.Process(_logger, ex);
+                
+                var tenant = await _tenantLogic.GetByGuid(guid);
+
+                if (tenant == null)
+                {
+                    return NotFound();
+                }
             }
             
             return StatusCode(StatusCodes.Status500InternalServerError);
@@ -105,9 +114,9 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
                 await _tenantLogic.DeleteTenant(tenantToDeleteBo.Guid);
                 return Ok(tenantToDeleteBo);
             }
-            catch (Exception ex)
+            catch (BasicWebAppException ex)
             {
-                // TODO: implement exception processing.
+                ExceptionProcessor.Process(_logger, ex);
             }
             
             return StatusCode(StatusCodes.Status500InternalServerError);

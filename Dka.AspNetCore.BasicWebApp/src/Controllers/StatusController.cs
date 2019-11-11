@@ -25,16 +25,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
         
         public async Task<IActionResult> Index()
         {
-            var apiLiveStatusResult = false;
-            
-            try
-            {
-                apiLiveStatusResult = await _internalApiClient.CheckApiLiveStatus();
-            }
-            catch (ApiConnectionException ex)
-            {
-                ExceptionProcessor.Process(_logger, _httpContext, ex);
-            }
+            var apiLiveStatusResult = await _internalApiClient.CheckApiLiveStatus();
 
             ViewData[ViewDataKeys.ApiLiveStatus] = apiLiveStatusResult;
             

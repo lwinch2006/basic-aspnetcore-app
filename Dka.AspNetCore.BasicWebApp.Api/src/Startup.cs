@@ -13,6 +13,7 @@ using DbUp;
 using Dka.AspNetCore.BasicWebApp.Api.Models.AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Api.Models.ExceptionProcessing;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Dka.AspNetCore.BasicWebApp.Api
 {
@@ -45,8 +46,10 @@ namespace Dka.AspNetCore.BasicWebApp.Api
             services.AddRazorPages();
         }
 
-        public void Configure(IApplicationBuilder app, ILogger<Startup> logger)
+        public void Configure(IApplicationBuilder app, ILogger<Startup> logger, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddSerilog();
+            
             RunDbMigrations(logger);
             
             app.UseHsts();
@@ -75,6 +78,8 @@ namespace Dka.AspNetCore.BasicWebApp.Api
                 });
                 configure.MapRazorPages();
             });
+            
+            logger.LogInformation("WebAPI initialised.");
         }
 
         private void RunDbMigrations(ILogger<Startup> logger)
