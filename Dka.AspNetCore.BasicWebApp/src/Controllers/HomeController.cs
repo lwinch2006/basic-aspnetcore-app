@@ -32,7 +32,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
             {
                 pageName = await _internalApiClient.GetPageNameAsync("Home");
             }
-            catch (InternalApiClientException ex)
+            catch (ApiConnectionException ex)
             {
                 // Logging exception and showing UI message to the user.
                 ExceptionProcessor.Process(_logger, _httpContext, ex);

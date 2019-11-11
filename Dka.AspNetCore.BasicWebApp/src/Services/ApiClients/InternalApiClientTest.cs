@@ -48,7 +48,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             return Task.FromResult(true);
         }
 
-        public Task UpdateTenant(Common.Models.ApiContracts.Tenant tenantApiContract)
+        public Task EditTenant(Guid guid, Common.Models.ApiContracts.Tenant tenantApiContract)
         {
             return Task.CompletedTask;
         }

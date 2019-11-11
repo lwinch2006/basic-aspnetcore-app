@@ -38,6 +38,11 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
         public async Task<IActionResult> GetByGuid(Guid guid)
         {
             var tenant = await _tenantLogic.GetByGuid(guid);
+
+            if (tenant == null)
+            {
+                return NotFound();
+            }
             
             return Ok(tenant);
         }
@@ -46,11 +51,6 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
         [ActionName("new")]
         public async Task<IActionResult> CreateNewTenant([FromBody] Common.Models.ApiContracts.NewTenant newTenantApiContract)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(newTenantApiContract);
-            }
-
             try
             {
                 var newTenantBo = _mapper.Map<Tenant>(newTenantApiContract);
@@ -59,9 +59,57 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
             }
             catch (Exception ex)
             {
-                
+                // TODO: implement exception processing.
             }
 
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+
+        [HttpPut("{guid}")]
+        [ActionName("edit")]
+        public async Task<IActionResult> EditTenant(Guid guid, [FromBody] Common.Models.ApiContracts.Tenant tenantToEditApiContract)
+        {
+            if (guid != tenantToEditApiContract.Guid)
+            {
+                return BadRequest(tenantToEditApiContract);
+            }
+
+            try
+            {
+                var tenantToEditBo = _mapper.Map<Tenant>(tenantToEditApiContract);
+                await _tenantLogic.EditTenant(tenantToEditBo);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                // TODO: implement exception processing.
+                // TODO: implement returning not exist response.
+            }
+            
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+
+        [HttpDelete("{guid}")]
+        [ActionName("delete")]
+        public async Task<IActionResult> DeleteTenant(Guid guid)
+        {
+            try
+            {
+                var tenantToDeleteBo = await _tenantLogic.GetByGuid(guid);
+
+                if (tenantToDeleteBo == null)
+                {
+                    return NotFound();
+                }
+                
+                await _tenantLogic.DeleteTenant(tenantToDeleteBo.Guid);
+                return Ok(tenantToDeleteBo);
+            }
+            catch (Exception ex)
+            {
+                // TODO: implement exception processing.
+            }
+            
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }

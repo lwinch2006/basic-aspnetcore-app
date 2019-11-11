@@ -31,7 +31,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
             {
                 apiLiveStatusResult = await _internalApiClient.CheckApiLiveStatus();
             }
-            catch (InternalApiClientException ex)
+            catch (ApiConnectionException ex)
             {
                 ExceptionProcessor.Process(_logger, _httpContext, ex);
             }

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts;
 using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
+using Dka.AspNetCore.BasicWebApp.Models.Tenants;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 using Tenant = Dka.AspNetCore.BasicWebApp.Common.Models.Tenants.Tenant;
@@ -36,7 +38,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             }
             catch (Exception ex)
             {
-                throw new InternalApiClientException("Internal API client exception", ex);
+                throw new ApiConnectionException(ex);
             }
         }
 
@@ -54,15 +56,17 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             }
             catch (Exception ex)
             {
-                throw new InternalApiClientException("Internal API client exception", ex);
+                throw new ApiConnectionException(ex);
             }
         }
 
         public async Task<Tenant> GetTenantByGuid(Guid guid)
         {
+            HttpResponseMessage response = null;
+            
             try
             {
-                var response = await _httpClient.GetAsync($"/Administration/Tenants/Details/{guid}");
+                response = await _httpClient.GetAsync($"/Administration/Tenants/Details/{guid}");
 
                 response.EnsureSuccessStatusCode();
 
@@ -70,9 +74,126 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 
                 return tenant;
             }
+            catch (HttpRequestException ex)
+            {
+                if (response == null)
+                {
+                    throw new ApiConnectionException(ex);
+                }
+                
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                        throw new TenantNotFoundException(ex);
+                    
+                    default:
+                        throw new ApiStatusCodeException(ex);
+                }
+            }
             catch (Exception ex)
             {
-                throw new InternalApiClientException("Internal API client exception", ex);
+                throw new ApiConnectionException(ex);
+            }
+        }
+        
+        public async Task<Guid> CreateNewTenant(NewTenant newTenantApiContract)
+        {
+            HttpResponseMessage response = null;
+            
+            try
+            {
+                var newTenantApiContractAsJson = JsonSerializer.Serialize(newTenantApiContract);
+                
+                var newTenantApiContractAsContent = new StringContent(newTenantApiContractAsJson, Encoding.UTF8, "application/json");
+                
+                response = await _httpClient.PostAsync("/Administration/Tenants/new", newTenantApiContractAsContent);
+
+                response.EnsureSuccessStatusCode();
+
+                var tenantGuid = await response.Content.ReadAsAsync<Guid>();
+
+                return tenantGuid;
+            }
+            catch (HttpRequestException ex)
+            {
+                if (response == null)
+                {
+                    throw new ApiConnectionException(ex);
+                }
+                
+                throw new ApiStatusCodeException(ex);
+            }            
+            catch (Exception ex)
+            {
+                throw new ApiConnectionException(ex);
+            }
+        }
+
+        public async Task EditTenant(Guid guid, Common.Models.ApiContracts.Tenant tenantToEditApiContract)
+        {
+            HttpResponseMessage response = null;
+            
+            try
+            {
+                var tenantToEditApiContractAsJson = JsonSerializer.Serialize(tenantToEditApiContract);
+                
+                var tenantToEditApiContractAsContent = new StringContent(tenantToEditApiContractAsJson, Encoding.UTF8, "application/json");
+
+                response = await _httpClient.PutAsync($"/Administration/Tenants/edit/{guid}", tenantToEditApiContractAsContent);
+
+                response.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException ex)
+            {
+                if (response == null)
+                {
+                    throw new ApiConnectionException(ex);
+                }
+                
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                        throw new TenantNotFoundException(ex);
+                    
+                    default:
+                        throw new ApiStatusCodeException(ex);
+                }
+            }             
+            catch (Exception ex)
+            {
+                throw new ApiConnectionException(ex);
+            }
+        }
+
+        public async Task DeleteTenant(Guid guid)
+        {
+            HttpResponseMessage response = null;
+            
+            try
+            {
+                response = await _httpClient.DeleteAsync($"/Administration/Tenants/delete/{guid}");
+
+                response.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException ex)
+            {
+                if (response == null)
+                {
+                    throw new ApiConnectionException(ex);
+                }
+                
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.NotFound:
+                        throw new TenantNotFoundException(ex);
+                    
+                    default:
+                        throw new ApiStatusCodeException(ex);
+                }
+            }             
+            catch (Exception ex)
+            {
+                throw new ApiConnectionException(ex);
             }
         }
         
@@ -89,38 +210,6 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
         public async Task<bool> CheckApiLiveStatus()
         {
             return await CheckApiHealthByUrl("/health/live");
-        }
-
-        public Task UpdateTenant(Common.Models.ApiContracts.Tenant tenantApiContract)
-        {
-            return Task.CompletedTask;
-        }
-
-        public async Task<Guid> CreateNewTenant(NewTenant newTenantApiContract)
-        {
-            try
-            {
-                var newTenantApiContractAsJson = JsonSerializer.Serialize(newTenantApiContract);
-                
-                var newTenantApiContractAsContent = new StringContent(newTenantApiContractAsJson, Encoding.UTF8, "application/json");
-                
-                var response = await _httpClient.PostAsync("/Administration/Tenants/new", newTenantApiContractAsContent);
-
-                response.EnsureSuccessStatusCode();
-
-                var tenantGuid = await response.Content.ReadAsAsync<Guid>();
-
-                return tenantGuid;
-            }
-            catch (Exception ex)
-            {
-                throw new InternalApiClientException("Internal API client exception", ex);
-            }
-        }
-
-        public Task DeleteTenant(Guid guid)
-        {
-            return Task.CompletedTask;
         }
 
         private async Task<bool> CheckApiHealthByUrl(string url)

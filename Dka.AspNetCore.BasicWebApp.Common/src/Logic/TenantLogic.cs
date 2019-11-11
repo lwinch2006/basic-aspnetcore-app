@@ -35,5 +35,15 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Logic
 
             return newTenantGuid;
         }
+
+        public async Task EditTenant(Tenant tenantToEdit)
+        {
+            await _tenantRepository.EditTenant(tenantToEdit);
+        }
+
+        public async Task DeleteTenant(Guid guid)
+        {
+            await _tenantRepository.DeleteTenant(guid);
+        }
     }
 }

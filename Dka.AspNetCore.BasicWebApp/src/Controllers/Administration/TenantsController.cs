@@ -48,7 +48,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             {
                 tenants = await _internalApiClient.GetTenants();
             }
-            catch (InternalApiClientException ex)
+            catch (BasicWebAppException ex)
             {
                 ExceptionProcessor.Process(_logger, _httpContext, ex);
             }
@@ -65,11 +65,6 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             try
             {
                 var tenantBo = await _internalApiClient.GetTenantByGuid(guid);
-
-                if (tenantBo == null)
-                {
-                    throw new TenantNotFoundException("Tenant not found");
-                }
 
                 tenantVm = _mapper.Map<ViewModels.Tenants.Tenant>(tenantBo);
             }
@@ -126,11 +121,6 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             {
                 var tenantBo = await _internalApiClient.GetTenantByGuid(guid);
                 
-                if (tenantBo == null)
-                {
-                    throw new TenantNotFoundException("Tenant not found");
-                }
-                
                 tenantVm = _mapper.Map<ViewModels.Tenants.Tenant>(tenantBo);
             }
             catch (BasicWebAppException ex)
@@ -144,23 +134,23 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         [ValidateAntiForgeryToken]
         [HttpPost("{guid}")]
         [ActionName("edit")]
-        public async Task<IActionResult> EditTenantDetails([FromRoute] Guid guid, [Bind("Alias", "Name", "Guid")] ViewModels.Tenants.Tenant tenantVm)
+        public async Task<IActionResult> EditTenantDetails([FromRoute] Guid guid, [Bind("Alias", "Name", "Guid")] ViewModels.Tenants.Tenant tenantToEditVm)
         {
             try
             {
-                if (guid != tenantVm.Guid)
+                if (guid != tenantToEditVm.Guid)
                 {
-                    throw new TenantNotFoundException("Tenant not found");
+                    throw new TenantNotFoundException();
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantVm);
+                    return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToEditVm);
                 }
 
-                var tenantApiContract = _mapper.Map<Common.Models.ApiContracts.Tenant>(tenantVm);
+                var tenantToEditApiContract = _mapper.Map<Common.Models.ApiContracts.Tenant>(tenantToEditVm);
                 
-                await _internalApiClient.UpdateTenant(tenantApiContract);
+                await _internalApiClient.EditTenant(guid, tenantToEditApiContract);
 
                 return RedirectToAction("index");
             }
@@ -169,19 +159,19 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
                 ExceptionProcessor.Process(_logger, _httpContext, ex);
             }
 
-            return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantVm);
+            return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToEditVm);
         }
 
         [ValidateAntiForgeryToken]
         [HttpPost("{guid}")]
         [ActionName("delete")]
-        public async Task<IActionResult> RemoveTenant([FromRoute]Guid guid, [Bind("Alias", "Name", "Guid")] ViewModels.Tenants.Tenant tenantToDeleteVm)
+        public async Task<IActionResult> DeleteTenant([FromRoute]Guid guid, [Bind("Alias", "Name", "Guid")] ViewModels.Tenants.Tenant tenantToDeleteVm)
         {
             try
             {
                 if (guid != tenantToDeleteVm.Guid)
                 {
-                    throw new TenantNotFoundException("Tenant not found");
+                    throw new TenantNotFoundException();
                 }
                 
                 if (!ModelState.IsValid)
@@ -189,7 +179,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
                     return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToDeleteVm);
                 }
 
-                await _internalApiClient.DeleteTenant(guid);
+                await _internalApiClient.DeleteTenant(tenantToDeleteVm.Guid);
 
                 return RedirectToAction("index");
             }

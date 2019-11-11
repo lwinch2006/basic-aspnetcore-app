@@ -2,10 +2,12 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Models.Toastr
 {
     public static class UserFriendlyErrorMessageConstants
     {
-        public const string ApiConnectionError = "API is not available. Please try again in few minutes.";
+        public const string ApiConnectionException = "Service is not available. Please try again in few minutes.";
+        
+        public const string ApiStatusCodeException = "Operation failed. Please try again in few minutes.";
+        
+        public const string GeneralException = "General error. Please try again in few minutes.";
 
-        public const string GeneralError = "General error. Please try again in few minutes.";
-
-        public const string TenantNotFoundError = "Tenant not found.";
+        public const string TenantNotFoundException = "Tenant(s) not found.";
     }
 }

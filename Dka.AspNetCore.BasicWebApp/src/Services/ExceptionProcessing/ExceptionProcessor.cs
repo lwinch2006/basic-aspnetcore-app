@@ -20,16 +20,20 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ExceptionProcessing
             
             switch (exception)
             {
-                case InternalApiClientException _:
-                    httpContext.Items[ToastrConstants.Message] = UserFriendlyErrorMessageConstants.ApiConnectionError;                       
+                case ApiConnectionException _:
+                    httpContext.Items[ToastrConstants.Message] = UserFriendlyErrorMessageConstants.ApiConnectionException;                       
+                    break;
+                
+                case ApiStatusCodeException _:
+                    httpContext.Items[ToastrConstants.Message] = UserFriendlyErrorMessageConstants.ApiStatusCodeException;  
                     break;
                 
                 case TenantNotFoundException _:
-                    httpContext.Items[ToastrConstants.Message] = UserFriendlyErrorMessageConstants.TenantNotFoundError;                       
+                    httpContext.Items[ToastrConstants.Message] = UserFriendlyErrorMessageConstants.TenantNotFoundException;                       
                     break;
                 
                 default:
-                    httpContext.Items[ToastrConstants.Message] = UserFriendlyErrorMessageConstants.GeneralError;                     
+                    httpContext.Items[ToastrConstants.Message] = UserFriendlyErrorMessageConstants.GeneralException;                     
                     break;
             }
         }

@@ -67,5 +67,36 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
                 return newTenantBo.Guid;
             }
         }
+
+        internal async Task EditTenant(Tenant tenantToEdit)
+        {
+            await using (var connection = new SqlConnection(_databaseConfiguration.ConnectionString))
+            {
+                const string query = @"
+                    UPDATE [Tenants]
+                    SET 
+                        [Alias] = @Alias,
+                        [Name] = @Name
+                    WHERE
+                        [Guid] = @Guid;
+                ";
+
+                await connection.ExecuteAsync(query,
+                    new {@Alias = tenantToEdit.Alias, @Name = tenantToEdit.Name, @Guid = tenantToEdit.Guid});
+            }
+        }
+
+        internal async Task DeleteTenant(Guid guid)
+        {
+            await using (var connection = new SqlConnection(_databaseConfiguration.ConnectionString))
+            {
+                const string query = @"
+                    DELETE FROM [Tenants]
+                    WHERE [Guid] = @Guid;
+                ";
+                
+                await connection.ExecuteAsync(query, new {@Guid = guid});
+            }
+        }
     }
 }
