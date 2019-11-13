@@ -18,6 +18,31 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp.SystemTests", "Dka.AspNetCore.BasicWebApp\test\Dka.AspNetCore.BasicWebApp.SystemTests\Dka.AspNetCore.BasicWebApp.SystemTests.csproj", "{148E1E6F-E8DA-4C29-9082-E355E73544E0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{13AFB803-273E-4425-881C-E87B595E7E20}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ELK", "ELK", "{10D1FC49-F975-47E3-87B7-E6FF7FF995EB}"
+ProjectSection(SolutionItems) = preProject
+	Infrastructure\Docker\ELK\docker-compose.yml = Infrastructure\Docker\ELK\docker-compose.yml
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{0196E302-0A4F-4834-9CD4-875251FD4892}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MSSQL", "MSSQL", "{4C5CD2F3-F6F5-4E50-931D-B0F35B4024FE}"
+ProjectSection(SolutionItems) = preProject
+	Infrastructure\Docker\MSSQL\docker-compose.yml = Infrastructure\Docker\MSSQL\docker-compose.yml
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unleash", "Unleash", "{00F947AB-B556-4A97-89C4-83C234FEEDF7}"
+ProjectSection(SolutionItems) = preProject
+	Infrastructure\Docker\Unleash\docker-compose.yml = Infrastructure\Docker\Unleash\docker-compose.yml
+	Infrastructure\Docker\Unleash\Dockerfile = Infrastructure\Docker\Unleash\Dockerfile
+	Infrastructure\Docker\Unleash\index.js = Infrastructure\Docker\Unleash\index.js
+	Infrastructure\Docker\Unleash\LICENSE.md = Infrastructure\Docker\Unleash\LICENSE.md
+	Infrastructure\Docker\Unleash\package.json = Infrastructure\Docker\Unleash\package.json
+	Infrastructure\Docker\Unleash\README.md = Infrastructure\Docker\Unleash\README.md
+	Infrastructure\Docker\Unleash\yarn.lock = Infrastructure\Docker\Unleash\yarn.lock
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,5 +88,9 @@ Global
 		{5F61424E-9666-47FE-AAA2-8281F5A27B7A} = {05C08C5F-A199-46BF-9015-420F38412BC9}
 		{9FF8DA52-ADAF-4B60-97B1-B6D36496E431} = {05C08C5F-A199-46BF-9015-420F38412BC9}
 		{148E1E6F-E8DA-4C29-9082-E355E73544E0} = {05C08C5F-A199-46BF-9015-420F38412BC9}
+		{0196E302-0A4F-4834-9CD4-875251FD4892} = {13AFB803-273E-4425-881C-E87B595E7E20}
+		{10D1FC49-F975-47E3-87B7-E6FF7FF995EB} = {0196E302-0A4F-4834-9CD4-875251FD4892}
+		{4C5CD2F3-F6F5-4E50-931D-B0F35B4024FE} = {0196E302-0A4F-4834-9CD4-875251FD4892}
+		{00F947AB-B556-4A97-89C4-83C234FEEDF7} = {0196E302-0A4F-4834-9CD4-875251FD4892}
 	EndGlobalSection
 EndGlobal

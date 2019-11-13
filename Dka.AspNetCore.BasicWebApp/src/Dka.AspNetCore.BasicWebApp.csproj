@@ -28,4 +28,8 @@
       <ProjectReference Include="..\..\Dka.AspNetCore.BasicWebApp.Common\src\Dka.AspNetCore.BasicWebApp.Common.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Infrastructure\Docker\Unleash\package.json" />
+    </ItemGroup>
+
 </Project>
