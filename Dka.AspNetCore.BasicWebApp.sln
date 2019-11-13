@@ -40,7 +40,6 @@ ProjectSection(SolutionItems) = preProject
 	Infrastructure\Docker\Unleash\LICENSE.md = Infrastructure\Docker\Unleash\LICENSE.md
 	Infrastructure\Docker\Unleash\package.json = Infrastructure\Docker\Unleash\package.json
 	Infrastructure\Docker\Unleash\README.md = Infrastructure\Docker\Unleash\README.md
-	Infrastructure\Docker\Unleash\yarn.lock = Infrastructure\Docker\Unleash\yarn.lock
 EndProjectSection
 EndProject
 Global
