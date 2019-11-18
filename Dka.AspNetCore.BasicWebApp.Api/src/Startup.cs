@@ -46,12 +46,17 @@ namespace Dka.AspNetCore.BasicWebApp.Api
             services.AddRazorPages();
         }
 
-        public void Configure(IApplicationBuilder app, ILogger<Startup> logger, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, ILogger<Startup> logger, ILoggerFactory loggerFactory, IHostEnvironment environment)
         {
             loggerFactory.AddSerilog();
             
             RunDbMigrations(logger);
-            
+
+            if (environment.IsDevelopment())
+            {
+                RunDbMigrationsInDevelopmentEnvironment(logger);
+            }
+
             app.UseHsts();
             app.UseHttpsRedirection();
             app.UseRouting();
@@ -89,7 +94,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api
             var upgrader =
                 DeployChanges.To
                     .SqlDatabase(_databaseConfiguration.ConnectionString)
-                    .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
+                    .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), scriptName => !scriptName.Contains("seed-dev-data", StringComparison.OrdinalIgnoreCase))
                     .LogToConsole()
                     .Build();
 
@@ -103,6 +108,33 @@ namespace Dka.AspNetCore.BasicWebApp.Api
             }
 
             logger.LogInformation("Database migrations run success.");
+        }
+
+        private void RunDbMigrationsInDevelopmentEnvironment(ILogger<Startup> logger)
+        {
+            EnsureDatabase.For.SqlDatabase(_databaseConfiguration.ConnectionString);
+            
+            var upgrader =
+                DeployChanges.To
+                    .SqlDatabase(_databaseConfiguration.ConnectionString)
+                    .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), scriptName => scriptName.Contains("seed-dev-data", StringComparison.OrdinalIgnoreCase))
+                    .LogToConsole()
+                    .Build();
+
+            var result = upgrader.PerformUpgrade();
+
+            if (!result.Successful)
+            {
+                logger.LogError(result.Error.Message);
+                
+                throw new ApiDbRunMigrationsException("Database migrations (Development environment) run failure", result.Error);
+            }
+
+            logger.LogInformation("Database migrations (Development environment) run success.");            
+            
+            
+            
+            
         }
     }
 }
