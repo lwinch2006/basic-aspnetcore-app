@@ -9,7 +9,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Services.ServiceCollection
     {
         public static void AddDatabaseClasses(this IServiceCollection services, DatabaseConfiguration databaseConfiguration)
         {
-            services.AddScoped(sp => new TenantLogic(new TenantRepository(databaseConfiguration)));
+            services.AddScoped(sp => new TenantLogic(new TenantRepository(new DatabaseConnectionFactory(databaseConfiguration))));
         }
     }
 }

@@ -19,9 +19,9 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Models.Tenants
         {
             var dummyTenants = new List<Tenant>
             {
-                new Tenant { Guid = Guid.Parse("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), Alias = "umbrella", Name = "Umbrella Corporation"},
-                new Tenant { Guid = Guid.Parse("F02E8F1F-0BBA-4049-9ED6-902F610DEE95"), Alias = "cyberdyne", Name = "Cyberdyne Systems"},
-                new Tenant { Guid = Guid.Parse("5D71D117-F481-41B7-BE4A-AF0BB5A8A20E"), Alias = "ocp", Name = "OCP"}
+                new Tenant { Id = 1, Name = "Umbrella Corporation", Alias = "umbrella", Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")},
+                new Tenant { Id = 2, Name = "Cyberdyne Systems", Alias = "cyberdyne", Guid = new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95")},
+                new Tenant { Id = 3, Name = "OCP", Alias = "ocp", Guid = new Guid("5D71D117-F481-41B7-BE4A-AF0BB5A8A20E")}
             };
 
             return await Task.FromResult(dummyTenants);

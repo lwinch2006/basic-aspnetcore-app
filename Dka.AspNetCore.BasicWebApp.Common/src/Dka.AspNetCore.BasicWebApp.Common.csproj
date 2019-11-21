@@ -4,6 +4,11 @@
         <TargetFramework>netcoreapp3.0</TargetFramework>
         <LangVersion>8</LangVersion>
         <Nullable>enable</Nullable>
+        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+        <Authors>D.K.</Authors>
+        <Description>Common library for BasicWebApp</Description>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <FileVersion>1.0.0</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>

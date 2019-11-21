@@ -15,35 +15,35 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Logic
             _tenantRepository = tenantRepository;
         }
 
-        public async Task<IEnumerable<Tenant>> GetAll()
+        public virtual async Task<IEnumerable<Tenant>> GetAll()
         {
             var tenants = await _tenantRepository.GetAll();
 
             return tenants;
         }
 
-        public async Task<Tenant> GetByGuid(Guid guid)
+        public virtual async Task<Tenant> GetByGuid(Guid guid)
         {
             var tenant = await _tenantRepository.GetByGuid(guid);
 
             return tenant;
         }
 
-        public async Task<Guid> CreateNewTenant(Tenant newTenantBo)
+        public virtual async Task<Guid> CreateNewTenant(Tenant newTenantBo)
         {
             var newTenantGuid = await _tenantRepository.CreateNewTenant(newTenantBo);
 
             return newTenantGuid;
         }
 
-        public async Task EditTenant(Tenant tenantToEdit)
+        public virtual async Task<int> EditTenant(Tenant tenantToEdit)
         {
-            await _tenantRepository.EditTenant(tenantToEdit);
+            return await _tenantRepository.EditTenant(tenantToEdit);
         }
 
-        public async Task DeleteTenant(Guid guid)
+        public virtual async Task<int> DeleteTenant(Guid guid)
         {
-            await _tenantRepository.DeleteTenant(guid);
+            return await _tenantRepository.DeleteTenant(guid);
         }
     }
 }

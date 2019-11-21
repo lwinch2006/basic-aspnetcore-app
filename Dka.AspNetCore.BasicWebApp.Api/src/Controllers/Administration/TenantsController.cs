@@ -56,6 +56,11 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
         {
             try
             {
+                if (newTenantApiContract == null)
+                {
+                    return BadRequest();
+                }
+
                 var newTenantBo = _mapper.Map<Tenant>(newTenantApiContract);
                 newTenantBo.Guid = await _tenantLogic.CreateNewTenant(newTenantBo);
                 return Ok(newTenantBo.Guid);
@@ -72,11 +77,11 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
         [ActionName("edit")]
         public async Task<IActionResult> EditTenant(Guid guid, [FromBody] Common.Models.ApiContracts.Tenant tenantToEditApiContract)
         {
-            if (guid != tenantToEditApiContract.Guid)
+            if (guid != tenantToEditApiContract?.Guid)
             {
                 return BadRequest(tenantToEditApiContract);
-            }
-
+            }             
+            
             try
             {
                 var tenantToEditBo = _mapper.Map<Tenant>(tenantToEditApiContract);
@@ -117,6 +122,8 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
             catch (BasicWebAppException ex)
             {
                 ExceptionProcessor.Process(_logger, ex);
+                
+                // TODO: Here can be also checking of GUID and returning NotFound result.
             }
             
             return StatusCode(StatusCodes.Status500InternalServerError);

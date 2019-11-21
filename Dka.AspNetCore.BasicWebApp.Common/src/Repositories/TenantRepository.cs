@@ -1,27 +1,28 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Configurations;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
 using Dapper;
 
+[assembly: InternalsVisibleTo("Dka.AspNetCore.BasicWebApp.Common.UnitTests")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
 {
     public class TenantRepository
     {
-        private readonly DatabaseConfiguration _databaseConfiguration;
+        private readonly DatabaseConnectionFactory _databaseConnectionFactory;
 
-        public TenantRepository(DatabaseConfiguration databaseConfiguration)
+        public TenantRepository(DatabaseConnectionFactory databaseConnectionFactory)
         {
-            _databaseConfiguration = databaseConfiguration;
+            _databaseConnectionFactory = databaseConnectionFactory;
         }
 
-        internal async Task<IEnumerable<Tenant>> GetAll()
+        internal virtual async Task<IEnumerable<Tenant>> GetAll()
         {
-            await using (var connection = new SqlConnection(_databaseConfiguration.ConnectionString))
+            using (var connection = _databaseConnectionFactory.GetConnection())
             {
                 const string query = @"
                     SELECT [Id], [Name], [Alias], [Guid]
@@ -34,25 +35,25 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
             }
         }
 
-        internal async Task<Tenant> GetByGuid(Guid guid)
+        internal virtual async Task<Tenant> GetByGuid(Guid guid)
         {
-            await using (var connection = new SqlConnection(_databaseConfiguration.ConnectionString))
+            using (var connection = _databaseConnectionFactory.GetConnection())
             {
                 const string query = @"
-                    SELECT [Id], [Name], [Alias], [Guid]
-                    FROM [Tenants]
-                    WHERE [Guid] = @Guid
+                    SELECT Id, Name, Alias, Guid
+                    FROM Tenants
+                    WHERE Guid = @Guid
                 ";
 
-                var tenant = await connection.QuerySingleOrDefaultAsync<Tenant>(query, new { @Guid = guid });
+                var tenant = await connection.QuerySingleOrDefaultAsync<Tenant>(query, new { @Guid = guid.ToString() });
 
                 return tenant;
             }
         }
 
-        internal async Task<Guid> CreateNewTenant(Tenant newTenantBo)
+        internal virtual async Task<Guid> CreateNewTenant(Tenant newTenantBo)
         {
-            await using (var connection = new SqlConnection(_databaseConfiguration.ConnectionString))
+            using (var connection = _databaseConnectionFactory.GetConnection())
             {
                 newTenantBo.Guid = Guid.NewGuid();
                 
@@ -61,16 +62,16 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
                     VALUES (@Alias, @Name, @Guid);
                 ";
 
-                await connection.ExecuteAsync(query,
-                    new {@Alias = newTenantBo.Alias, @Name = newTenantBo.Name, @Guid = newTenantBo.Guid});
+                var affectedRows = await connection.ExecuteAsync(query,
+                    new {@Alias = newTenantBo.Alias, @Name = newTenantBo.Name, @Guid = newTenantBo.Guid.ToString()});
 
-                return newTenantBo.Guid;
+                return affectedRows == 1 ? newTenantBo.Guid : Guid.Empty;
             }
         }
 
-        internal async Task EditTenant(Tenant tenantToEdit)
+        internal virtual async Task<int> EditTenant(Tenant tenantToEdit)
         {
-            await using (var connection = new SqlConnection(_databaseConfiguration.ConnectionString))
+            using (var connection = _databaseConnectionFactory.GetConnection())
             {
                 const string query = @"
                     UPDATE [Tenants]
@@ -81,21 +82,25 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
                         [Guid] = @Guid;
                 ";
 
-                await connection.ExecuteAsync(query,
-                    new {@Alias = tenantToEdit.Alias, @Name = tenantToEdit.Name, @Guid = tenantToEdit.Guid});
+                var affectedRows = await connection.ExecuteAsync(query,
+                    new {@Alias = tenantToEdit.Alias, @Name = tenantToEdit.Name, @Guid = tenantToEdit.Guid.ToString()});
+
+                return affectedRows;
             }
         }
 
-        internal async Task DeleteTenant(Guid guid)
+        internal virtual async Task<int> DeleteTenant(Guid guid)
         {
-            await using (var connection = new SqlConnection(_databaseConfiguration.ConnectionString))
+            using (var connection = _databaseConnectionFactory.GetConnection())
             {
                 const string query = @"
                     DELETE FROM [Tenants]
                     WHERE [Guid] = @Guid;
                 ";
                 
-                await connection.ExecuteAsync(query, new {@Guid = guid});
+                var affectedRows = await connection.ExecuteAsync(query, new {@Guid = guid.ToString()});
+
+                return affectedRows;
             }
         }
     }

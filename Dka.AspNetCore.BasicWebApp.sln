@@ -42,6 +42,10 @@ ProjectSection(SolutionItems) = preProject
 	Infrastructure\Docker\Unleash\README.md = Infrastructure\Docker\Unleash\README.md
 EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp.Api.UnitTests", "Dka.AspNetCore.BasicWebApp.Api\test\Dka.AspNetCore.BasicWebApp.Api.UnitTests\Dka.AspNetCore.BasicWebApp.Api.UnitTests.csproj", "{10E52EA9-FCBD-49F0-9365-4D8BCC442FD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp.Common.UnitTests", "Dka.AspNetCore.BasicWebApp.Common.UnitTests\Dka.AspNetCore.BasicWebApp.Common.UnitTests.csproj", "{52329959-0414-4DCE-BD41-5FDF24579483}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +84,14 @@ Global
 		{148E1E6F-E8DA-4C29-9082-E355E73544E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{148E1E6F-E8DA-4C29-9082-E355E73544E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{148E1E6F-E8DA-4C29-9082-E355E73544E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10E52EA9-FCBD-49F0-9365-4D8BCC442FD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10E52EA9-FCBD-49F0-9365-4D8BCC442FD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10E52EA9-FCBD-49F0-9365-4D8BCC442FD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10E52EA9-FCBD-49F0-9365-4D8BCC442FD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52329959-0414-4DCE-BD41-5FDF24579483}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52329959-0414-4DCE-BD41-5FDF24579483}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52329959-0414-4DCE-BD41-5FDF24579483}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52329959-0414-4DCE-BD41-5FDF24579483}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E686D784-F444-4798-BDB7-40BDF7F5F5B8} = {05C08C5F-A199-46BF-9015-420F38412BC9}
@@ -91,5 +103,7 @@ Global
 		{10D1FC49-F975-47E3-87B7-E6FF7FF995EB} = {0196E302-0A4F-4834-9CD4-875251FD4892}
 		{4C5CD2F3-F6F5-4E50-931D-B0F35B4024FE} = {0196E302-0A4F-4834-9CD4-875251FD4892}
 		{00F947AB-B556-4A97-89C4-83C234FEEDF7} = {0196E302-0A4F-4834-9CD4-875251FD4892}
+		{10E52EA9-FCBD-49F0-9365-4D8BCC442FD2} = {05C08C5F-A199-46BF-9015-420F38412BC9}
+		{52329959-0414-4DCE-BD41-5FDF24579483} = {05C08C5F-A199-46BF-9015-420F38412BC9}
 	EndGlobalSection
 EndGlobal
