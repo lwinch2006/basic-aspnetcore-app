@@ -2,19 +2,19 @@ namespace Dka.AspNetCore.BasicWebApp.Models.Constants
 {
     public static class ViewDataKeys
     {
-        public static string ApiLiveStatus = "ApiLiveStatus";
+        public const string ApiLiveStatus = "ApiLiveStatus";
         
-        public static string HtmlPageHeadSectionTitle = "Title";
+        public const string HtmlPageHeadSectionTitle = "Title";
         
-        public static string HtmlPageTopHeaderTitle = "MainPageTitle";
+        public const string HtmlPageTopHeaderTitle = "MainPageTitle";
         
-        public static string HtmlPageNameReceivedFromApi = "PageNameFromApi";
+        public const string HtmlPageNameReceivedFromApi = "PageNameFromApi";
         
-        public static string ActiveNavigationLink = "ActiveNavLinkName";
+        public const string ActiveNavigationLink = "ActiveNavLinkName";
 
-        public static string Tenants = "Tenants";
+        public const string Tenants = "Tenants";
         
-        public static string TenantDetails = "TenantDetails";
+        public const string TenantDetails = "TenantDetails";
         
         
     }

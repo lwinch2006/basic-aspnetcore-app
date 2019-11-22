@@ -22,4 +22,8 @@
       <ProjectReference Include="..\..\src\Dka.AspNetCore.BasicWebApp.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Services\ApiClients" />
+    </ItemGroup>
+
 </Project>
