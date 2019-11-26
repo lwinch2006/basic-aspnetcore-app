@@ -12,7 +12,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
     {
         private readonly IInternalApiClient _internalApiClient;
         
-        private readonly ILogger<TenantsController> _logger;
+        private readonly ILogger<AdministrationController> _logger;
 
         private readonly HttpContext _httpContext;
 
@@ -21,7 +21,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
         public AdministrationController(
             IInternalApiClient internalApiClient, 
             IHttpContextAccessor httpContextAccessor, 
-            ILogger<TenantsController> logger,
+            ILogger<AdministrationController> logger,
             IMapper mapper)
         {
             _internalApiClient = internalApiClient;

@@ -16,7 +16,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
         private readonly ILogger<StatusController> _logger;
         private readonly HttpContext _httpContext;
         
-        public StatusController(IInternalApiClient internalApiClient, ILogger<StatusController> logger, IHttpContextAccessor httpContextAccessor)
+        public StatusController(IInternalApiClient internalApiClient, IHttpContextAccessor httpContextAccessor, ILogger<StatusController> logger)
         {
             _internalApiClient = internalApiClient;
             _logger = logger;

@@ -224,7 +224,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 
                 return responseAsString.Equals(HealthStatus.Healthy.ToString(), StringComparison.OrdinalIgnoreCase);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }            

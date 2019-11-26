@@ -13,8 +13,8 @@ namespace Dka.AspNetCore.BasicWebApp.Services.Unleash
         
         public bool IsEnabled(Dictionary<string, string> parameters, UnleashContext context)
         {
-            if (!parameters.ContainsKey(ParameterName) || 
-                !context.Properties.ContainsKey(UnleashConstants.TenantGuidStrategyName))
+            if (parameters == null || !parameters.ContainsKey(ParameterName) || 
+                context?.Properties == null || !context.Properties.ContainsKey(UnleashConstants.TenantGuidStrategyName))
             {
                 return false;
             }

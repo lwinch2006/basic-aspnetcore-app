@@ -7,6 +7,10 @@ namespace Dka.AspNetCore.BasicWebApp.Models.ApiClients
 {
     public class ApiConnectionException : BasicWebAppException
     {
+        public ApiConnectionException()
+            : base("API connection exception")
+        {}
+
         public ApiConnectionException(string message)
             : base(message)
         {}

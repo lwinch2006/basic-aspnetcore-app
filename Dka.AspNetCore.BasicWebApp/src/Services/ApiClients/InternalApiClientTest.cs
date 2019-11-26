@@ -55,7 +55,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 
         public async Task<Guid> CreateNewTenant(NewTenant newTenantApiContract)
         {
-            return await Task.FromResult(Guid.NewGuid());
+            return await Task.FromResult(new Guid("C78C30E4-620E-4E2C-8BAF-2A81BA8470A1"));
         }
 
         public Task DeleteTenant(Guid guid)
