@@ -334,7 +334,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             catch (ApiConnectionException)
             {
                 Assert.True(true, "ApiConnectionException is thrown. This behaviour is legal.");
+                return;
             }
+            
+            Assert.False(true, "ApiConnectionException is not thrown. This behaviour is illegal.");
         }
 
         [Fact]
@@ -360,7 +363,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             catch (TenantNotFoundException)
             {
                 Assert.True(true, "TenantNotFoundException is thrown. This behaviour is legal.");
+                return;
             }
+            
+            Assert.True(false, "TenantNotFoundException is not thrown. This behaviour is illegal.");
         }
 
         [Fact]
@@ -375,7 +381,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             catch (ApiStatusCodeException)
             {
                 Assert.True(true, "ApiStatusCodeException is thrown. This behaviour is legal.");
-            }            
+                return;
+            }          
+            
+            Assert.True(false, "ApiStatusCodeException is not thrown. This behaviour is illegal.");
         }
         
         [Fact]
@@ -390,7 +399,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             catch (ApiConnectionException)
             {
                 Assert.True(true, "ApiConnectionException is thrown. This behaviour is legal.");
-            }            
+                return;
+            }
+            
+            Assert.True(false, "ApiConnectionException is not thrown. This behaviour is illegal.");
         }
         
         [Fact]
@@ -405,7 +417,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             catch (ApiConnectionException)
             {
                 Assert.True(true, "ApiConnectionException is thrown. This behaviour is legal.");
-            }            
+                return;
+            }
+            
+            Assert.True(false, "ApiConnectionException is not thrown. This behaviour is illegal.");
         }
 
         [Fact]
@@ -420,7 +435,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             catch (ApiConnectionException)
             {
                 Assert.True(true, "ApiConnectionException is thrown. This behaviour is legal.");
-            }            
+                return;
+            }
+            
+            Assert.True(false, "ApiConnectionException is not thrown. This behaviour is illegal.");
         }
 
         [Fact]

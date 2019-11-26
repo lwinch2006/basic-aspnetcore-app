@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Dka.AspNetCore.BasicWebApp.Api.Models.Configurations;
 using Microsoft.AspNetCore.Hosting;
@@ -11,6 +12,7 @@ using Serilog.Sinks.Elasticsearch;
 
 namespace Dka.AspNetCore.BasicWebApp.Api
 {
+    [ExcludeFromCodeCoverage]
     public static class Program
     {
         public static void Main(string[] args)

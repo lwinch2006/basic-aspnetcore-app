@@ -116,8 +116,11 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
             }
             catch (NullReferenceException)
             {
-                Assert.True(true, "NullReferenceException has happened. This is correct behaviour.");    
+                Assert.True(true, "NullReferenceException has happened. This is correct behaviour.");
+                return;
             }
+            
+            Assert.True(false, "NullReferenceException has not happened. This is incorrect behaviour.");
         }
 
         [Fact]
@@ -127,6 +130,15 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
             var affectedRows = await tenantLogic.EditTenant(new Tenant {Name = "Test company", Alias = "test-company", Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")});
             
             Assert.Equal(1, affectedRows);            
+        }
+        
+        [Fact]
+        public async Task EditTenant_PassInvalidTenant_ReturnsNewTenantGuid_ShouldPass()
+        {
+            var tenantLogic = SetupTenantLogic();
+            var affectedRows = await tenantLogic.EditTenant(new Tenant {Name = "Test company", Alias = "test-company", Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF")});
+            
+            Assert.Equal(0, affectedRows);            
         }
         
         [Fact]
@@ -140,8 +152,11 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
             }
             catch (NullReferenceException)
             {
-                Assert.True(true, "NullReferenceException has happened. This is correct behaviour.");  
+                Assert.True(true, "NullReferenceException has happened. This is correct behaviour.");
+                return;
             }
+            
+            Assert.True(false, "NullReferenceException has not happened. This is incorrect behaviour.");
         }
 
         [Fact]

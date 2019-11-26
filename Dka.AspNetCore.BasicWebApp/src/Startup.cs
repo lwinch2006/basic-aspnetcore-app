@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Common.Logic;
@@ -15,6 +16,7 @@ using Serilog;
 
 namespace Dka.AspNetCore.BasicWebApp
 {
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         protected readonly string _applicationName;

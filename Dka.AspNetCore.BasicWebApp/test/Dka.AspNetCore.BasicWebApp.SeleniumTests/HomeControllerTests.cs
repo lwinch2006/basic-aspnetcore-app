@@ -29,6 +29,11 @@ namespace Dka.AspNetCore.BasicWebApp.SeleniumTests
             var driver = new RemoteWebDriver(chromeOptions);
             Browser = driver;
             Logs = new RemoteLogs(driver);
+            
+            Assert.NotNull(Server);
+            Assert.NotNull(Client);
+            Assert.NotNull(Browser);
+            Assert.NotNull(Logs);
         }
         
         [Fact]

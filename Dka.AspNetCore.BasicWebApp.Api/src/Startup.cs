@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Api.Services.ServiceCollection;
@@ -17,6 +18,7 @@ using Serilog;
 
 namespace Dka.AspNetCore.BasicWebApp.Api
 {
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         private readonly string _appName;

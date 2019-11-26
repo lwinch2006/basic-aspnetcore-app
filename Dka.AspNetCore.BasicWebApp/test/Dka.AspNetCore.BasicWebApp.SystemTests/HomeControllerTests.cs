@@ -24,6 +24,12 @@ namespace Dka.AspNetCore.BasicWebApp.SystemTests
 
             ApiServer = apiServer;
             ApiClient = ApiServer.CreateClient();
+            
+            
+            Assert.NotNull(WebServer);
+            Assert.NotNull(WebClient);
+            Assert.NotNull(ApiServer);
+            Assert.NotNull(ApiClient);
         }        
         
         [Fact]

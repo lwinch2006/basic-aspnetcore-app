@@ -105,13 +105,15 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests.RepositoryTests
 
             try
             {
-                var newTenantGuid = await tenantRepository.CreateNewTenant(null);
-                Assert.True(newTenantGuid != Guid.Empty);
+                await tenantRepository.CreateNewTenant(null);
             }
             catch (NullReferenceException)
             {
                 Assert.True(true, "NullReferenceException has happened. This is correct behaviour.");
+                return;
             }
+            
+            Assert.True(false, "NullReferenceException has not happened. This is incorrect behaviour.");
         }        
 
         [Fact]

@@ -24,7 +24,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.Unleash
             {
                 sessionId = context.Session.Id;
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException)
             {
                 // TODO: Process exception in some way.
             }
