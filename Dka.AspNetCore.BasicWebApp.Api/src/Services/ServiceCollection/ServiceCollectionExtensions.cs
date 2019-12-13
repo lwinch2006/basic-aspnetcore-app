@@ -1,4 +1,5 @@
 using Dka.AspNetCore.BasicWebApp.Common.Logic;
+using Dka.AspNetCore.BasicWebApp.Common.Logic.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Configurations;
 using Dka.AspNetCore.BasicWebApp.Common.Repositories;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +10,15 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Services.ServiceCollection
     {
         public static void AddDatabaseClasses(this IServiceCollection services, DatabaseConfiguration databaseConfiguration)
         {
-            services.AddScoped(sp => new TenantLogic(new TenantRepository(new DatabaseConnectionFactory(databaseConfiguration))));
+            services.AddScoped(sp => new DatabaseConnectionFactory(databaseConfiguration));
+            
+            // Repositories.
+            services.AddScoped<TenantRepository>();
+            services.AddScoped<UserRepository>();
+            
+            // Logic.
+            services.AddScoped<TenantLogic>();
+            services.AddScoped<ApplicationUserStore>();
         }
     }
 }

@@ -13,6 +13,8 @@ using Microsoft.Extensions.Hosting;
 using DbUp;
 using Dka.AspNetCore.BasicWebApp.Api.Models.AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Api.Models.ExceptionProcessing;
+using Dka.AspNetCore.BasicWebApp.Common.Logic.Authentication;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Authentication;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
@@ -43,6 +45,11 @@ namespace Dka.AspNetCore.BasicWebApp.Api
                 .AddSqlServer(_databaseConfiguration.ConnectionString, null, "Database", null, new[] {"db-status-check"}, null)
                 .AddCheck("Memory", () => HealthCheckResult.Healthy(), new [] { "memory-status-check" });
             services.AddAutoMapper(typeof(BasicWebAppApiProfile));
+
+            // Defining authentication.
+            services
+                .AddDefaultIdentity<ApplicationUser>()
+                .AddUserStore<ApplicationUserStore>();
             
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -62,6 +69,8 @@ namespace Dka.AspNetCore.BasicWebApp.Api
             app.UseHsts();
             app.UseHttpsRedirection();
             app.UseRouting();
+            
+            app.UseAuthentication();
             
             app.UseEndpoints(configure =>
             {
