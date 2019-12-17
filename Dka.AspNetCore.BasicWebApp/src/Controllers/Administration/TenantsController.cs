@@ -12,9 +12,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
 {
+    [Authorize]
     [Route("Administration/[controller]/{action=Index}")]
     public class TenantsController : Controller
     {

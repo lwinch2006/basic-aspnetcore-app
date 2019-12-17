@@ -1,38 +1,32 @@
 using System;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 
 namespace Dka.AspNetCore.BasicWebApp.Common.Logic
 {
     public static class EnvironmentLogic
     {
-        private const string DevelopmentEnvironmentName = "Development";
-        private const string StageEnvironmentName = "Stage";
-        private const string TestEnvironmentName = "Test";
-        private const string ProductionEnvironmentName = "Production";
-        private const string DefaultAspNetCoreEnvironment = ProductionEnvironmentName;
-        private const string AspNetCoreEnvironmentVariableName = "ASPNETCORE_ENVIRONMENT";
-        
         public static bool IsDevelopment()
         {
-            var environment = Environment.GetEnvironmentVariable(AspNetCoreEnvironmentVariableName) ?? DefaultAspNetCoreEnvironment;
-            return environment.Equals(DevelopmentEnvironmentName, StringComparison.OrdinalIgnoreCase);
+            var environment = Environment.GetEnvironmentVariable(EnvironmentVariableNames.EnvironmentName) ?? WebHostEnvironments.Default;
+            return environment.Equals(WebHostEnvironments.Development, StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool IsTest()
         {
-            var environment = Environment.GetEnvironmentVariable(AspNetCoreEnvironmentVariableName) ?? DefaultAspNetCoreEnvironment;
-            return environment.Equals(TestEnvironmentName, StringComparison.OrdinalIgnoreCase);
+            var environment = Environment.GetEnvironmentVariable(EnvironmentVariableNames.EnvironmentName) ?? WebHostEnvironments.Default;
+            return environment.Equals(WebHostEnvironments.Test, StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool IsStage()
         {
-            var environment = Environment.GetEnvironmentVariable(AspNetCoreEnvironmentVariableName) ?? DefaultAspNetCoreEnvironment;
-            return environment.Equals(StageEnvironmentName, StringComparison.OrdinalIgnoreCase);
+            var environment = Environment.GetEnvironmentVariable(EnvironmentVariableNames.EnvironmentName) ?? WebHostEnvironments.Default;
+            return environment.Equals(WebHostEnvironments.Stage, StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool IsProduction()
         {
-            var environment = Environment.GetEnvironmentVariable(AspNetCoreEnvironmentVariableName) ?? DefaultAspNetCoreEnvironment;
-            return environment.Equals(ProductionEnvironmentName, StringComparison.OrdinalIgnoreCase);
+            var environment = Environment.GetEnvironmentVariable(EnvironmentVariableNames.EnvironmentName) ?? WebHostEnvironments.Default;
+            return environment.Equals(WebHostEnvironments.Production, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

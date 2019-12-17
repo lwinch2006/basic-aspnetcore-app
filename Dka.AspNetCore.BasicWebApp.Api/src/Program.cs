@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Dka.AspNetCore.BasicWebApp.Api.Models.Configurations;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -28,7 +29,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api
             var configuration = BuildConfiguration();
 
             var webHostConfiguration = new WebHostConfiguration();
-            configuration.GetSection($"{assemblyName}:webHost").Bind(webHostConfiguration);
+            configuration.GetSection($"{assemblyName}:{AppSettingsJsonFileSections.WebHost}").Bind(webHostConfiguration);
 
             var webHostBuilder = Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webHostConfigurator =>
@@ -61,7 +62,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", false, true)
-                .AddJsonFile($"appsettings.{ Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production" }.json", true, true)
+                .AddJsonFile($"appsettings.{ Environment.GetEnvironmentVariable(EnvironmentVariableNames.EnvironmentName) ?? WebHostEnvironments.Default }.json", true, true)
                 .Build();
 
             return configuration;
@@ -74,7 +75,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api
             
             hostBuilder.ConfigureLogging(loggingBuilder =>
             {
-                loggingBuilder.AddConfiguration(configuration.GetSection($"{assemblyName}:Logging"));
+                loggingBuilder.AddConfiguration(configuration.GetSection($"{assemblyName}:{AppSettingsJsonFileSections.Logging}"));
                 loggingBuilder.ClearProviders();
                 loggingBuilder.AddConsole();
             });            
@@ -84,8 +85,8 @@ namespace Dka.AspNetCore.BasicWebApp.Api
         {
             var assemblyName = typeof(Startup).Assembly.GetName().Name;
             var configuration = BuildConfiguration();
-            var elasticUri = configuration[$"{assemblyName}:ElasticConfiguration:Uri"];
-            var indexFormat = configuration[$"{assemblyName}:ElasticConfiguration:Index"];
+            var elasticUri = configuration[$"{assemblyName}:{AppSettingsJsonFileSections.ElasticConfiguration}:Uri"];
+            var indexFormat = configuration[$"{assemblyName}:{AppSettingsJsonFileSections.ElasticConfiguration}:Index"];
             
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration.GetSection($"{assemblyName}"))

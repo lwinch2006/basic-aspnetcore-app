@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Text;
 using AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Api.Services.ServiceCollection;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Configurations;
@@ -12,10 +13,16 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using DbUp;
 using Dka.AspNetCore.BasicWebApp.Api.Models.AutoMapper;
+using Dka.AspNetCore.BasicWebApp.Api.Models.Configurations;
 using Dka.AspNetCore.BasicWebApp.Api.Models.ExceptionProcessing;
 using Dka.AspNetCore.BasicWebApp.Common.Logic.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Authentication;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 namespace Dka.AspNetCore.BasicWebApp.Api
@@ -36,7 +43,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api
         
         public void ConfigureServices(IServiceCollection services)
         {
-            _configuration.GetSection($"{_appName}:BaseWebAppContext").Bind(_databaseConfiguration);
+            _configuration.GetSection($"{_appName}:{AppSettingsJsonFileSections.BaseWebAppContext}").Bind(_databaseConfiguration);
 
             services.AddSingleton(_databaseConfiguration);
             services.AddDatabaseClasses(_databaseConfiguration);
@@ -46,13 +53,31 @@ namespace Dka.AspNetCore.BasicWebApp.Api
                 .AddCheck("Memory", () => HealthCheckResult.Healthy(), new [] { "memory-status-check" });
             services.AddAutoMapper(typeof(BasicWebAppApiProfile));
 
+            var jwtConfiguration = _configuration.GetSection($"{_appName}:{AppSettingsJsonFileSections.Jwt}").Get<JwtConfiguration>();
+            
+            services.AddOptions();
+            services.Configure<JwtConfiguration>(_configuration.GetSection($"{_appName}:{AppSettingsJsonFileSections.Jwt}"));
+            
             // Defining authentication.
             services
-                .AddDefaultIdentity<ApplicationUser>()
-                .AddUserStore<ApplicationUserStore>();
+                .AddIdentityCore<ApplicationUser>()
+                .AddUserStore<ApplicationUserStore>()
+                .AddDefaultTokenProviders();
+
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                    options =>
+                    {
+                        options = jwtConfiguration.JwtBearerOptions;
+                        options.TokenValidationParameters.IssuerSigningKey =
+                            new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration.Secret));
+                    });
             
-            services.AddControllersWithViews();
-            services.AddRazorPages();
+            services.AddControllers();
         }
 
         public void Configure(IApplicationBuilder app, ILogger<Startup> logger, ILoggerFactory loggerFactory, IHostEnvironment environment)
@@ -64,6 +89,8 @@ namespace Dka.AspNetCore.BasicWebApp.Api
             if (environment.IsDevelopment())
             {
                 RunDbMigrationsInDevelopmentEnvironment(logger);
+                
+                app.UseDeveloperExceptionPage();
             }
 
             app.UseHsts();
@@ -71,6 +98,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api
             app.UseRouting();
             
             app.UseAuthentication();
+            app.UseAuthorization();
             
             app.UseEndpoints(configure =>
             {
@@ -92,8 +120,12 @@ namespace Dka.AspNetCore.BasicWebApp.Api
                 {
                     Predicate = _ => false
                 });
-                configure.MapRazorPages();
             });
+
+            // app.UseEndpoints(configure =>
+            // {
+            //     configure.MapControllers();
+            // });
             
             logger.LogInformation("WebAPI initialised.");
         }
