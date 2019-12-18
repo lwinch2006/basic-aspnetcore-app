@@ -45,29 +45,6 @@ namespace Dka.AspNetCore.BasicWebApp
             services.AddUnleashClient();
             services.AddAutoMapper(typeof(BasicWebAppProfile));
             
-            var jwtConfiguration = _configuration.GetSection($"{_applicationName}:{AppSettingsJsonFileSections.Jwt}").Get<JwtConfiguration>();
-            
-            services.AddOptions();
-            services.Configure<JwtConfiguration>(_configuration.GetSection($"{_applicationName}:{AppSettingsJsonFileSections.Jwt}"));
-            
-            // Defining authentication.
-            // services
-            //     .AddIdentityCore<IdentityUser>()
-            //     .AddDefaultTokenProviders();
-
-            services.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
-                    options =>
-                    {
-                        options = jwtConfiguration.JwtBearerOptions;
-                        options.TokenValidationParameters.IssuerSigningKey =
-                            new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration.Secret));
-                    });
-            
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
         }
@@ -80,9 +57,6 @@ namespace Dka.AspNetCore.BasicWebApp
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-            
-            app.UseAuthentication();
-            app.UseAuthorization();
             
             app.UseUnleashMiddleware(); 
             
