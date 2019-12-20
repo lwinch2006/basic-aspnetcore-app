@@ -72,7 +72,8 @@ namespace Dka.AspNetCore.BasicWebApp.Api
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
                     options =>
                     {
-                        options = jwtConfiguration.JwtBearerOptions;
+                        _configuration.GetSection($"{_appName}:{AppSettingsJsonFileSections.Jwt}:{nameof(JwtBearerOptions)}").Bind(options);
+                        
                         options.TokenValidationParameters.IssuerSigningKey =
                             new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration.Secret));
                     });
@@ -121,11 +122,6 @@ namespace Dka.AspNetCore.BasicWebApp.Api
                     Predicate = _ => false
                 });
             });
-
-            // app.UseEndpoints(configure =>
-            // {
-            //     configure.MapControllers();
-            // });
             
             logger.LogInformation("WebAPI initialised.");
         }

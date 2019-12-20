@@ -12,6 +12,7 @@ using Dka.AspNetCore.BasicWebApp.Models.AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Models.Configurations;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Services.Unleash;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -45,6 +46,20 @@ namespace Dka.AspNetCore.BasicWebApp
             services.AddUnleashClient();
             services.AddAutoMapper(typeof(BasicWebAppProfile));
             
+            services.AddAuthentication(options =>
+                    {
+                        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                        options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                        options.RequireAuthenticatedSignIn = false;
+                    })
+                .AddCookie(options =>
+                {
+                    options.SlidingExpiration = true;
+                    options.LoginPath = AuthenticationDefaults.LoginUrl;
+                    options.LogoutPath = AuthenticationDefaults.LogoutUrl;
+                    options.ReturnUrlParameter = AuthenticationDefaults.ReturnUrlParameter;
+                });
+            
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
         }
@@ -57,6 +72,9 @@ namespace Dka.AspNetCore.BasicWebApp
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+            
+            app.UseAuthentication();
+            app.UseAuthorization();
             
             app.UseUnleashMiddleware(); 
             

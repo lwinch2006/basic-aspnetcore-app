@@ -1,0 +1,28 @@
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Constants
+@using Dka.AspNetCore.BasicWebApp.Models.Constants
+@model Dka.AspNetCore.BasicWebApp.ViewModels.Authentication.SignInViewModel
+
+@{
+    ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "Sign in";
+    ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "Sign in";
+    ViewData[ViewDataKeys.ActiveNavigationLink] = "login";
+}
+
+
+
+<form asp-controller="Login" asp-action="SignIn" method="post">
+    <div class="row">
+        <div class="col-sm-12 text-sm-center">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        </div>
+    </div>    
+    
+    <input asp-for="Username" class="form-control"/>
+    <span asp-validation-for="Username" class="text-danger"></span>    
+    
+    <input asp-for="Password" class="form-control"/>
+    <span asp-validation-for="Password" class="text-danger"></span>    
+    
+    <button type="submit" asp-controller="Login" asp-action="SignIn" class="btn btn-outline-secondary dka-btn">Sign in</button>
+    
+</form>

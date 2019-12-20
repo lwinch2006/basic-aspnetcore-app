@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
@@ -39,6 +40,11 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
             }
 
             ViewData[ViewDataKeys.HtmlPageNameReceivedFromApi] = pageName;
+
+
+
+            _httpContext.Response.Headers[HttpHeaders.Authorization] = "Bearer test";
+            
             
             return View();
         }
