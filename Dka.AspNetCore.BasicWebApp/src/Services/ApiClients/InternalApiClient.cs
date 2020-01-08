@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -22,17 +23,18 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
     {
         private readonly HttpClient _httpClient;
 
-        public InternalApiClient(HttpClient httpClient, IHttpContextAccessor httpContextAccessor = null)
+        public InternalApiClient(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         {
             _httpClient = httpClient;
 
-            var httpContext = httpContextAccessor?.HttpContext;
+            var httpContext = httpContextAccessor.HttpContext;
 
-            var token = httpContext?.Request.Headers[HttpHeaders.Authorization];
-
-            if (token?.Count > 0)
+            if (httpContext.User.Identity.IsAuthenticated)
             {
-                _httpClient.DefaultRequestHeaders.Add(HttpHeaders.Authorization, new[] {token.Value[0]});
+                var accessToken =
+                    httpContext.User.Claims.Single(record => record.Type.Equals(ClaimsCustomTypes.AccessToken)).Value;
+                
+                _httpClient.DefaultRequestHeaders.Add(HttpHeaders.Authorization, new[] { $"{AuthorizationConstants.Bearer} {accessToken}" });
             }
         }
 
@@ -243,7 +245,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             }            
         }
 
-        public async Task<SignInResponseContract> Login(SignInRequestContract signInRequestContract)
+        public async Task<SignInResponseContract> SignIn(SignInRequestContract signInRequestContract)
         {
             HttpResponseMessage response = null;
             
@@ -274,7 +276,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             }
         }
 
-        public async Task<SignOutResponseContract> Logout(SignOutRequestContract signInRequestContract)
+        public async Task<SignOutResponseContract> SignOut(SignOutRequestContract signOutRequestContract)
         {
             return await Task.FromResult(new SignOutResponseContract
                 { SignOutResult = SignInResult.Success });

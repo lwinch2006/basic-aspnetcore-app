@@ -26,8 +26,8 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 
         Task DeleteTenant(Guid guid);
 
-        Task<SignInResponseContract> Login(SignInRequestContract signInRequestContract);
+        Task<SignInResponseContract> SignIn(SignInRequestContract signInRequestContract);
         
-        Task<SignOutResponseContract> Logout(SignOutRequestContract signInRequestContract);
+        Task<SignOutResponseContract> SignOut(SignOutRequestContract signInRequestContract);
     }
 }

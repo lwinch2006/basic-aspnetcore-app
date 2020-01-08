@@ -10,19 +10,19 @@
 
 
 
-<form asp-controller="Login" asp-action="SignIn" method="post">
+<form asp-controller="Account" asp-action="SignIn" method="post">
     <div class="row">
         <div class="col-sm-12 text-sm-center">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
         </div>
     </div>    
     
-    <input asp-for="Username" class="form-control"/>
-    <span asp-validation-for="Username" class="text-danger"></span>    
+    <input asp-for="@Model.Username" class="form-control"/>
+    <span asp-validation-for="@Model.Username" class="text-danger"></span>    
     
-    <input asp-for="Password" class="form-control"/>
-    <span asp-validation-for="Password" class="text-danger"></span>    
+    <input asp-for="@Model.Password" class="form-control"/>
+    <span asp-validation-for="@Model.Password" class="text-danger"></span>    
     
-    <button type="submit" asp-controller="Login" asp-action="SignIn" class="btn btn-outline-secondary dka-btn">Sign in</button>
+    <button type="submit" asp-controller="Account" asp-action="SignIn" asp-route-returnUrl="@ViewData[ViewDataNames.ReturnUrl]" class="btn btn-outline-secondary dka-btn">Sign in</button>
     
 </form>

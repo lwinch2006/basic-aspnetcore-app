@@ -3,40 +3,64 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Configurations;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
 {
-    [Authorize]
-    [Route("Account/[controller]/{action=Index}")]
-    public class LoginController : Controller
+    public class AccountController : Controller
     {
         private readonly JwtConfiguration _jwtConfiguration;
 
-        public LoginController(IOptions<JwtConfiguration> jwtConfiguration)
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        private readonly ILogger<AccountController> _logger;
+        
+        public AccountController(IOptions<JwtConfiguration> jwtConfiguration, UserManager<ApplicationUser> userManager, ILogger<AccountController> logger)
         {
             _jwtConfiguration = jwtConfiguration.Value;
+            _userManager = userManager;
+            _logger = logger;
         }
         
         [HttpPost]
-        [AllowAnonymous]
-        [ActionName("SignIn")]
         public async Task<IActionResult> SignIn([FromBody] SignInRequestContract signInRequestContract)
         {
-            if (signInRequestContract == null)
+            if (signInRequestContract == null || 
+                string.IsNullOrWhiteSpace(signInRequestContract.Username) || 
+                string.IsNullOrWhiteSpace(signInRequestContract.Password))
             {
                 return BadRequest();
             }
+
+            if (!(await _userManager.FindByNameAsync(signInRequestContract.Username) is { } user))
+            {
+                return await Task.FromResult(Ok(new SignInResponseContract
+                {
+                    SignInResult = SignInResult.Failed
+                }));
+            }
+
+            if (!await _userManager.CheckPasswordAsync(user, signInRequestContract.Password))
+            {
+                return await Task.FromResult(Ok(new SignInResponseContract
+                {
+                    SignInResult = SignInResult.Failed
+                }));
+            }
             
             var tokenExpireAt = DateTime.UtcNow.AddDays(7);
-            var userRole = "Administrator";
-            var userId = new Guid("7ea7c405-5d05-4f72-849d-6c39c011305c");
+            var userRole = UserRoleNames.Administrator;
             
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtConfiguration.Secret);
@@ -45,9 +69,8 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
                 Subject = new ClaimsIdentity(new[] 
                 {
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-                    new Claim(ClaimTypes.Role, userRole),
-                    
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Guid.ToString()),
+                    new Claim(ClaimTypes.Role, userRole)
                 }),
                 Expires = tokenExpireAt,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -58,7 +81,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
             var signInResponseContract = new SignInResponseContract
             {
                 SignInResult = SignInResult.Success,
-                AccessToken = $"Bearer {token}",
+                AccessToken = token,
                 UserRole = userRole,
                 ExpireAt = tokenExpireAt
             };
@@ -66,7 +89,6 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
             return await Task.FromResult(Ok(signInResponseContract));
         }
         
-        [ActionName("SignOut")]
         public async Task<IActionResult> SignOut()
         {
             return await Task.FromResult(Ok(new SignOutResponseContract { SignOutResult = SignInResult.Success}));

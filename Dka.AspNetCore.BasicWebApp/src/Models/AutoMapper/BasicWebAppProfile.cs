@@ -21,10 +21,12 @@ namespace Dka.AspNetCore.BasicWebApp.Models.AutoMapper
             // API contract -> ViewModel.
             CreateMap<Common.Models.ApiContracts.Tenant, ViewModels.Tenants.Tenant>();
             CreateMap<Common.Models.ApiContracts.NewTenant, ViewModels.Tenants.NewTenant>();
+            CreateMap<Common.Models.ApiContracts.Authentication.SignInRequestContract, ViewModels.Authentication.SignInViewModel>();
             
             // ViewModel -> API contract.
             CreateMap<ViewModels.Tenants.Tenant, Common.Models.ApiContracts.Tenant>();
             CreateMap<ViewModels.Tenants.NewTenant, Common.Models.ApiContracts.NewTenant>();
+            CreateMap<ViewModels.Authentication.SignInViewModel, Common.Models.ApiContracts.Authentication.SignInRequestContract>();
             
             // ViewModel -> Logic model.
             CreateMap<ViewModels.Tenants.Tenant, Common.Models.Tenants.Tenant>();

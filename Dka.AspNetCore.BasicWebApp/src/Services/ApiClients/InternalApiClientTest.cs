@@ -64,12 +64,12 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             return Task.CompletedTask;
         }
 
-        public Task<SignInResponseContract> Login(SignInRequestContract signInRequestContract)
+        public Task<SignInResponseContract> SignIn(SignInRequestContract signInRequestContract)
         {
             throw new NotImplementedException();
         }
 
-        public Task<SignOutResponseContract> Logout(SignOutRequestContract signInRequestContract)
+        public Task<SignOutResponseContract> SignOut(SignOutRequestContract signInRequestContract)
         {
             throw new NotImplementedException();
         }
