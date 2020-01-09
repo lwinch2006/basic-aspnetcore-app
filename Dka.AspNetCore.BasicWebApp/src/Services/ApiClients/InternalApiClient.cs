@@ -40,9 +40,11 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 
         public async Task<string> GetPageNameAsync(string pageName)
         {
+            HttpResponseMessage response = null;
+            
             try
             {
-                var response = await _httpClient.GetAsync(
+                response = await _httpClient.GetAsync(
                     $"/Pages/GetPageName?pagename={pageName}");
 
                 response.EnsureSuccessStatusCode();
@@ -50,6 +52,19 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
                 var result = await response.Content.ReadAsStringAsync();
 
                 return result;
+            }
+            catch (HttpRequestException ex)
+            {
+                if (response == null)
+                {
+                    throw new ApiConnectionException(ex);
+                }
+                
+                switch (response.StatusCode)
+                {
+                    default:
+                        throw new ApiStatusCodeException(ex);
+                }
             }
             catch (Exception ex)
             {
@@ -278,8 +293,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 
         public async Task<SignOutResponseContract> SignOut(SignOutRequestContract signOutRequestContract)
         {
-            return await Task.FromResult(new SignOutResponseContract
-                { SignOutResult = SignInResult.Success });
+            return await Task.FromResult(new SignOutResponseContract());
         }
     }
 }

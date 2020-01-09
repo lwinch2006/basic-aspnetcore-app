@@ -65,11 +65,6 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Account
                 var signInRequestContract = _mapper.Map<SignInRequestContract>(signInViewModel);
 
                 var signInResponseContract = await _internalApiClient.SignIn(signInRequestContract);
-
-                if (signInResponseContract.SignInResult != SignInResult.Success)
-                {
-                    throw new AuthenticationException();
-                }
                 
                 var claims = new List<Claim>
                 {
@@ -95,9 +90,11 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Account
             return View("~/Views/Account/SignIn.cshtml", signInViewModel);
         }
 
-        public async Task SignOut()
+        public async Task<IActionResult> SignOut()
         {
             await _httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            
+            return LocalRedirect("~/");
         }
     }
 }

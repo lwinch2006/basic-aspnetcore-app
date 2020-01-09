@@ -10,6 +10,7 @@ using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
 using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Models.Tenants;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Moq;
 using Moq.Protected;
@@ -205,7 +206,9 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
                 BaseAddress = new Uri("https://localhost")
             };
             
-            var internalApiClient = new InternalApiClient(httpClient);
+            var httpContextAccessor = new HttpContextAccessor();
+            
+            var internalApiClient = new InternalApiClient(httpClient, httpContextAccessor);
             return internalApiClient;
         }
         
@@ -226,7 +229,8 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
                 BaseAddress = new Uri("https://localhost")
             };
             
-            var internalApiClient = new InternalApiClient(httpClient);
+            var httpContextAccessor = new HttpContextAccessor();
+            var internalApiClient = new InternalApiClient(httpClient, httpContextAccessor);
             return internalApiClient;
         }
         
@@ -242,7 +246,8 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
                 BaseAddress = new Uri("https://localhost")
             };
             
-            var internalApiClient = new InternalApiClient(httpClient);
+            var httpContextAccessor = new HttpContextAccessor();
+            var internalApiClient = new InternalApiClient(httpClient, httpContextAccessor);
             return internalApiClient;
         }
         
@@ -258,7 +263,8 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
                 BaseAddress = new Uri("https://localhost")
             };
             
-            var internalApiClient = new InternalApiClient(httpClient);
+            var httpContextAccessor = new HttpContextAccessor();
+            var internalApiClient = new InternalApiClient(httpClient, httpContextAccessor);
             return internalApiClient;
         }
         
@@ -274,7 +280,8 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
                 BaseAddress = new Uri("https://localhost")
             };
             
-            var internalApiClient = new InternalApiClient(httpClient);
+            var httpContextAccessor = new HttpContextAccessor();
+            var internalApiClient = new InternalApiClient(httpClient, httpContextAccessor);
             return internalApiClient;
         }         
 

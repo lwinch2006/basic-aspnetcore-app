@@ -18,11 +18,19 @@
                 <a id="nav-link-about" class="nav-link" href="~/About/">About</a>
             </li>
         </ul>
-        @if (unleashClient.AdministrationMenuEnabled)
+        @if (Context.User.Identity.IsAuthenticated)
         {
-            <ul class="navbar-nav ml-md-auto">
+            @if (unleashClient.AdministrationMenuEnabled)
+            {
+                <ul class="navbar-nav ml-md-auto">
+                    <li class="nav-item">
+                        <a id="nav-link-administration" class="nav-link" href="~/Administration/">Administration<span class="sr-only">(current)</span></a>
+                    </li>
+                </ul>            
+            }
+            <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a id="nav-link-administration" class="nav-link" href="~/Administration/">Administration<span class="sr-only">(current)</span></a>
+                    <a id="nav-link-administration" class="nav-link" href="~/Account/SignOut">Sign out</a>
                 </li>
             </ul>            
         }

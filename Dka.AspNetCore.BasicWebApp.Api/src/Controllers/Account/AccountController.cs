@@ -43,21 +43,17 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
                 return BadRequest();
             }
 
-            if (!(await _userManager.FindByNameAsync(signInRequestContract.Username) is { } user))
-            {
-                return await Task.FromResult(Ok(new SignInResponseContract
-                {
-                    SignInResult = SignInResult.Failed
-                }));
-            }
-
-            if (!await _userManager.CheckPasswordAsync(user, signInRequestContract.Password))
-            {
-                return await Task.FromResult(Ok(new SignInResponseContract
-                {
-                    SignInResult = SignInResult.Failed
-                }));
-            }
+            var user = new ApplicationUser { Guid = Guid.NewGuid() };
+            
+            // if (!(await _userManager.FindByNameAsync(signInRequestContract.Username) is { } user))
+            // {
+            //     return NotFound();
+            // }
+            //
+            // if (!await _userManager.CheckPasswordAsync(user, signInRequestContract.Password))
+            // {
+            //     return NotFound();
+            // }
             
             var tokenExpireAt = DateTime.UtcNow.AddDays(7);
             var userRole = UserRoleNames.Administrator;
@@ -80,7 +76,6 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
 
             var signInResponseContract = new SignInResponseContract
             {
-                SignInResult = SignInResult.Success,
                 AccessToken = token,
                 UserRole = userRole,
                 ExpireAt = tokenExpireAt
@@ -91,7 +86,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
         
         public async Task<IActionResult> SignOut()
         {
-            return await Task.FromResult(Ok(new SignOutResponseContract { SignOutResult = SignInResult.Success}));
+            return await Task.FromResult(Ok(new SignOutResponseContract() ));
         }
     }
 }
