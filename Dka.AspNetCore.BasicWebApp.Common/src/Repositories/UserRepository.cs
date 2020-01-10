@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Dapper;
@@ -184,9 +186,11 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
                         ,@TwoFactorEnabled
                         ,@Guid
                     );
+
+                    SELECT SCOPE_IDENTITY();
                 ";
 
-                var result = await connection.ExecuteAsync(query, 
+                var result = await connection.QuerySingleOrDefaultAsync<int>(query, 
                     new
                     {
                         @UserName = user.UserName,
@@ -206,9 +210,145 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
                         @Guid = user.Guid
                     });
 
-                return result == 1 ? 
-                    IdentityResult.Success : IdentityResult.Failed();
+                if (result == 0)
+                {
+                    return IdentityResult.Failed();
+                }
+                
+                user.Id = result;
+                return IdentityResult.Success;
             }   
+        }
+
+        internal async Task AddToRoleAsync(ApplicationUser user, string roleName)
+        {
+            using (var connection = _databaseConnectionFactory.GetConnection())
+            {
+                const string query = @"
+                    DECLARE @RoleId INT = 0;
+
+                    SELECT @RoleId = [Id]
+                    FROM [Roles]
+                    WHERE [Name] = @RoleName
+
+                    IF (@RoleId > 0)
+                    BEGIN
+                        INSERT INTO [UserRoles] ([UserId], [RoleId])
+                        VALUES (@UserId, @RoleId);
+                    END;    
+                ";
+                
+                var result = await connection.ExecuteAsync(query, 
+                    new
+                    {
+                        @UserId = user.Id,
+                        @RoleName = roleName,
+                    });
+            }
+        }
+
+        internal async Task RemoveFromRoleAsync(ApplicationUser user, string roleName)
+        {
+            using (var connection = _databaseConnectionFactory.GetConnection())
+            {
+                const string query = @"
+                    DECLARE @RoleId INT = 0;
+
+                    SELECT @RoleId = [Id]
+                    FROM [Roles]
+                    WHERE [Name] = @RoleName
+
+                    IF (@RoleId > 0)
+                    BEGIN
+                        DELETE
+                        FROM [UserRoles]
+                        WHERE [UserId] = @UserId AND [RoleId] = @RoleId
+                    END;
+                ";
+
+                var result = await connection.ExecuteAsync(query,
+                    new
+                    {
+                        @UserId = user.Id,
+                        @RoleName = roleName,
+                    });
+            }
+        }
+
+        internal async Task<IList<string>> GetRolesAsync(ApplicationUser user)
+        {
+            using (var connection = _databaseConnectionFactory.GetConnection())
+            {
+                const string query = @"
+                    SELECT [Name]
+                    FROM [Roles]
+                    WHERE [Id] IN (SELECT [RoleId] FROM [UserRoles] WHERE [UserId] = @UserId);
+                ";
+
+                var result = await connection.QueryAsync<string>(query,
+                    new
+                    {
+                        @UserId = user.Id
+                    });
+
+                return result.ToList();
+            }
+        }
+
+        internal async Task<bool> IsInRoleAsync(ApplicationUser user, string roleName)
+        {
+            using (var connection = _databaseConnectionFactory.GetConnection())
+            {
+                const string query = @"
+                    SELECT [UserId]
+                    FROM [UserRoles]
+                    WHERE [UserId] = @UserId AND [RoleId] IN (SELECT [Id] FROM [Roles] WHERE [Name] = @RoleName);
+                ";
+
+                var result = await connection.QuerySingleOrDefaultAsync<int>(query,
+                    new
+                    {
+                        @UserId = user.Id,
+                        @RoleName = roleName,
+                    });
+
+                return result > 0;
+            }
+        }
+
+        internal async Task<IList<ApplicationUser>> GetUsersInRoleAsync(string roleName)
+        {
+            using (var connection = _databaseConnectionFactory.GetConnection())
+            {
+                const string query = @"
+                    SELECT [Id]
+                          ,[UserName]
+                          ,[NormalizedUserName]
+                          ,[Email]
+                          ,[NormalizedEmail]
+                          ,[EmailConfirmed]
+                          ,[PhoneNumber]
+                          ,[PhoneNumberConfirmed]
+                          ,[PasswordHash]
+                          ,[SecurityStamp]
+                          ,[ConcurrencyStamp]
+                          ,[AccessFailedCount]
+                          ,[LockoutEnabled]
+                          ,[LockoutEnd]
+                          ,[TwoFactorEnabled]
+                          ,[Guid]
+                    FROM [Users]
+                    WHERE [Id] IN (SELECT [UserId] FROM [UserRoles] WHERE [RoleId] IN (SELECT [Id] FROM [Roles] WHERE [Name] = @RoleName));
+                ";
+
+                var result = await connection.QueryAsync<ApplicationUser>(query,
+                    new
+                    {
+                        @RoleName = roleName,
+                    });
+
+                return result.ToList();
+            }
         }
     }
 }

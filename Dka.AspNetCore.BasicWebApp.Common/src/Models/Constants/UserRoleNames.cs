@@ -4,6 +4,6 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Models.Constants
     {
         public const string Administrator = "Administrator";
         
-        public const string User = "User";
+        public const string Support = "Support";
     }
 }

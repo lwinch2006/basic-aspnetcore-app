@@ -36,6 +36,8 @@
       <EmbeddedResource Include="Infrastructure\SQLScripts\201911060838-update-table-tenants-rename-externalid-column.sql" />
       <EmbeddedResource Include="Infrastructure\SQLScripts\201911180906-update-table-tenants-add-timestamp-columns.sql" />
       <EmbeddedResource Include="Infrastructure\SQLScripts\201912131054-create-table-users.sql" />
+      <EmbeddedResource Include="Infrastructure\SQLScripts\202001100928-create-table-roles.sql" />
+      <EmbeddedResource Include="Infrastructure\SQLScripts\202001100929-create-table-users-roles.sql" />
       <EmbeddedResource Include="Infrastructure\SQLScripts\Development\201911180914-update-table-tenants-seed-dev-data.sql" />
       <None Remove="Infrastructure\SQLScripts\201911011515-create-table-tenants.sql" />
       <EmbeddedResource Include="Infrastructure\SQLScripts\201911011515-create-table-tenants.sql" />

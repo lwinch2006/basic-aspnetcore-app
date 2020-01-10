@@ -15,10 +15,12 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Services.ServiceCollection
             // Repositories.
             services.AddScoped<TenantRepository>();
             services.AddScoped<UserRepository>();
-            
+            services.AddScoped<RoleRepository>();
+
             // Logic.
             services.AddScoped<TenantLogic>();
             services.AddScoped<ApplicationUserStore>();
+            services.AddScoped<ApplicationRoleStore>();
         }
     }
 }

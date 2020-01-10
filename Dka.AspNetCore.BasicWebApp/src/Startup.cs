@@ -46,12 +46,13 @@ namespace Dka.AspNetCore.BasicWebApp
             services.AddUnleashClient();
             services.AddAutoMapper(typeof(BasicWebAppProfile));
             
-            services.AddAuthentication(options =>
-                    {
-                        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                        options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                        options.RequireAuthenticatedSignIn = false;
-                    })
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.RequireAuthenticatedSignIn = false;
+                })
                 .AddCookie(options =>
                 {
                     options.SlidingExpiration = true;
