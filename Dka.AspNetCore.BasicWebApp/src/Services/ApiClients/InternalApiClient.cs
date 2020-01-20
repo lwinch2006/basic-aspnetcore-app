@@ -1,13 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Models.Tenants;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 using Tenant = Dka.AspNetCore.BasicWebApp.Common.Models.Tenants.Tenant;
@@ -18,16 +23,28 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
     {
         private readonly HttpClient _httpClient;
 
-        public InternalApiClient(HttpClient httpClient)
+        public InternalApiClient(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         {
             _httpClient = httpClient;
+
+            var httpContext = httpContextAccessor.HttpContext;
+
+            if (httpContext.User.Identity.IsAuthenticated)
+            {
+                var accessToken =
+                    httpContext.User.Claims.Single(record => record.Type.Equals(ClaimsCustomTypes.AccessToken)).Value;
+                
+                _httpClient.DefaultRequestHeaders.Add(HttpHeaders.Authorization, new[] { $"{AuthorizationConstants.Bearer} {accessToken}" });
+            }
         }
 
         public async Task<string> GetPageNameAsync(string pageName)
         {
+            HttpResponseMessage response = null;
+            
             try
             {
-                var response = await _httpClient.GetAsync(
+                response = await _httpClient.GetAsync(
                     $"/Pages/GetPageName?pagename={pageName}");
 
                 response.EnsureSuccessStatusCode();
@@ -35,6 +52,19 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
                 var result = await response.Content.ReadAsStringAsync();
 
                 return result;
+            }
+            catch (HttpRequestException ex)
+            {
+                if (response == null)
+                {
+                    throw new ApiConnectionException(ex);
+                }
+                
+                switch (response.StatusCode)
+                {
+                    default:
+                        throw new ApiStatusCodeException(ex);
+                }
             }
             catch (Exception ex)
             {
@@ -228,6 +258,42 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             {
                 return false;
             }            
+        }
+
+        public async Task<SignInResponseContract> SignIn(SignInRequestContract signInRequestContract)
+        {
+            HttpResponseMessage response = null;
+            
+            try
+            {
+                var signInRequestContractSerialized = JsonSerializer.Serialize(signInRequestContract);
+                var signInRequestContractAsRequestContent = new StringContent(signInRequestContractSerialized, Encoding.UTF8, "application/json");
+                
+                response = await _httpClient.PostAsync(AuthenticationDefaults.LoginUrl, signInRequestContractAsRequestContent);
+                response.EnsureSuccessStatusCode();
+                
+                var signInResponseContract = await response.Content.ReadAsAsync<SignInResponseContract>();
+
+                return signInResponseContract;
+            }
+            catch (HttpRequestException ex)
+            {
+                if (response == null)
+                {
+                    throw new ApiConnectionException(ex);
+                }
+                    
+                throw new ApiStatusCodeException(ex);
+            }            
+            catch (Exception ex)
+            {
+                throw new ApiConnectionException(ex);
+            }
+        }
+
+        public async Task<SignOutResponseContract> SignOut(SignOutRequestContract signOutRequestContract)
+        {
+            return await Task.FromResult(new SignOutResponseContract());
         }
     }
 }

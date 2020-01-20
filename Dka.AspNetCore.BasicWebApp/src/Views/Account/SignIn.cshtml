@@ -1,0 +1,44 @@
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Constants
+@using Dka.AspNetCore.BasicWebApp.Models.Constants
+@model Dka.AspNetCore.BasicWebApp.ViewModels.Authentication.SignInViewModel
+
+@{
+    ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "Sign in";
+    ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "Sign in";
+    ViewData[ViewDataKeys.ActiveNavigationLink] = "login";
+}
+
+<form asp-controller="Account" asp-action="SignIn" method="post">
+    <div class="row">
+        <div class="col-sm-12 text-sm-center">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6 offset-sm-3">
+            <div class="row mb-3">
+                <div class="col-sm-4 text-sm-right">
+                    <label asp-for="@Model.Username" class="font-weight-bold"></label>
+                </div>
+                <div class="col-sm-8">
+                    <input asp-for="@Model.Username" class="form-control"/>
+                    <span asp-validation-for="@Model.Username" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4 text-sm-right">
+                    <label asp-for="@Model.Password" class="font-weight-bold"></label>
+                </div>
+                <div class="col-sm-8">
+                    <input asp-for="@Model.Password" class="form-control"/>
+                    <span asp-validation-for="@Model.Password" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-12 text-sm-center">
+                    <button type="submit" asp-controller="Account" asp-action="SignIn" asp-route-returnUrl="@ViewData[ViewDataNames.ReturnUrl]" class="btn btn-outline-secondary dka-btn">Sign in</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

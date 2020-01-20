@@ -3,12 +3,15 @@ using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Services.ExceptionProcessing;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace Dka.AspNetCore.BasicWebApp.Controllers
 {
+    [Authorize(AuthenticationSchemes=CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AboutController : Controller
     {
         private readonly IInternalApiClient _internalApiClient;

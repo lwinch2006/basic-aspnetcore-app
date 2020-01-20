@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
 {
@@ -25,19 +28,24 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         private readonly HttpContext _httpContext;
 
         private readonly IMapper _mapper;
+
+        private readonly IAuthorizationService _authorizationService;
         
         public TenantsController(
             IInternalApiClient internalApiClient, 
             IHttpContextAccessor httpContextAccessor, 
             ILogger<TenantsController> logger,
-            IMapper mapper)
+            IMapper mapper,
+            IAuthorizationService authorizationService)
         {
             _internalApiClient = internalApiClient;
             _httpContext = httpContextAccessor.HttpContext;
             _logger = logger;
             _mapper = mapper;
+            _authorizationService = authorizationService;
         }
         
+        [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Read)]
         [HttpGet]
         [ActionName("index")]
         public async Task<IActionResult> GetAll()
@@ -56,6 +64,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             return View("~/Views/Administration/Tenants/TenantList.cshtml", tenants);
         }
 
+        [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Read)]
         [HttpGet("{guid}")]
         [ActionName("details")]
         public async Task<IActionResult> GetByGuid([FromRoute]Guid guid)
@@ -76,6 +85,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             return View("~/Views/Administration/Tenants/TenantDetails.cshtml", tenantVm);
         }
 
+        [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Create)]
         [HttpGet]
         [ActionName("new")]
         public async Task<IActionResult> CreateNewTenant()
@@ -85,6 +95,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             return await Task.FromResult(View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenant));
         }
         
+        [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Create)]
         [ValidateAntiForgeryToken]
         [HttpPost]
         [ActionName("new")]
@@ -111,6 +122,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             return View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenant);
         }
         
+        [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Update)]
         [HttpGet("{guid}")]
         [ActionName("edit")]
         public async Task<IActionResult> EditTenantDetails([FromRoute]Guid guid)
@@ -131,6 +143,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantVm);
         }
 
+        [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Update)]
         [ValidateAntiForgeryToken]
         [HttpPost("{guid}")]
         [ActionName("edit")]
@@ -162,6 +175,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToEditVm);
         }
 
+        [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Delete)]
         [ValidateAntiForgeryToken]
         [HttpPost("{guid}")]
         [ActionName("delete")]

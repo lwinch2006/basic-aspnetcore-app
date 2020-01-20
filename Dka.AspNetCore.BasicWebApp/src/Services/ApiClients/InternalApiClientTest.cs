@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication;
 using Tenant = Dka.AspNetCore.BasicWebApp.Common.Models.Tenants.Tenant;
 
 namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
@@ -61,6 +62,16 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
         public Task DeleteTenant(Guid guid)
         {
             return Task.CompletedTask;
+        }
+
+        public Task<SignInResponseContract> SignIn(SignInRequestContract signInRequestContract)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<SignOutResponseContract> SignOut(SignOutRequestContract signInRequestContract)
+        {
+            throw new NotImplementedException();
         }
     }
 }

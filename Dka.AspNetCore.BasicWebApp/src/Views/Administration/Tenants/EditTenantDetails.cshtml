@@ -1,4 +1,9 @@
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants
 @using Dka.AspNetCore.BasicWebApp.Models.Constants
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService;
+
 @model Dka.AspNetCore.BasicWebApp.ViewModels.Tenants.Tenant
 @{
     ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "Edit tenant details";
@@ -38,9 +43,17 @@
                     <div></div>
                     <div>
                         <a asp-controller="Tenants" asp-action="details" asp-route-guid="@Model.Guid" class="btn btn-outline-secondary dka-btn">Cancel</a>
-                        <button type="submit" asp-controller="Tenants" asp-action="edit" asp-route-guid="@Model.Guid" class="btn btn-outline-secondary dka-btn">Save</button>
+
+                        @if ((await AuthorizationService.AuthorizeAsync(Context.User, Model, new DataOperationRequirement(nameof(Tenant), DataOperationNames.Update))).Succeeded)
+                        {
+                            <button type="submit" asp-controller="Tenants" asp-action="edit" asp-route-guid="@Model.Guid" class="btn btn-outline-secondary dka-btn">Save</button>
+                        }
                     </div>
-                    <button type="submit" asp-controller="Tenants" asp-action="delete" asp-route-guid="@Model.Guid" class="btn btn-outline-danger dka-btn ml-auto ml-sm-0">Remove</button>
+
+                    @if ((await AuthorizationService.AuthorizeAsync(Context.User, Model, new DataOperationRequirement(nameof(Tenant), DataOperationNames.Delete))).Succeeded)
+                    {
+                        <button type="submit" asp-controller="Tenants" asp-action="delete" asp-route-guid="@Model.Guid" class="btn btn-outline-danger dka-btn ml-auto ml-sm-0">Remove</button>
+                    }
                 </div>
             </div>
         </div>

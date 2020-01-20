@@ -1,8 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading.Tasks;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
 
 namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
@@ -26,5 +25,9 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
         Task<Guid> CreateNewTenant(Common.Models.ApiContracts.NewTenant newTenantApiContract);
 
         Task DeleteTenant(Guid guid);
+
+        Task<SignInResponseContract> SignIn(SignInRequestContract signInRequestContract);
+        
+        Task<SignOutResponseContract> SignOut(SignOutRequestContract signInRequestContract);
     }
 }

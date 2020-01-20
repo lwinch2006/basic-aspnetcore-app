@@ -1,5 +1,9 @@
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization
 @using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants
 @using Dka.AspNetCore.BasicWebApp.Models.Constants
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService;
+
 @model IEnumerable<Tenant>
 @{
     ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "Tenant list";
@@ -39,7 +43,10 @@
                             @Model.ElementAt(i).Name
                         </td>
                         <td>
-                            <a asp-controller="Tenants" asp-action="details" asp-route-guid="@Model.ElementAt(i).Guid">details</a>
+                            @if ((await AuthorizationService.AuthorizeAsync(Context.User, Model, new DataOperationRequirement(nameof(Tenant), DataOperationNames.Read))).Succeeded)
+                            {
+                                <a asp-controller="Tenants" asp-action="details" asp-route-guid="@Model.ElementAt(i).Guid">details</a>
+                            }
                         </td>
                     </tr>
                 }
@@ -53,7 +60,10 @@
         <div class="d-flex">
             <a asp-controller="Administration" asp-action="Index" class="btn btn-outline-secondary">Back</a>
 
-            <a asp-controller="Tenants" asp-action="new" class="btn btn-outline-secondary ml-auto">Add new tenant</a>
+            @if ((await AuthorizationService.AuthorizeAsync(Context.User, Model, new DataOperationRequirement(nameof(Tenant), DataOperationNames.Create))).Succeeded)
+            {
+                <a asp-controller="Tenants" asp-action="new" class="btn btn-outline-secondary ml-auto">Add new tenant</a>
+            }
         </div>
     </div>
 </div>
