@@ -1,4 +1,9 @@
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants
 @using Dka.AspNetCore.BasicWebApp.Models.Constants
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+
 @model Dka.AspNetCore.BasicWebApp.ViewModels.Tenants.Tenant
 @{
     ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "Tenant details";
@@ -27,7 +32,11 @@
     <div class="row">
         <div class="col-sm-12 text-sm-center">
             <a asp-controller="Tenants" asp-action="index" class="btn btn-outline-secondary dka-btn">Back</a>
-            <a asp-controller="Tenants" asp-action="edit" asp-route-guid="@Model.Guid" class="btn btn-outline-secondary dka-btn">Edit</a>
+            
+            @if ((await AuthorizationService.AuthorizeAsync(Context.User, Model, new DataOperationRequirement(nameof(Tenant), DataOperationNames.Update))).Succeeded)
+            {
+                <a asp-controller="Tenants" asp-action="edit" asp-route-guid="@Model.Guid" class="btn btn-outline-secondary dka-btn">Edit</a>
+            }
         </div>
     </div>
 }

@@ -9,6 +9,7 @@ using Dka.AspNetCore.BasicWebApp.Controllers.Administration;
 using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
 using Dka.AspNetCore.BasicWebApp.ViewModels.Tenants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -100,9 +101,11 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
                 foundTenant.Name = tenantToEdit.Name;
                 foundTenant.Alias = tenantToEdit.Alias;
                 return Task.CompletedTask;
-            });            
+            });
+
+            var authorizationService = new Mock<IAuthorizationService>();
             
-            var tenantController = new TenantsController(internalApiClient.Object, httpContextAccessor, logger.Object, mapper);
+            var tenantController = new TenantsController(internalApiClient.Object, httpContextAccessor, logger.Object, mapper, authorizationService.Object);
 
             return tenantController;
         }
@@ -120,7 +123,9 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
             internalApiClient.Setup(client => client.DeleteTenant(It.IsAny<Guid>())).Returns<Guid>(tenantGuid => throw new BasicWebAppException());
             internalApiClient.Setup(client => client.EditTenant(It.IsAny<Guid>(), It.IsAny<Common.Models.ApiContracts.Tenant>())).Returns<Guid, Common.Models.ApiContracts.Tenant>((tenantGuid, tenantToEdit) => throw new BasicWebAppException());
             
-            var tenantController = new TenantsController(internalApiClient.Object, httpContextAccessor, logger.Object, mapper);
+            var authorizationService = new Mock<IAuthorizationService>();
+            
+            var tenantController = new TenantsController(internalApiClient.Object, httpContextAccessor, logger.Object, mapper, authorizationService.Object);
 
             return tenantController;
         }
@@ -132,7 +137,8 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
             var logger = new Mock<ILogger<TenantsController>>();
             IMapper mapper = null;
             var internalApiClient = new Mock<IInternalApiClient>();
-            var tenantController = new TenantsController(internalApiClient.Object, httpContextAccessor, logger.Object, mapper);
+            var authorizationService = new Mock<IAuthorizationService>();
+            var tenantController = new TenantsController(internalApiClient.Object, httpContextAccessor, logger.Object, mapper, authorizationService.Object);
             return tenantController;
         }     
         
@@ -142,7 +148,8 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
             httpContextAccessor.HttpContext = new DefaultHttpContext();
             var logger = new Mock<ILogger<TenantsController>>();
             var mapper = SetupMapper();
-            var tenantController = new TenantsController(null, httpContextAccessor, logger.Object, mapper);
+            var authorizationService = new Mock<IAuthorizationService>();
+            var tenantController = new TenantsController(null, httpContextAccessor, logger.Object, mapper, authorizationService.Object);
             return tenantController;
         }         
         

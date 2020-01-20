@@ -5,6 +5,7 @@ using System.Text;
 using AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Common.Logic;
 using Dka.AspNetCore.BasicWebApp.Common.Logic.Authentication;
+using Dka.AspNetCore.BasicWebApp.Common.Logic.Authorization;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Configurations;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
@@ -14,8 +15,11 @@ using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Services.Unleash;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -60,8 +64,23 @@ namespace Dka.AspNetCore.BasicWebApp
                     options.LogoutPath = AuthenticationDefaults.LogoutUrl;
                     options.ReturnUrlParameter = AuthenticationDefaults.ReturnUrlParameter;
                 });
+
+            services.AddAuthorization();
             
-            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerForAdministrator>();
+            services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerForSupport>();
+            services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerForPowerUser>();
+            services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerBasedOnRight>();
+            services.AddSingleton<IAuthorizationPolicyProvider, DataOperationAuthorizationPolicyProvider>();
+            
+            services.AddControllersWithViews(config =>
+            {
+                var authorizationPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                
+                config.Filters.Add(new AuthorizeFilter(authorizationPolicy));
+                
+            }).AddRazorRuntimeCompilation();
+
             services.AddRazorPages();
         }
 

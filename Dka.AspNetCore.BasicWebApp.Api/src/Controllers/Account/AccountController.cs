@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -23,13 +24,16 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
         private readonly JwtConfiguration _jwtConfiguration;
 
         private readonly UserManager<ApplicationUser> _userManager;
+        
+        private readonly RoleManager<ApplicationRole> _roleManager;
 
         private readonly ILogger<AccountController> _logger;
         
-        public AccountController(IOptions<JwtConfiguration> jwtConfiguration, UserManager<ApplicationUser> userManager, ILogger<AccountController> logger)
+        public AccountController(IOptions<JwtConfiguration> jwtConfiguration, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ILogger<AccountController> logger)
         {
             _jwtConfiguration = jwtConfiguration.Value;
             _userManager = userManager;
+            _roleManager = roleManager;
             _logger = logger;
         }
         
@@ -43,20 +47,19 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
                 return BadRequest();
             }
 
-            var user = new ApplicationUser { Guid = Guid.NewGuid() };
+            if (!(await _userManager.FindByNameAsync(signInRequestContract.Username) is { } user))
+            {
+                return NotFound();
+            }
             
-            // if (!(await _userManager.FindByNameAsync(signInRequestContract.Username) is { } user))
-            // {
-            //     return NotFound();
-            // }
-            //
-            // if (!await _userManager.CheckPasswordAsync(user, signInRequestContract.Password))
-            // {
-            //     return NotFound();
-            // }
+            if (!await _userManager.CheckPasswordAsync(user, signInRequestContract.Password))
+            {
+                return NotFound();
+            }
             
             var tokenExpireAt = DateTime.UtcNow.AddDays(7);
-            var userRole = UserRoleNames.Administrator;
+
+            var userRoles= await _userManager.GetRolesAsync(user) ?? new List<string>();
             
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtConfiguration.Secret);
@@ -65,19 +68,23 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
                 Subject = new ClaimsIdentity(new[] 
                 {
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Guid.ToString()),
-                    new Claim(ClaimTypes.Role, userRole)
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Guid.ToString())
                 }),
                 Expires = tokenExpireAt,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
+
+            foreach (var userRole in userRoles)
+            {
+                tokenDescriptor.Subject.AddClaim(new Claim(ClaimTypes.Role, userRole));
+            }
             
             var token = tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescriptor));
 
             var signInResponseContract = new SignInResponseContract
             {
                 AccessToken = token,
-                UserRole = userRole,
+                UserRoles = userRoles,
                 ExpireAt = tokenExpireAt
             };
             

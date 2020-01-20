@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
 namespace Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication
@@ -9,6 +10,6 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication
 
         public string AccessToken { get; set; }
 
-        public string UserRole { get; set; }
+        public IList<string> UserRoles { get; set; }
     }
 }

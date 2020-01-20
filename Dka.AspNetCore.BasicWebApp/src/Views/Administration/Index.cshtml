@@ -1,4 +1,9 @@
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants
 @using Dka.AspNetCore.BasicWebApp.Models.Constants
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService;
+
 @{
     ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "Administration";
     ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "Administration";
@@ -7,16 +12,19 @@
 
 <div class="row mb-3 mb-sm-2">
     <div class="col-sm-3">
-        <a asp-controller="Tenants" asp-action="index" class="btn btn-link d-inline text-dark">
-            <div class="card">
-                <div class="card-body text-center">
-                    <div class="mb-2">
-                        <i class="fas fa-users fa-2x"></i>
+        @if ((await AuthorizationService.AuthorizeAsync(Context.User, new Tenant(), new DataOperationRequirement(nameof(Tenant), DataOperationNames.Read))).Succeeded)
+        {
+            <a asp-controller="Tenants" asp-action="index" class="btn btn-link d-inline text-dark">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="mb-2">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                        <div>Tenants</div>
                     </div>
-                    <div>Tenants</div>
                 </div>
-            </div>
-        </a>
+            </a>
+        }
     </div>
     <div class="col-sm-3">
 

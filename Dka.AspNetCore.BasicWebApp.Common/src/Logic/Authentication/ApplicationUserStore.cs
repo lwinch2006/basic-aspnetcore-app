@@ -152,18 +152,6 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Logic.Authentication
 
             return await _userRepository.GetUsersInRoleAsync(roleName);
         }
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         public Task SetEmailAsync(ApplicationUser user, string email, CancellationToken cancellationToken)
         {

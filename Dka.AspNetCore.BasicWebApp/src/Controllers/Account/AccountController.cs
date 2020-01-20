@@ -40,6 +40,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Account
             _mapper = mapper;
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> SignIn(string returnUrl = null)
         {
             returnUrl ??= "/";
@@ -49,6 +50,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Account
             return await Task.FromResult(View("~/Views/Account/SignIn.cshtml"));
         }
 
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<IActionResult> SignIn(SignInViewModel signInViewModel, string returnUrl = null)
@@ -69,10 +71,14 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Account
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, signInViewModel.Username),
-                    new Claim(ClaimTypes.Role, signInResponseContract.UserRole),
                     new Claim(ClaimsCustomTypes.AccessToken, signInResponseContract.AccessToken)
                 };
 
+                foreach (var userRole in signInResponseContract.UserRoles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, userRole));
+                }
+                
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 var authOptions = new AuthenticationProperties();

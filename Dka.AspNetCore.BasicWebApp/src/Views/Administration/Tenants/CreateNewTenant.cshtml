@@ -1,4 +1,8 @@
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants
 @using Dka.AspNetCore.BasicWebApp.Models.Constants
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService; 
 @model Dka.AspNetCore.BasicWebApp.ViewModels.Tenants.NewTenant
 @{
     ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "New tenant";
@@ -33,7 +37,10 @@
     <div class="row mb-3">
         <div class="col-sm-12 text-sm-center">
             <a asp-controller="Tenants" asp-action="index" class="btn btn-outline-secondary dka-btn">Cancel</a>
-            <button type="submit" asp-controller="Tenants" asp-action="new" class="btn btn-outline-secondary dka-btn">Save</button>
+            @if ((await AuthorizationService.AuthorizeAsync(Context.User, Model, new DataOperationRequirement(nameof(Tenant), DataOperationNames.Create))).Succeeded)
+            {
+                <button type="submit" asp-controller="Tenants" asp-action="new" class="btn btn-outline-secondary dka-btn">Save</button>
+            }
         </div>
     </div>
 </form>
