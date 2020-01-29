@@ -97,7 +97,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api
             services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerForSupport>();
             services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerForPowerUser>();
             services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerBasedOnRight>();
-            services.AddSingleton<IAuthorizationPolicyProvider>(sp => new DataOperationAuthorizationPolicyProviderForJwt(JwtBearerDefaults.AuthenticationScheme, authorizationOptions));            
+            services.AddSingleton<IAuthorizationPolicyProvider>(sp => new DataOperationAuthorizationPolicyProvider(JwtBearerDefaults.AuthenticationScheme, authorizationOptions));            
             
             services.AddControllers(config =>
             {

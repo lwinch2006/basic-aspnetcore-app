@@ -10,17 +10,21 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Logic.Authorization
     public class DataOperationAuthorizationPolicyProvider : IAuthorizationPolicyProvider
     {
         private const string PolicyPrefix = "DataOperation";
+
+        private readonly string _authenticationScheme;
         
         private DefaultAuthorizationPolicyProvider BackupPolicyProvider { get; }
         
-        public DataOperationAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options)
+        public DataOperationAuthorizationPolicyProvider(string authenticationScheme, IOptions<AuthorizationOptions> options)
         {
             BackupPolicyProvider = new DefaultAuthorizationPolicyProvider(options);
+
+            _authenticationScheme = authenticationScheme;
         }
         
         public Task<AuthorizationPolicy> GetDefaultPolicyAsync()
         {
-            return Task.FromResult(new AuthorizationPolicyBuilder(CookieAuthenticationDefaults.AuthenticationScheme).RequireAuthenticatedUser().Build());
+            return Task.FromResult(new AuthorizationPolicyBuilder(_authenticationScheme).RequireAuthenticatedUser().Build());
         }
 
         public Task<AuthorizationPolicy> GetFallbackPolicyAsync()
@@ -45,7 +49,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Logic.Authorization
             var target = policyParts[1];
             var dataOperation = policyParts[2];
             
-            var policy = new AuthorizationPolicyBuilder(CookieAuthenticationDefaults.AuthenticationScheme);
+            var policy = new AuthorizationPolicyBuilder(_authenticationScheme);
             policy.AddRequirements(new DataOperationRequirement(target, dataOperation));
             return Task.FromResult(policy.Build());
         }

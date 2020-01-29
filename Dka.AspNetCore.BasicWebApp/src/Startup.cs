@@ -24,6 +24,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
@@ -67,11 +68,13 @@ namespace Dka.AspNetCore.BasicWebApp
 
             services.AddAuthorization();
             
+            var authorizationOptions = Options.Create(new AuthorizationOptions());
+            
             services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerForAdministrator>();
             services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerForSupport>();
             services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerForPowerUser>();
             services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerBasedOnRight>();
-            services.AddSingleton<IAuthorizationPolicyProvider, DataOperationAuthorizationPolicyProvider>();
+            services.AddSingleton<IAuthorizationPolicyProvider>(sp => new DataOperationAuthorizationPolicyProvider(CookieAuthenticationDefaults.AuthenticationScheme, authorizationOptions)); 
             
             services.AddControllersWithViews(config =>
             {
