@@ -20,31 +20,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{13AFB803-273E-4425-881C-E87B595E7E20}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ELK", "ELK", "{10D1FC49-F975-47E3-87B7-E6FF7FF995EB}"
-ProjectSection(SolutionItems) = preProject
-	Infrastructure\Docker\ELK\docker-compose.yml = Infrastructure\Docker\ELK\docker-compose.yml
-EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{0196E302-0A4F-4834-9CD4-875251FD4892}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MSSQL", "MSSQL", "{4C5CD2F3-F6F5-4E50-931D-B0F35B4024FE}"
-ProjectSection(SolutionItems) = preProject
-	Infrastructure\Docker\MSSQL\docker-compose.yml = Infrastructure\Docker\MSSQL\docker-compose.yml
-EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unleash", "Unleash", "{00F947AB-B556-4A97-89C4-83C234FEEDF7}"
-ProjectSection(SolutionItems) = preProject
-	Infrastructure\Docker\Unleash\docker-compose.yml = Infrastructure\Docker\Unleash\docker-compose.yml
-	Infrastructure\Docker\Unleash\Dockerfile = Infrastructure\Docker\Unleash\Dockerfile
-	Infrastructure\Docker\Unleash\index.js = Infrastructure\Docker\Unleash\index.js
-	Infrastructure\Docker\Unleash\LICENSE.md = Infrastructure\Docker\Unleash\LICENSE.md
-	Infrastructure\Docker\Unleash\package.json = Infrastructure\Docker\Unleash\package.json
-	Infrastructure\Docker\Unleash\README.md = Infrastructure\Docker\Unleash\README.md
-EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp.Api.UnitTests", "Dka.AspNetCore.BasicWebApp.Api\test\Dka.AspNetCore.BasicWebApp.Api.UnitTests\Dka.AspNetCore.BasicWebApp.Api.UnitTests.csproj", "{10E52EA9-FCBD-49F0-9365-4D8BCC442FD2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dka.AspNetCore.BasicWebApp.Common.UnitTests", "Dka.AspNetCore.BasicWebApp.Common\test\Dka.AspNetCore.BasicWebApp.Common.UnitTests\Dka.AspNetCore.BasicWebApp.Common.UnitTests.csproj", "{6767C483-A4EA-46B6-BF08-C057FEB0E37B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BasicWebApp", "BasicWebApp", "{436F6BB9-EBA2-4B28-BAE9-0C4AD1E6F330}"
+ProjectSection(SolutionItems) = preProject
+	Infrastructure\Docker\BasicWebApp\docker-compose.yml = Infrastructure\Docker\BasicWebApp\docker-compose.yml
+	Infrastructure\Docker\BasicWebApp\Dockerfile = Infrastructure\Docker\BasicWebApp\Dockerfile
+	Infrastructure\Docker\BasicWebApp\index.js = Infrastructure\Docker\BasicWebApp\index.js
+	Infrastructure\Docker\BasicWebApp\LICENSE.md = Infrastructure\Docker\BasicWebApp\LICENSE.md
+	Infrastructure\Docker\BasicWebApp\package.json = Infrastructure\Docker\BasicWebApp\package.json
+	Infrastructure\Docker\BasicWebApp\README.md = Infrastructure\Docker\BasicWebApp\README.md
+EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -100,10 +90,8 @@ Global
 		{9FF8DA52-ADAF-4B60-97B1-B6D36496E431} = {05C08C5F-A199-46BF-9015-420F38412BC9}
 		{148E1E6F-E8DA-4C29-9082-E355E73544E0} = {05C08C5F-A199-46BF-9015-420F38412BC9}
 		{0196E302-0A4F-4834-9CD4-875251FD4892} = {13AFB803-273E-4425-881C-E87B595E7E20}
-		{10D1FC49-F975-47E3-87B7-E6FF7FF995EB} = {0196E302-0A4F-4834-9CD4-875251FD4892}
-		{4C5CD2F3-F6F5-4E50-931D-B0F35B4024FE} = {0196E302-0A4F-4834-9CD4-875251FD4892}
-		{00F947AB-B556-4A97-89C4-83C234FEEDF7} = {0196E302-0A4F-4834-9CD4-875251FD4892}
 		{10E52EA9-FCBD-49F0-9365-4D8BCC442FD2} = {05C08C5F-A199-46BF-9015-420F38412BC9}
 		{6767C483-A4EA-46B6-BF08-C057FEB0E37B} = {05C08C5F-A199-46BF-9015-420F38412BC9}
+		{436F6BB9-EBA2-4B28-BAE9-0C4AD1E6F330} = {0196E302-0A4F-4834-9CD4-875251FD4892}
 	EndGlobalSection
 EndGlobal

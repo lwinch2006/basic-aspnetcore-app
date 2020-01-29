@@ -1,0 +1,83 @@
+version: '3.1'
+services:
+  # Elasticsearch service
+  bwa-elasticsearch:
+    container_name: bwa-elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.2
+    environment:
+      - node.name=elasticsearch-01
+      - cluster.name=elasticsearch-docker-cluster
+      - cluster.initial_master_nodes=elasticsearch-01
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - docker-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - docker-network
+
+  # Kibana service
+  bwa-kibana:
+    container_name: bwa-kibana
+    image: docker.elastic.co/kibana/kibana:7.4.2
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch-01:9200
+      ELASTICSEARCH_HOSTS: http://elasticsearch-01:9200
+    networks:
+      - docker-network
+
+  # MS SQL server service
+  bwa-mssql-server:
+    container_name: bwa-mssql-server
+    image: microsoft/mssql-server-linux:2017-latest
+    ports:
+      - "1533:1433"
+    networks:
+      - docker-network
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=<Yg!P0rdWde77>
+
+  # Unleash web service
+  bwa-unleash-web:
+    container_name: bwa-unleash-web
+    build: .
+    ports:
+      - "4242:4242"
+    networks:
+      - docker-network 
+    environment:
+      DATABASE_URL: postgres://postgres:unleash@db/postgres
+    depends_on:
+      - bwa-unleash-db
+    command: >
+      sh -c "
+        while ! nc -z unleash-db 5432; do
+          echo 'Postgres is unavailable.'
+          sleep 1
+        done
+        npm run start"
+
+  # Unleash db service
+  bwa-unleash-db:
+    container_name: bwa-unleash-db
+    image: postgres:10-alpine    
+    expose:
+      - "5432"
+    networks:
+      - docker-network 
+
+volumes:
+  docker-data:
+    driver: local
+
+networks:
+  docker-network:
+    driver: bridge
