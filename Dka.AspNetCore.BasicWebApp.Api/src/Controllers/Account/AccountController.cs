@@ -37,6 +37,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
             _logger = logger;
         }
         
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> SignIn([FromBody] SignInRequestContract signInRequestContract)
         {

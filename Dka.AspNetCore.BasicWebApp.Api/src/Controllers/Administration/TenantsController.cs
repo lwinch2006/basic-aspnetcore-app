@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Api.Services.ExceptionProcessing;
 using Dka.AspNetCore.BasicWebApp.Common.Logic;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ExceptionProcessing;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
 using Microsoft.AspNetCore.Http;
@@ -27,6 +28,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
             _logger = logger;
         }
         
+        [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Read)]
         [HttpGet]
         [ActionName("index")]
         public async Task<IActionResult> GetAll()
@@ -36,6 +38,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
             return Ok(tenants);
         }
 
+        [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Read)]
         [HttpGet("{guid}")]
         [ActionName("details")]
         public async Task<IActionResult> GetByGuid(Guid guid)
@@ -50,6 +53,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
             return Ok(tenant);
         }
 
+        [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Create)]
         [HttpPost]
         [ActionName("new")]
         public async Task<IActionResult> CreateNewTenant([FromBody] Common.Models.ApiContracts.NewTenant newTenantApiContract)
@@ -73,6 +77,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
+        [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Update)]
         [HttpPut("{guid}")]
         [ActionName("edit")]
         public async Task<IActionResult> EditTenant(Guid guid, [FromBody] Common.Models.ApiContracts.Tenant tenantToEditApiContract)
@@ -103,6 +108,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
+        [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Delete)]
         [HttpDelete("{guid}")]
         [ActionName("delete")]
         public async Task<IActionResult> DeleteTenant(Guid guid)

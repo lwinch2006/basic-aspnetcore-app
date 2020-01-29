@@ -19,13 +19,17 @@ using Dka.AspNetCore.BasicWebApp.Api.Models.AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Api.Models.Configurations;
 using Dka.AspNetCore.BasicWebApp.Api.Models.ExceptionProcessing;
 using Dka.AspNetCore.BasicWebApp.Common.Logic.Authentication;
+using Dka.AspNetCore.BasicWebApp.Common.Logic.Authorization;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ExceptionProcessing;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
@@ -85,7 +89,21 @@ namespace Dka.AspNetCore.BasicWebApp.Api
                             new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration.Secret));
                     });
             
-            services.AddControllers();
+            services.AddAuthorization();
+
+            var authorizationOptions = Options.Create(new AuthorizationOptions());
+            
+            services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerForAdministrator>();
+            services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerForSupport>();
+            services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerForPowerUser>();
+            services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerBasedOnRight>();
+            services.AddSingleton<IAuthorizationPolicyProvider>(sp => new DataOperationAuthorizationPolicyProviderForJwt(JwtBearerDefaults.AuthenticationScheme, authorizationOptions));            
+            
+            services.AddControllers(config =>
+            {
+                var authorizationPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                config.Filters.Add(new AuthorizeFilter(authorizationPolicy));                
+            });
             
             _services = services;
         }
