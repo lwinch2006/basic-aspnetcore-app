@@ -27,18 +27,6 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             Assert.NotNull(internalApiClientTest);
         }
 
-        [Theory]
-        [InlineData("home")]
-        [InlineData("about")]
-        public async Task TestingGetPageNameAsync_ShouldPass(string pageName)
-        {
-            var internalApiClientTest = SetupInternalApiClientTest();
-
-            var result = await internalApiClientTest.GetPageNameAsync(pageName);
-
-            Assert.Equal(pageName, result);
-        }
-
         [Fact]
         public async Task TestingGetTenants_ShouldPass()
         {

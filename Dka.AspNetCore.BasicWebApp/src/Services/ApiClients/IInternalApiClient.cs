@@ -8,8 +8,6 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 {
     public interface IInternalApiClient
     {
-        Task<string> GetPageNameAsync(string pageName);
-
         Task<IEnumerable<Tenant>> GetTenants();
         
         Task<Tenant> GetTenantByGuid(Guid guid);

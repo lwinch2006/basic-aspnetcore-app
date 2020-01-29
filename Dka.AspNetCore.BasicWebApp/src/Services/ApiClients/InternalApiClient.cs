@@ -38,40 +38,6 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             }
         }
 
-        public async Task<string> GetPageNameAsync(string pageName)
-        {
-            HttpResponseMessage response = null;
-            
-            try
-            {
-                response = await _httpClient.GetAsync(
-                    $"/Pages/GetPageName?pagename={pageName}");
-
-                response.EnsureSuccessStatusCode();
-
-                var result = await response.Content.ReadAsStringAsync();
-
-                return result;
-            }
-            catch (HttpRequestException ex)
-            {
-                if (response == null)
-                {
-                    throw new ApiConnectionException(ex);
-                }
-                
-                switch (response.StatusCode)
-                {
-                    default:
-                        throw new ApiStatusCodeException(ex);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new ApiConnectionException(ex);
-            }
-        }
-
         public async Task<IEnumerable<Tenant>> GetTenants()
         {
             try

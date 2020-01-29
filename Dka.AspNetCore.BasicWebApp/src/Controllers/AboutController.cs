@@ -29,19 +29,15 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var pageName = string.Empty;
-
             try
             {
-                pageName = await _internalApiClient.GetPageNameAsync("About");
+                ViewData[ViewDataKeys.HtmlPageNameReceivedFromApi] = "About";
             }
             catch (ApiConnectionException ex)
             {
                 // Logging exception and showing UI message to the user.
                 ExceptionProcessor.Process(_logger, _httpContext, ex);
             }
-
-            ViewData[ViewDataKeys.HtmlPageNameReceivedFromApi] = pageName;
 
             return View();
         }

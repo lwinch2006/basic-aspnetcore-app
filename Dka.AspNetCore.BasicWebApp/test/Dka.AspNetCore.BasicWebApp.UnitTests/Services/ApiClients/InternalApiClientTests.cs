@@ -292,33 +292,6 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             Assert.NotNull(internalApiClient);
         }
 
-        [Theory]
-        [InlineData("Home")]
-        [InlineData("About")]
-        public async Task TestingGetPageNameAsync_ShouldPass(string pageName)
-        {
-            var internalApiClient = SetupInternalApiClient();
-
-            var result = await internalApiClient.GetPageNameAsync(pageName);
-
-            Assert.Equal(pageName.ToLower(), result.ToLower());
-        }
-
-        [Fact]
-        public async Task TestingGetPageNameAsync_ThrowingException__ShouldPass()
-        {
-            try
-            {
-                var internalApiClient = SetupInternalApiClientWithInternalServerErrorException();
-
-                await internalApiClient.GetPageNameAsync("Status");
-            }
-            catch (ApiConnectionException)
-            {
-                Assert.True(true, "ApiConnectionException is thrown. This behaviour is legal.");
-            }
-        }
-
         [Fact]
         public async Task TestingGetTenants_ShouldPass()
         {

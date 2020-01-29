@@ -20,10 +20,6 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers
             httpContextAccessor.HttpContext = new DefaultHttpContext();
             var logger = new Mock<ILogger<HomeController>>();
             var internalApiClient = new Mock<IInternalApiClient>();
-            internalApiClient.Setup(client => client.GetPageNameAsync(It.IsAny<string>())).Returns<string>(pageName =>
-            {
-                return Task.FromResult(pageName);
-            }).Verifiable();
             
             var homeController = new HomeController(internalApiClient.Object, httpContextAccessor, logger.Object);
 
@@ -36,7 +32,6 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers
             httpContextAccessor.HttpContext = new DefaultHttpContext();
             var logger = new Mock<ILogger<HomeController>>();
             var internalApiClient = new Mock<IInternalApiClient>();
-            internalApiClient.Setup(client => client.GetPageNameAsync(It.IsAny<string>())).Returns<string>(pageName => throw new ApiConnectionException()).Verifiable();
             
             var homeController = new HomeController(internalApiClient.Object, httpContextAccessor, logger.Object);
 
@@ -53,7 +48,6 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers
             var viewResult = Assert.IsType<ViewResult>(result);
 
             Assert.Equal("Home", viewResult.ViewData[ViewDataKeys.HtmlPageNameReceivedFromApi]);
-            internalApiClient.Verify();
         }
         
         [Fact]
@@ -66,7 +60,6 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers
             var viewResult = Assert.IsType<ViewResult>(result);
 
             Assert.Equal(string.Empty, viewResult.ViewData[ViewDataKeys.HtmlPageNameReceivedFromApi]);
-            internalApiClient.Verify();
         }
     }
 }
