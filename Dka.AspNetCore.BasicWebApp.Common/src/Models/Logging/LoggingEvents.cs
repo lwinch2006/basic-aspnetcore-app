@@ -9,6 +9,17 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Models.Logging
         public const int UpdateItem = 2001003;
         public const int DeleteItem = 2001004;
 
+        // SignIn/SignOut operation event IDs.
+        public const int SignInUser = 2001005;
+        public const int SignOutUser = 2001006;
+        
+        // Application operation event IDs.
+        public const int ApplicationOkResult = 2001007;         
+
+        
+        
+        
+        
         // CRUD operation "bad data" event IDs.
         public const int CreateItemBadData = 4001000;
         public const int ReadItemsBadData = 4001001;
@@ -16,11 +27,35 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Models.Logging
         public const int UpdateItemBadData = 4001003;
         public const int DeleteItemBadData = 4001004;        
         
+        // SignIn/SignOut operation "bad data" event IDs.
+        public const int SignInUserBadData = 4001005;
+        public const int SignOutUserBadData = 4001006;
+        
+        // Application operation "bad data" event IDs.
+        public const int ApplicationBadData = 4001007;         
+
+        
+        
+        
+        
+        
         // CRUD operation "not found" event IDs.
         public const int ReadItemsNotFound = 4041001;
         public const int ReadItemNotFound = 4041002;
         public const int UpdateItemNotFound = 4041003;
         public const int DeleteItemNotFound = 4041004;
+        
+        // SignIn/SignOut operation "not found" event IDs.
+        public const int SignInUserNotFound = 4041005;
+        public const int SignOutUserNotFound = 4041006;
+        
+        // Application operation "not found" event IDs.
+        public const int ApplicationNotFound = 4041007;        
+
+        
+        
+        
+        
         
         // CRUD operation "exception" event IDs.
         public const int CreateItemFailed = 5001000;
@@ -29,20 +64,11 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Models.Logging
         public const int UpdateItemFailed = 5001003;
         public const int DeleteItemFailed = 5001004;
         
-        // SignIn/SignOut operation event IDs.
-        public const int SignInUser = 2001005;
-        public const int SignOutUser = 2001006;
-        
-        // SignIn/SignOut operation "bad data" event IDs.
-        public const int SignInUserBadData = 4001005;
-        public const int SignOutUserBadData = 4001006;
-        
-        // SignIn/SignOut operation "not found" event IDs.
-        public const int SignInUserNotFound = 4001005;
-        public const int SignOutUserNotFound = 4001006;
-        
         // SignIn/SignOut operation "exception" event IDs.
-        public const int SignInUserFailed = 4001005;
-        public const int SignOutUserFailed = 4001006;
+        public const int SignInUserFailed = 5001005;
+        public const int SignOutUserFailed = 5001006;
+        
+        // Application operation "exception" event IDs.
+        public const int ApplicationFailed = 5001007;
     }
 }

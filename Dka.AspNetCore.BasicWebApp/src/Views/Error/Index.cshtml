@@ -1,0 +1,31 @@
+@using Dka.AspNetCore.BasicWebApp.Models.Constants
+@model Dka.AspNetCore.BasicWebApp.ViewModels.ExceptionProcessing.ErrorViewModel
+
+@{
+    ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "Error";
+    ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "Error";
+    ViewData[ViewDataKeys.ActiveNavigationLink] = "home";
+}
+<div style="width: 400px; border-radius: 15px; margin: auto; padding: 10px; background-color: #f8f9fa;">
+    <div class="row mb-2">
+        <div class="col-sm-12 text-center">
+            Information for customer support:
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+            Request ID:
+        </div>
+        <div class="col-sm-8">
+            @Model.RequestId
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+            Trace ID:
+        </div>
+        <div class="col-sm-8">
+            @Model.TraceId
+        </div>
+    </div>
+</div>

@@ -34,7 +34,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
             catch (BasicWebAppException ex)
             {
                 // Logging exception and showing UI message to the user.
-                ExceptionProcessor.Process(LoggingEvents.ReadItemsFailed, _logger, HttpContext, ex);
+                ExceptionProcessor.ProcessError(LoggingEvents.ReadItemsFailed, _logger, HttpContext, ex);
             }
             
             return View();

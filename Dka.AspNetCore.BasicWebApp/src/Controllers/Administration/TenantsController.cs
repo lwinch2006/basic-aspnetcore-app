@@ -48,7 +48,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(LoggingEvents.ReadItemsFailed, _logger, HttpContext, ex);
+                ExceptionProcessor.ProcessError(LoggingEvents.ReadItemsFailed, _logger, HttpContext, ex);
             }
 
             return View("~/Views/Administration/Tenants/TenantList.cshtml", tenants);
@@ -69,7 +69,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(LoggingEvents.ReadItemFailed, _logger, HttpContext, ex, guid);
+                ExceptionProcessor.ProcessError(LoggingEvents.ReadItemFailed, _logger, HttpContext, ex, guid);
             }
 
             return View("~/Views/Administration/Tenants/TenantDetails.cshtml", tenantVm);
@@ -108,7 +108,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(LoggingEvents.CreateItemFailed, _logger, HttpContext, ex, newTenant.Name);
+                ExceptionProcessor.ProcessError(LoggingEvents.CreateItemFailed, _logger, HttpContext, ex, newTenant.Name);
             }
 
             return View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenant);
@@ -129,7 +129,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(LoggingEvents.UpdateItemFailed, _logger, HttpContext, ex, guid);
+                ExceptionProcessor.ProcessError(LoggingEvents.UpdateItemFailed, _logger, HttpContext, ex, guid);
             }
 
             return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantVm);
@@ -158,7 +158,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(LoggingEvents.UpdateItemFailed, _logger, HttpContext, ex, guid);
+                ExceptionProcessor.ProcessError(LoggingEvents.UpdateItemFailed, _logger, HttpContext, ex, guid);
             }
 
             return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToEditVm);
@@ -185,7 +185,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(LoggingEvents.DeleteItemFailed, _logger, HttpContext, ex, guid);
+                ExceptionProcessor.ProcessError(LoggingEvents.DeleteItemFailed, _logger, HttpContext, ex, guid);
             }
             
             return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToDeleteVm);

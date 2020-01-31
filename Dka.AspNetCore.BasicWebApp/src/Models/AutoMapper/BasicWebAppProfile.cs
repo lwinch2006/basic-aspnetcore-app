@@ -1,4 +1,5 @@
 using AutoMapper;
+using Dka.AspNetCore.BasicWebApp.Models.ExceptionProcessing;
 
 namespace Dka.AspNetCore.BasicWebApp.Models.AutoMapper
 {
@@ -13,6 +14,7 @@ namespace Dka.AspNetCore.BasicWebApp.Models.AutoMapper
             // Logic model -> ViewModel.
             CreateMap<Common.Models.Tenants.Tenant, ViewModels.Tenants.Tenant>();
             CreateMap<Common.Models.Tenants.Tenant, ViewModels.Tenants.NewTenant>();
+            CreateMap<WebAppStatusCodeException, ViewModels.ExceptionProcessing.ErrorViewModel>();
             
             // API contract -> Logic model.
             CreateMap<Common.Models.ApiContracts.Tenant, Common.Models.Tenants.Tenant>();
@@ -31,6 +33,7 @@ namespace Dka.AspNetCore.BasicWebApp.Models.AutoMapper
             // ViewModel -> Logic model.
             CreateMap<ViewModels.Tenants.Tenant, Common.Models.Tenants.Tenant>();
             CreateMap<ViewModels.Tenants.NewTenant, Common.Models.Tenants.Tenant>();
+            CreateMap<ViewModels.ExceptionProcessing.ErrorViewModel, WebAppStatusCodeException>();            
         }
     }
 }

@@ -87,11 +87,22 @@ namespace Dka.AspNetCore.BasicWebApp
             services.AddRazorPages();
         }
 
-        public void Configure(IApplicationBuilder app, ILogger<Startup> logger, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, ILogger<Startup> logger, ILoggerFactory loggerFactory, IHostEnvironment hostEnvironment)
         {
             loggerFactory.AddSerilog();
-
-            app.UseHsts();
+            
+            if (hostEnvironment.IsDevelopment())
+            {
+                app.UseExceptionHandler("/Error/500");
+                //app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error/500");
+                app.UseHsts();
+            }
+            
+            app.UseStatusCodePagesWithReExecute("/Error/{0}");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();

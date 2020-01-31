@@ -95,7 +95,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Account
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(LoggingEvents.SignInUserFailed, _logger, HttpContext, ex, signInViewModel.Username);
+                ExceptionProcessor.ProcessError(LoggingEvents.SignInUserFailed, _logger, HttpContext, ex, signInViewModel.Username);
             }
 
             return View("~/Views/Account/SignIn.cshtml", signInViewModel);
