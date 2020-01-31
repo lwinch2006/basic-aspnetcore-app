@@ -1,5 +1,6 @@
 using Dka.AspNetCore.BasicWebApp.Api.Services.ExceptionProcessing;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ExceptionProcessing;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Logging;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -14,7 +15,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Services.ExceptionProcessing
             var logger = new Mock<ILogger>();
             var basicWebAppException = new BasicWebAppException();
 
-            ExceptionProcessor.Process(logger.Object, basicWebAppException);
+            ExceptionProcessor.Process(LoggingEvents.ReadItemsFailed, logger.Object, basicWebAppException);
 
             Assert.True(true, "Testing completed without exceptions. This behaviour should be.");
         }

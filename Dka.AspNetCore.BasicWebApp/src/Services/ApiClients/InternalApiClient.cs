@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -10,9 +9,7 @@ using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
-using Dka.AspNetCore.BasicWebApp.Models.Tenants;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 using Tenant = Dka.AspNetCore.BasicWebApp.Common.Models.Tenants.Tenant;
@@ -77,14 +74,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
                     throw new ApiConnectionException(ex);
                 }
                 
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.NotFound:
-                        throw new TenantNotFoundException(ex);
-                    
-                    default:
-                        throw new ApiStatusCodeException(ex);
-                }
+                throw new ApiStatusCodeException(ex);
             }
             catch (Exception ex)
             {
@@ -146,14 +136,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
                     throw new ApiConnectionException(ex);
                 }
                 
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.NotFound:
-                        throw new TenantNotFoundException(ex);
-                    
-                    default:
-                        throw new ApiStatusCodeException(ex);
-                }
+                throw new ApiStatusCodeException(ex);
             }             
             catch (Exception ex)
             {
@@ -178,14 +161,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
                     throw new ApiConnectionException(ex);
                 }
                 
-                switch (response.StatusCode)
-                {
-                    case HttpStatusCode.NotFound:
-                        throw new TenantNotFoundException(ex);
-                    
-                    default:
-                        throw new ApiStatusCodeException(ex);
-                }
+                throw new ApiStatusCodeException(ex);
             }             
             catch (Exception ex)
             {

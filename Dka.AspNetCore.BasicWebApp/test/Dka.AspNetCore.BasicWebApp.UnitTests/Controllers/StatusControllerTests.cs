@@ -15,13 +15,11 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers
     {
         private (StatusController, Mock<IInternalApiClient>) SetupController()
         {
-            var httpContextAccessor = new HttpContextAccessor();
-            httpContextAccessor.HttpContext = new DefaultHttpContext();
             var logger = new Mock<ILogger<StatusController>>();
             var internalApiClient = new Mock<IInternalApiClient>();
             internalApiClient.Setup(client => client.CheckApiLiveStatus()).Returns(() => Task.FromResult(true)).Verifiable();
             
-            var statusController = new StatusController(internalApiClient.Object, httpContextAccessor, logger.Object);
+            var statusController = new StatusController(internalApiClient.Object, logger.Object);
 
             return (statusController, internalApiClient);
         }

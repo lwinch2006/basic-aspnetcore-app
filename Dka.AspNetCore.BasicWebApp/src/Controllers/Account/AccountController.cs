@@ -7,9 +7,12 @@ using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ExceptionProcessing;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Logging;
 using Dka.AspNetCore.BasicWebApp.Models.ExceptionProcessing;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Services.ExceptionProcessing;
+using Dka.AspNetCore.BasicWebApp.Services.HttpContext;
+using Dka.AspNetCore.BasicWebApp.Services.ModelState;
 using Dka.AspNetCore.BasicWebApp.ViewModels.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -28,14 +31,11 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Account
 
         private readonly ILogger<AccountController> _logger;
 
-        private readonly HttpContext _httpContext;
-        
         private readonly IMapper _mapper;
 
-        public AccountController(IInternalApiClient internalApiClient, IHttpContextAccessor httpContextAccessor, ILogger<AccountController> logger, IMapper mapper)
+        public AccountController(IInternalApiClient internalApiClient, ILogger<AccountController> logger, IMapper mapper)
         {
             _internalApiClient = internalApiClient;
-            _httpContext = httpContextAccessor.HttpContext;
             _logger = logger;
             _mapper = mapper;
         }
@@ -59,6 +59,8 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Account
             
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning(LoggingEvents.SignInUserBadData, "SignIn user model is not valid. {ErrorMessages}", ModelState.GetModelStateErrorMessages());
+                
                 return View("~/Views/Account/SignIn.cshtml", signInViewModel);
             }            
 
@@ -70,6 +72,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Account
                 
                 var claims = new List<Claim>
                 {
+                    new Claim(ClaimTypes.NameIdentifier, signInResponseContract.UserGuid.ToString()),
                     new Claim(ClaimTypes.Name, signInViewModel.Username),
                     new Claim(ClaimsCustomTypes.AccessToken, signInResponseContract.AccessToken)
                 };
@@ -82,15 +85,17 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Account
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 var authOptions = new AuthenticationProperties();
-            
-                await _httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal,
+                
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal,
                     authOptions);
+                
+                _logger.LogInformation(LoggingEvents.SignInUser, "Signing in user with GUID {Guid}.", signInResponseContract.UserGuid.ToString());
                 
                 return LocalRedirect(returnUrl);
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(_logger, _httpContext, ex);
+                ExceptionProcessor.Process(LoggingEvents.SignInUserFailed, _logger, HttpContext, ex, signInViewModel.Username);
             }
 
             return View("~/Views/Account/SignIn.cshtml", signInViewModel);
@@ -98,7 +103,9 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Account
 
         public async Task<IActionResult> SignOut()
         {
-            await _httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            
+            _logger.LogInformation(LoggingEvents.SignOutUser, "Signing out user with GUID {Guid}.", HttpContext.GetAuthenticatedUserGuid());
             
             return LocalRedirect("~/");
         }

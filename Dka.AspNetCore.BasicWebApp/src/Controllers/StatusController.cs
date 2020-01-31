@@ -14,13 +14,11 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
     {
         private readonly IInternalApiClient _internalApiClient;
         private readonly ILogger<StatusController> _logger;
-        private readonly HttpContext _httpContext;
         
-        public StatusController(IInternalApiClient internalApiClient, IHttpContextAccessor httpContextAccessor, ILogger<StatusController> logger)
+        public StatusController(IInternalApiClient internalApiClient, ILogger<StatusController> logger)
         {
             _internalApiClient = internalApiClient;
             _logger = logger;
-            _httpContext = httpContextAccessor.HttpContext;
         }
         
         public async Task<IActionResult> Index()

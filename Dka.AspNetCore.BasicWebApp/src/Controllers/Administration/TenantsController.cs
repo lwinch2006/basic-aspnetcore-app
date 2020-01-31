@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ExceptionProcessing;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
-using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
-using Dka.AspNetCore.BasicWebApp.Models.Constants;
-using Dka.AspNetCore.BasicWebApp.Models.Tenants;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Services.ExceptionProcessing;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization;
-using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Logging;
+using Dka.AspNetCore.BasicWebApp.Services.ModelState;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
@@ -25,24 +23,16 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         
         private readonly ILogger<TenantsController> _logger;
 
-        private readonly HttpContext _httpContext;
-
         private readonly IMapper _mapper;
-
-        private readonly IAuthorizationService _authorizationService;
         
         public TenantsController(
             IInternalApiClient internalApiClient, 
-            IHttpContextAccessor httpContextAccessor, 
             ILogger<TenantsController> logger,
-            IMapper mapper,
-            IAuthorizationService authorizationService)
+            IMapper mapper)
         {
             _internalApiClient = internalApiClient;
-            _httpContext = httpContextAccessor.HttpContext;
             _logger = logger;
             _mapper = mapper;
-            _authorizationService = authorizationService;
         }
         
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Read)]
@@ -58,7 +48,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(_logger, _httpContext, ex);
+                ExceptionProcessor.Process(LoggingEvents.ReadItemsFailed, _logger, HttpContext, ex);
             }
 
             return View("~/Views/Administration/Tenants/TenantList.cshtml", tenants);
@@ -79,7 +69,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(_logger, _httpContext, ex);
+                ExceptionProcessor.Process(LoggingEvents.ReadItemFailed, _logger, HttpContext, ex, guid);
             }
 
             return View("~/Views/Administration/Tenants/TenantDetails.cshtml", tenantVm);
@@ -103,6 +93,8 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         {
             if (!ModelState.IsValid || newTenant == null)
             {
+                _logger.LogWarning(LoggingEvents.CreateItemBadData, "Empty tenant cannot be created. {ErrorMessages}", ModelState.GetModelStateErrorMessages());
+                
                 return View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenant);
             }
 
@@ -116,7 +108,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(_logger, _httpContext, ex);
+                ExceptionProcessor.Process(LoggingEvents.CreateItemFailed, _logger, HttpContext, ex, newTenant.Name);
             }
 
             return View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenant);
@@ -137,7 +129,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(_logger, _httpContext, ex);
+                ExceptionProcessor.Process(LoggingEvents.UpdateItemFailed, _logger, HttpContext, ex, guid);
             }
 
             return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantVm);
@@ -151,16 +143,13 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         {
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning(LoggingEvents.UpdateItemBadData, "Edit tenant model is not valid. {ErrorMessages}", ModelState.GetModelStateErrorMessages());
+                
                 return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToEditVm);
             }            
             
             try
             {
-                if (guid != tenantToEditVm?.Guid)
-                {
-                    throw new TenantNotFoundException();
-                }
-
                 var tenantToEditApiContract = _mapper.Map<Common.Models.ApiContracts.Tenant>(tenantToEditVm);
                 
                 await _internalApiClient.EditTenant(guid, tenantToEditApiContract);
@@ -169,7 +158,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(_logger, _httpContext, ex);
+                ExceptionProcessor.Process(LoggingEvents.UpdateItemFailed, _logger, HttpContext, ex, guid);
             }
 
             return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToEditVm);
@@ -183,23 +172,20 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         {
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning(LoggingEvents.DeleteItemBadData, "Delete tenant model is not valid. {ErrorMessages}", ModelState.GetModelStateErrorMessages());
+                
                 return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToDeleteVm);
             }
             
             try
             {
-                if (guid != tenantToDeleteVm?.Guid)
-                {
-                    throw new TenantNotFoundException();
-                }
-
                 await _internalApiClient.DeleteTenant(tenantToDeleteVm.Guid);
 
                 return RedirectToAction("index");
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(_logger, _httpContext, ex);
+                ExceptionProcessor.Process(LoggingEvents.DeleteItemFailed, _logger, HttpContext, ex, guid);
             }
             
             return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToDeleteVm);

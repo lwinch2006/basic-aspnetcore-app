@@ -7,7 +7,5 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Models.Toastr
         public const string ApiStatusCodeException = "Operation failed. Please try again in few minutes.";
         
         public const string GeneralException = "General error. Please try again in few minutes.";
-
-        public const string TenantNotFoundException = "Tenant(s) not found.";
     }
 }

@@ -16,7 +16,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.Unleash
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IHostEnvironment env)
+        public async Task Invoke(Microsoft.AspNetCore.Http.HttpContext context, IHostEnvironment env)
         {
             var sessionId = string.Empty;
 

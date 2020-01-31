@@ -10,6 +10,8 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication
 
         public string AccessToken { get; set; }
 
+        public Guid UserGuid { get; set; }
+
         public IList<string> UserRoles { get; set; }
     }
 }

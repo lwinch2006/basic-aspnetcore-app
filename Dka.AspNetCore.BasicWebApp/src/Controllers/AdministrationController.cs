@@ -14,25 +14,21 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
         
         private readonly ILogger<AdministrationController> _logger;
 
-        private readonly HttpContext _httpContext;
-
         private readonly IMapper _mapper;
         
         public AdministrationController(
             IInternalApiClient internalApiClient, 
-            IHttpContextAccessor httpContextAccessor, 
             ILogger<AdministrationController> logger,
             IMapper mapper)
         {
             _internalApiClient = internalApiClient;
-            _httpContext = httpContextAccessor.HttpContext;
             _logger = logger;
             _mapper = mapper;
         }        
         
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return await Task.FromResult(View());
+            return View();
         }
     }
 }

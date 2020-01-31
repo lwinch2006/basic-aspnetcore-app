@@ -43,7 +43,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
                     WHERE Guid = @Guid
                 ";
 
-                var tenant = await connection.QuerySingleOrDefaultAsync<Tenant>(query, new { @Guid = guid.ToString() });
+                var tenant = await connection.QuerySingleOrDefaultAsync<Tenant>(query, new { Guid = guid });
 
                 return tenant;
             }
@@ -61,7 +61,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
                 ";
 
                 var affectedRows = await connection.ExecuteAsync(query,
-                    new {@Alias = newTenantBo.Alias, @Name = newTenantBo.Name, @Guid = newTenantBo.Guid.ToString()});
+                    new {newTenantBo.Alias, newTenantBo.Name, newTenantBo.Guid});
 
                 return affectedRows == 1 ? newTenantBo.Guid : Guid.Empty;
             }
@@ -81,7 +81,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
                 ";
 
                 var affectedRows = await connection.ExecuteAsync(query,
-                    new {@Alias = tenantToEdit.Alias, @Name = tenantToEdit.Name, @Guid = tenantToEdit.Guid.ToString()});
+                    new {tenantToEdit.Alias, tenantToEdit.Name, tenantToEdit.Guid});
 
                 return affectedRows;
             }
@@ -96,7 +96,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
                     WHERE [Guid] = @Guid;
                 ";
                 
-                var affectedRows = await connection.ExecuteAsync(query, new {@Guid = guid.ToString()});
+                var affectedRows = await connection.ExecuteAsync(query, new {Guid = guid});
 
                 return affectedRows;
             }

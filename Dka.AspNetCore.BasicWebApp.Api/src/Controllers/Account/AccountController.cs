@@ -4,18 +4,17 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration;
+using Dka.AspNetCore.BasicWebApp.Api.Services.HttpContext;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Configurations;
-using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
 {
@@ -45,18 +44,23 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
                 string.IsNullOrWhiteSpace(signInRequestContract.Username) || 
                 string.IsNullOrWhiteSpace(signInRequestContract.Password))
             {
+                _logger.LogWarning(LoggingEvents.SignInUserBadData, "Empty username or password not allowed.");
                 return BadRequest();
             }
 
             if (!(await _userManager.FindByNameAsync(signInRequestContract.Username) is { } user))
             {
+                _logger.LogWarning(LoggingEvents.SignInUserNotFound, "User with username {Username} not found.", signInRequestContract.Username);
                 return NotFound();
             }
             
             if (!await _userManager.CheckPasswordAsync(user, signInRequestContract.Password))
             {
+                _logger.LogWarning(LoggingEvents.SignInUserNotFound, "User with username {Username} provided password not valid.", signInRequestContract.Username);
                 return NotFound();
             }
+            
+            _logger.LogInformation(LoggingEvents.SignInUser, "Signing in user with GUID {Guid}.", user.Guid);
             
             var tokenExpireAt = DateTime.UtcNow.AddDays(7);
 
@@ -85,6 +89,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
             var signInResponseContract = new SignInResponseContract
             {
                 AccessToken = token,
+                UserGuid = user.Guid,
                 UserRoles = userRoles,
                 ExpireAt = tokenExpireAt
             };
@@ -94,7 +99,9 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
         
         public async Task<IActionResult> SignOut()
         {
-            return await Task.FromResult(Ok(new SignOutResponseContract() ));
+            _logger.LogInformation(LoggingEvents.SignOutUser, "Signing out user with GUID {Guid}.", HttpContext.GetAuthenticatedUserGuid());
+            
+            return await Task.FromResult(Ok(new SignOutResponseContract()));
         }
     }
 }

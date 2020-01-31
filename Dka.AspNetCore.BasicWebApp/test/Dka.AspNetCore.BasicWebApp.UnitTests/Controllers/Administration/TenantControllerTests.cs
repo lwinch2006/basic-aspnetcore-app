@@ -38,8 +38,6 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
 
         private TenantsController SetupController()
         {
-            var httpContextAccessor = new HttpContextAccessor();
-            httpContextAccessor.HttpContext = new DefaultHttpContext();
             var logger = new Mock<ILogger<TenantsController>>();
             var mapper = SetupMapper();
             var internalApiClient = new Mock<IInternalApiClient>();
@@ -81,7 +79,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
             {
                 var tenants = Tenant.GetDummyTenantSet().GetAwaiter().GetResult().ToList();
 
-                if (tenants.Find(record => record.Guid == tenantGuid) is Tenant tenantToDelete)
+                if (tenants.Find(record => record.Guid == tenantGuid) is { } tenantToDelete)
                 {
                     tenants.Remove(tenantToDelete);
                 }
@@ -103,17 +101,13 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
                 return Task.CompletedTask;
             });
 
-            var authorizationService = new Mock<IAuthorizationService>();
-            
-            var tenantController = new TenantsController(internalApiClient.Object, httpContextAccessor, logger.Object, mapper, authorizationService.Object);
+            var tenantController = new TenantsController(internalApiClient.Object, logger.Object, mapper);
 
             return tenantController;
         }
         
         private TenantsController SetupControllerWithThrowingException()
         {
-            var httpContextAccessor = new HttpContextAccessor();
-            httpContextAccessor.HttpContext = new DefaultHttpContext();
             var logger = new Mock<ILogger<TenantsController>>();
             var mapper = SetupMapper();
             var internalApiClient = new Mock<IInternalApiClient>();
@@ -123,33 +117,25 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
             internalApiClient.Setup(client => client.DeleteTenant(It.IsAny<Guid>())).Returns<Guid>(tenantGuid => throw new BasicWebAppException());
             internalApiClient.Setup(client => client.EditTenant(It.IsAny<Guid>(), It.IsAny<Common.Models.ApiContracts.Tenant>())).Returns<Guid, Common.Models.ApiContracts.Tenant>((tenantGuid, tenantToEdit) => throw new BasicWebAppException());
             
-            var authorizationService = new Mock<IAuthorizationService>();
-            
-            var tenantController = new TenantsController(internalApiClient.Object, httpContextAccessor, logger.Object, mapper, authorizationService.Object);
+            var tenantController = new TenantsController(internalApiClient.Object, logger.Object, mapper);
 
             return tenantController;
         }
         
         private TenantsController SetupControllerWithNullMapper()
         {
-            var httpContextAccessor = new HttpContextAccessor();
-            httpContextAccessor.HttpContext = new DefaultHttpContext();
             var logger = new Mock<ILogger<TenantsController>>();
             IMapper mapper = null;
             var internalApiClient = new Mock<IInternalApiClient>();
-            var authorizationService = new Mock<IAuthorizationService>();
-            var tenantController = new TenantsController(internalApiClient.Object, httpContextAccessor, logger.Object, mapper, authorizationService.Object);
+            var tenantController = new TenantsController(internalApiClient.Object, logger.Object, mapper);
             return tenantController;
         }     
         
         private TenantsController SetupControllerWithNullInternalApiClient()
         {
-            var httpContextAccessor = new HttpContextAccessor();
-            httpContextAccessor.HttpContext = new DefaultHttpContext();
             var logger = new Mock<ILogger<TenantsController>>();
             var mapper = SetupMapper();
-            var authorizationService = new Mock<IAuthorizationService>();
-            var tenantController = new TenantsController(null, httpContextAccessor, logger.Object, mapper, authorizationService.Object);
+            var tenantController = new TenantsController(null, logger.Object, mapper);
             return tenantController;
         }         
         

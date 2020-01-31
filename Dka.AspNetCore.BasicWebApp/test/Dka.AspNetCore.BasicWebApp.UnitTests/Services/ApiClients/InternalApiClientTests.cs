@@ -3,12 +3,10 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
 using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
-using Dka.AspNetCore.BasicWebApp.Models.Tenants;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -332,24 +330,6 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
         }
 
         [Fact]
-        public async Task TestingGetTenantByGuid_PassingInvalidGuid_ThrowingTenantNotFoundException_ShouldPass()
-        {
-            try
-            {
-                var internalApiClient = SetupInternalApiClient();
-
-                await internalApiClient.GetTenantByGuid(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF"));
-            }
-            catch (TenantNotFoundException)
-            {
-                Assert.True(true, "TenantNotFoundException is thrown. This behaviour is legal.");
-                return;
-            }
-            
-            Assert.True(false, "TenantNotFoundException is not thrown. This behaviour is illegal.");
-        }
-
-        [Fact]
         public async Task TestingGetTenantByGuid_ThrowingApiStatusCodeException_ShouldPass()
         {
             try
@@ -573,29 +553,6 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             
             Assert.False(true, "ApiConnectionException is not thrown. This behaviour is illegal.");
         }
-        
-        [Fact]
-        public async Task TestingEditTenant_PassingInvalidGuid_ThrowingNotFoundException_ShouldPass()
-        {
-            try
-            {
-                var internalApiClient = SetupInternalApiClient();
-
-                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF"), new Common.Models.ApiContracts.Tenant
-                {
-                    Name = "Test company 1",
-                    Alias = "test-company-1",
-                    Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF")
-                });
-            }
-            catch (TenantNotFoundException)
-            {
-                Assert.True(true, "TenantNotFoundException is thrown. This behaviour is legal.");
-                return;
-            }
-            
-            Assert.False(true, "TenantNotFoundException is not thrown. This behaviour is illegal.");
-        }        
 
         [Fact]
         public async Task TestingEditTenant_ThrowingApiStatusCodeException_ShouldPass()
@@ -697,24 +654,6 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             await internalApiClient.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"));
             
             Assert.True(true, "If test completed without exception it means test passed successfully.");
-        }
-        
-        [Fact]
-        public async Task TestingDeleteTenant_PassingInvalidGuid_ThrowingTenantNotFoundException_ShouldPass()
-        {
-            try
-            {
-                var internalApiClient = SetupInternalApiClient();
-
-                await internalApiClient.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF"));
-            }
-            catch (TenantNotFoundException)
-            {
-                Assert.True(true, "TenantNotFoundException is thrown. This behaviour is legal.");
-                return;
-            }
-            
-            Assert.False(true, "TenantNotFoundException is not thrown. This behaviour is illegal.");
         }
         
         [Fact]

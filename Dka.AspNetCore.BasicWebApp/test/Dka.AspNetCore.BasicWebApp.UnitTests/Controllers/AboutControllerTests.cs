@@ -16,34 +16,28 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers
     {
         private (AboutController, Mock<IInternalApiClient>) SetupController()
         {
-            var httpContextAccessor = new HttpContextAccessor();
-            httpContextAccessor.HttpContext = new DefaultHttpContext();
             var logger = new Mock<ILogger<AboutController>>();
             var internalApiClient = new Mock<IInternalApiClient>();
-            
-            var aboutController = new AboutController(internalApiClient.Object, httpContextAccessor, logger.Object);
+            var aboutController = new AboutController(internalApiClient.Object, logger.Object);
 
             return (aboutController, internalApiClient);
         }
         
         private (AboutController, Mock<IInternalApiClient>) SetupControllerWithThrowingException()
         {
-            var httpContextAccessor = new HttpContextAccessor();
-            httpContextAccessor.HttpContext = new DefaultHttpContext();
             var logger = new Mock<ILogger<AboutController>>();
             var internalApiClient = new Mock<IInternalApiClient>();
-            
-            var aboutController = new AboutController(internalApiClient.Object, httpContextAccessor, logger.Object);
+            var aboutController = new AboutController(internalApiClient.Object, logger.Object);
 
             return (aboutController, internalApiClient);
         }
 
         [Fact]
-        public async Task TestingIndexAction_ShouldPass()
+        public void TestingIndexAction_ShouldPass()
         {
             var (aboutController, internalApiClient) = SetupController();
 
-            var result = await aboutController.Index();
+            var result = aboutController.Index();
 
             var viewResult = Assert.IsType<ViewResult>(result);
 
@@ -51,11 +45,11 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers
         }
 
         [Fact]
-        public async Task TestingIndexAction_ThrowingException_ShouldPass()
+        public void TestingIndexAction_ThrowingException_ShouldPass()
         {
             var (aboutController, internalApiClient) = SetupControllerWithThrowingException();
 
-            var result = await aboutController.Index();
+            var result = aboutController.Index();
 
             var viewResult = Assert.IsType<ViewResult>(result);
 

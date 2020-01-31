@@ -5,6 +5,7 @@ using Dka.AspNetCore.BasicWebApp.Api.Services.ExceptionProcessing;
 using Dka.AspNetCore.BasicWebApp.Common.Logic;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ExceptionProcessing;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Logging;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -33,8 +34,9 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
         [ActionName("index")]
         public async Task<IActionResult> GetAll()
         {
+            _logger.LogInformation(LoggingEvents.ReadItems, "Getting all tenants.");
+            
             var tenants = await _tenantLogic.GetAll();
-
             return Ok(tenants);
         }
 
@@ -43,10 +45,13 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
         [ActionName("details")]
         public async Task<IActionResult> GetByGuid(Guid guid)
         {
+            _logger.LogInformation(LoggingEvents.ReadItem, "Getting tenant with GUID {guid}.", guid);
+            
             var tenant = await _tenantLogic.GetByGuid(guid);
 
             if (tenant == null)
             {
+                _logger.LogWarning(LoggingEvents.ReadItemNotFound, "Tenant with GUID {guid} not found.", guid);
                 return NotFound();
             }
             
@@ -58,12 +63,15 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
         [ActionName("new")]
         public async Task<IActionResult> CreateNewTenant([FromBody] Common.Models.ApiContracts.NewTenant newTenantApiContract)
         {
+            if (newTenantApiContract == null)
+            {
+                _logger.LogWarning(LoggingEvents.CreateItemBadData, "Empty tenant cannot be created.");
+                return BadRequest();
+            }
+            
             try
             {
-                if (newTenantApiContract == null)
-                {
-                    return BadRequest();
-                }
+                _logger.LogInformation(LoggingEvents.CreateItem, "Creating new tenant with name {Name}.", newTenantApiContract.Name);
 
                 var newTenantBo = _mapper.Map<Tenant>(newTenantApiContract);
                 newTenantBo.Guid = await _tenantLogic.CreateNewTenant(newTenantBo);
@@ -71,7 +79,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(_logger, ex);
+                ExceptionProcessor.Process(LoggingEvents.CreateItemFailed, _logger, ex, newTenantApiContract.Name);
             }
 
             return StatusCode(StatusCodes.Status500InternalServerError);
@@ -84,25 +92,29 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
         {
             if (guid != tenantToEditApiContract?.Guid)
             {
+                _logger.LogWarning(LoggingEvents.UpdateItemBadData, "Different tenant update attempt.");
                 return BadRequest(tenantToEditApiContract);
             }             
             
             try
             {
+                _logger.LogInformation(LoggingEvents.UpdateItem, "Updating tenant with GUID {guid}.", guid);
+                
                 var tenantToEditBo = _mapper.Map<Tenant>(tenantToEditApiContract);
                 await _tenantLogic.EditTenant(tenantToEditBo);
                 return NoContent();
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(_logger, ex);
-                
                 var tenant = await _tenantLogic.GetByGuid(guid);
 
                 if (tenant == null)
                 {
+                    _logger.LogWarning(LoggingEvents.UpdateItemNotFound, ex, "Tenant with GUID {guid} for updating not found.", guid);
                     return NotFound();
                 }
+                
+                ExceptionProcessor.Process(LoggingEvents.UpdateItemFailed, _logger, ex, guid);
             }
             
             return StatusCode(StatusCodes.Status500InternalServerError);
@@ -113,12 +125,15 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
         [ActionName("delete")]
         public async Task<IActionResult> DeleteTenant(Guid guid)
         {
+            _logger.LogInformation(LoggingEvents.ReadItem, "Deleting tenant with GUID {guid}.", guid);
+            
             try
             {
                 var tenantToDeleteBo = await _tenantLogic.GetByGuid(guid);
 
                 if (tenantToDeleteBo == null)
                 {
+                    _logger.LogWarning(LoggingEvents.UpdateItemNotFound, "Tenant with GUID {guid} for deleting not found.", guid);
                     return NotFound();
                 }
                 
@@ -127,9 +142,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(_logger, ex);
-                
-                // TODO: Here can be also checking of GUID and returning NotFound result.
+                ExceptionProcessor.Process(LoggingEvents.UpdateItemFailed, _logger, ex, guid);
             }
             
             return StatusCode(StatusCodes.Status500InternalServerError);

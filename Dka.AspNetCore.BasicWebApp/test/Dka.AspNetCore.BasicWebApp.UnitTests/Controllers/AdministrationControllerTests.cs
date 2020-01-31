@@ -16,22 +16,20 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers
     {
         private AdministrationController SetupController()
         {
-            var httpContextAccessor = new HttpContextAccessor();
-            httpContextAccessor.HttpContext = new DefaultHttpContext();
             var logger = new Mock<ILogger<AdministrationController>>();
             var mapper = new Mock<IMapper>();
             var internalApiClient = new Mock<IInternalApiClient>();
-            var administrationController = new AdministrationController(internalApiClient.Object, httpContextAccessor, logger.Object, mapper.Object);
+            var administrationController = new AdministrationController(internalApiClient.Object, logger.Object, mapper.Object);
 
             return administrationController;
         }
         
         [Fact]
-        public async Task TestingIndexAction_ShouldPass()
+        public void TestingIndexAction_ShouldPass()
         {
             var administrationController = SetupController();
 
-            var result = await administrationController.Index();
+            var result = administrationController.Index();
 
             Assert.IsType<ViewResult>(result);
         }

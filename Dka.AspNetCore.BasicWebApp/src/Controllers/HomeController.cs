@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ExceptionProcessing;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Logging;
 using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
@@ -17,17 +18,14 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
         private readonly IInternalApiClient _internalApiClient;
         
         private readonly ILogger<HomeController> _logger;
-
-        private readonly HttpContext _httpContext;        
         
-        public HomeController(IInternalApiClient internalApiClient, IHttpContextAccessor httpContextAccessor, ILogger<HomeController> logger)
+        public HomeController(IInternalApiClient internalApiClient, ILogger<HomeController> logger)
         {
             _internalApiClient = internalApiClient;
-            _httpContext = httpContextAccessor.HttpContext;
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             try
             {
@@ -36,7 +34,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
             catch (BasicWebAppException ex)
             {
                 // Logging exception and showing UI message to the user.
-                ExceptionProcessor.Process(_logger, _httpContext, ex);
+                ExceptionProcessor.Process(LoggingEvents.ReadItemsFailed, _logger, HttpContext, ex);
             }
             
             return View();
