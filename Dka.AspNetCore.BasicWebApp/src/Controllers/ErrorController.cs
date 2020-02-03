@@ -25,40 +25,17 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
             _logger = logger;
             _mapper = mapper;
         }
-        
-        public IActionResult Index()
+
+        [Route("Error/{errorCode}")]
+        public IActionResult ErrorWithCode(int errorCode)
         {
             var statusCodeException = new WebAppStatusCodeException(HttpContext);
             var errorVm = _mapper.Map<ErrorViewModel>(statusCodeException);
-            ExceptionProcessor.ProcessError(LoggingEvents.ApplicationFailed, _logger, HttpContext, statusCodeException, statusCodeException.Path, "Status code: 500");
+            var eventCode = int.Parse($"{errorCode}{LoggingEventPostfixes.Application}");
+            
+            ExceptionProcessor.ProcessWarning(eventCode, _logger, HttpContext, statusCodeException, statusCodeException.Path, $"Status code: {errorCode}");
             
             return View(errorVm);
         }
-        
-        [Route("Error/500")]
-        public IActionResult Error500()
-        {
-            var statusCodeException = new WebAppStatusCodeException(HttpContext);
-            var errorVm = _mapper.Map<ErrorViewModel>(statusCodeException);
-            ExceptionProcessor.ProcessError(LoggingEvents.ApplicationFailed, _logger, HttpContext, statusCodeException, statusCodeException.Path, "Status code: 500");
-            
-            return View(errorVm);
-        }
-        
-        [Route("Error/404")]
-        public IActionResult Error404()
-        {
-            var statusCodeException = new WebAppStatusCodeException(HttpContext);
-            var errorVm = _mapper.Map<ErrorViewModel>(statusCodeException);
-            ExceptionProcessor.ProcessWarning(LoggingEvents.ApplicationNotFound, _logger, HttpContext, statusCodeException, statusCodeException.Path, "Status code: 404");
-            
-            return View(errorVm);
-        }
-        
-        [Route("Error/403")]
-        public IActionResult Error403()
-        {
-            return Ok();
-        }        
     }
 }

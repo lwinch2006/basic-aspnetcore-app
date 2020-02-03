@@ -36,11 +36,14 @@ namespace Dka.AspNetCore.BasicWebApp.Models.ExceptionProcessing
             RequestId = httpContext.TraceIdentifier;
             TraceId = (Activity.Current?.Id ?? string.Empty).TrimStart('|').TrimEnd('.');
             
-            var exceptionHandlerPathFeature = httpContext.Features.Get<IExceptionHandlerPathFeature>();
+            var statusCodeReExecuteFeature = httpContext.Features.Get<IStatusCodeReExecuteFeature>();
 
-            if (exceptionHandlerPathFeature != null)
+            if (statusCodeReExecuteFeature != null)
             {
-                Path = exceptionHandlerPathFeature.Path;
+                Path =
+                    statusCodeReExecuteFeature.OriginalPathBase
+                    + statusCodeReExecuteFeature.OriginalPath
+                    + statusCodeReExecuteFeature.OriginalQueryString;
             }
         }
 

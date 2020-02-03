@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Common.Logic;
 using Dka.AspNetCore.BasicWebApp.Common.Logic.Authentication;
@@ -64,6 +65,11 @@ namespace Dka.AspNetCore.BasicWebApp
                     options.LoginPath = AuthenticationDefaults.LoginUrl;
                     options.LogoutPath = AuthenticationDefaults.LogoutUrl;
                     options.ReturnUrlParameter = AuthenticationDefaults.ReturnUrlParameter;
+                    options.Events.OnRedirectToAccessDenied = context => {
+                        context.Response.StatusCode = 403;
+                        
+                        return Task.CompletedTask;
+                    };
                 });
 
             services.AddAuthorization();
@@ -93,8 +99,7 @@ namespace Dka.AspNetCore.BasicWebApp
             
             if (hostEnvironment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Error/500");
-                //app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();
             }
             else
             {

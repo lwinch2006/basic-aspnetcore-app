@@ -19,7 +19,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ExceptionProcessing
             var httpContext = new DefaultHttpContext();
             var apiConnectionException = new ApiConnectionException("Hello World!!!");
             
-            ExceptionProcessor.Process(LoggingEvents.ReadItemsFailed, logger.Object, httpContext, apiConnectionException);
+            ExceptionProcessor.ProcessError(LoggingEvents.ReadItemsFailed, logger.Object, httpContext, apiConnectionException);
             
             Assert.Equal(UserFriendlyErrorMessageConstants.ApiConnectionException, httpContext.Items[ToastrConstants.Message]);
         }
@@ -31,7 +31,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ExceptionProcessing
             var httpContext = new DefaultHttpContext();
             var apiStatusCodeException = new ApiStatusCodeException("Hello World!!!");
             
-            ExceptionProcessor.Process(LoggingEvents.ReadItemsFailed, logger.Object, httpContext, apiStatusCodeException);
+            ExceptionProcessor.ProcessError(LoggingEvents.ReadItemsFailed, logger.Object, httpContext, apiStatusCodeException);
             
             Assert.Equal(UserFriendlyErrorMessageConstants.ApiStatusCodeException, httpContext.Items[ToastrConstants.Message]);
         }        
@@ -43,7 +43,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ExceptionProcessing
             var httpContext = new DefaultHttpContext();
             var basicWebAppException = new BasicWebAppException("Hello World!!!");
             
-            ExceptionProcessor.Process(LoggingEvents.ReadItemsFailed, logger.Object, httpContext, basicWebAppException);
+            ExceptionProcessor.ProcessError(LoggingEvents.ReadItemsFailed, logger.Object, httpContext, basicWebAppException);
             
             Assert.Equal(UserFriendlyErrorMessageConstants.GeneralException, httpContext.Items[ToastrConstants.Message]);
         } 

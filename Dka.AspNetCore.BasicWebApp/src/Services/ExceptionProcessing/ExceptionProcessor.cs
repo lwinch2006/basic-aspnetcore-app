@@ -22,19 +22,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ExceptionProcessing
         public static void Process(LoggingLevelTypes errorLevel, EventId eventId, ILogger logger, Microsoft.AspNetCore.Http.HttpContext httpContext, Exception exception, params object[] parameters)
         {
             // Logging.
-            var messageTemplate = "{Message}";
-
-            if (parameters?.Length > 0)
-            {
-                messageTemplate = "{Message}. Parameters(";
-                
-                for (var i = 0; i < parameters.Length - 1; i++)
-                {
-                    messageTemplate += $"p{i + 1}={{p{i + 1}}}, ";
-                }
-
-                messageTemplate += $"p{parameters.Length}={{p{parameters.Length}}})";
-            }
+            var messageTemplate = "{Message}. Parameters({parameters})";
 
             switch (errorLevel)
             {
