@@ -211,7 +211,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         {
             var tenantController = SetupTenantController();
             
-            var result = await tenantController.EditTenant(new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), new TenantContract { Name = "Test Company", Alias = "test-company", Guid = new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47C2D6") });
+            var result = await tenantController.EditTenant(new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), new EditTenantContract { Name = "Test Company", Alias = "test-company" });
 
             var apiResult = Assert.IsType<BadRequestObjectResult>(result);
             
@@ -233,7 +233,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         public async Task EditTenant_PassValidTenantAndGuid_ReturnsNoContent_ShouldPass()
         {
             var tenantController = SetupTenantController();
-            var result = await tenantController.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new TenantContract { Name = "Umbrella Corporation1", Alias = "umbrella1", Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C") });
+            var result = await tenantController.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantContract { Name = "Umbrella Corporation1", Alias = "umbrella1" });
             
             var apiResult = Assert.IsType<NoContentResult>(result);
             
@@ -244,7 +244,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         public async Task EditTenant_PassValidTenantAndGuid_ThrowsException_ReturnsNotFound_ShouldPass()
         {
             var tenantController = SetupTenantController();
-            var result = await tenantController.EditTenant(new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), new TenantContract { Name = "Umbrella Corporation1", Alias = "umbrella1", Guid = new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF") });
+            var result = await tenantController.EditTenant(new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), new EditTenantContract { Name = "Umbrella Corporation1", Alias = "umbrella1" });
             var apiResult = Assert.IsType<NotFoundResult>(result);
             
             Assert.Equal(StatusCodes.Status404NotFound, apiResult.StatusCode);
@@ -254,7 +254,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         public async Task EditTenant_PassValidTenantAndGuid_ThrowsException_ReturnsInternalServerError_ShouldPass()
         {
             var tenantController = SetupTenantController();
-            var result = await tenantController.EditTenant(new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95"), new TenantContract { Name = "Cyberdyne Systems1", Alias = "cyberdyne1", Guid = new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95") });
+            var result = await tenantController.EditTenant(new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95"), new EditTenantContract { Name = "Cyberdyne Systems1", Alias = "cyberdyne1" });
             var apiResult = Assert.IsType<StatusCodeResult>(result);
             
             Assert.Equal(StatusCodes.Status500InternalServerError, apiResult.StatusCode);

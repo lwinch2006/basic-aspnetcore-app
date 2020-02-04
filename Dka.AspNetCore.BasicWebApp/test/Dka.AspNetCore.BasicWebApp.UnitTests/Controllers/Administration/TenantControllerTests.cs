@@ -97,7 +97,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
                 return Task.CompletedTask;
             });
 
-            internalApiClient.Setup(client => client.EditTenant(It.IsAny<Guid>(), It.IsAny<TenantContract>())).Returns<Guid, TenantContract>((tenantGuid, tenantToEdit) =>
+            internalApiClient.Setup(client => client.EditTenant(It.IsAny<Guid>(), It.IsAny<EditTenantContract>())).Returns<Guid, EditTenantContract>((tenantGuid, tenantToEdit) =>
             {
                 var tenants = Tenant.GetDummyTenantSet().GetAwaiter().GetResult().ToList();
 
@@ -125,7 +125,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
             internalApiClient.Setup(client => client.GetTenantByGuid(It.IsAny<Guid>())).Returns(() => throw new BasicWebAppException());
             internalApiClient.Setup(client => client.CreateNewTenant(It.IsAny<NewTenantContract>())).Returns<NewTenantContract>(newTenant => throw new BasicWebAppException());
             internalApiClient.Setup(client => client.DeleteTenant(It.IsAny<Guid>())).Returns<Guid>(tenantGuid => throw new BasicWebAppException());
-            internalApiClient.Setup(client => client.EditTenant(It.IsAny<Guid>(), It.IsAny<TenantContract>())).Returns<Guid, TenantContract>((tenantGuid, tenantToEdit) => throw new BasicWebAppException());
+            internalApiClient.Setup(client => client.EditTenant(It.IsAny<Guid>(), It.IsAny<EditTenantContract>())).Returns<Guid, EditTenantContract>((tenantGuid, tenantToEdit) => throw new BasicWebAppException());
             
             var tenantController = new TenantsController(internalApiClient.Object, logger.Object, mapper);
 
@@ -285,16 +285,15 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
         {
             var tenantController = SetupController();
 
-            var result = await tenantController.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new BasicWebApp.ViewModels.Tenants.TenantViewModel
+            var result = await tenantController.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantViewModel
             {
                 Name = "Test tenant 1",
-                Alias = "test-tenant-1",
-                Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF")
+                Alias = "test-tenant-1"
             });
 
             var viewResult = Assert.IsType<ViewResult>(result);
             
-            Assert.Equal("Test tenant 1", ((BasicWebApp.ViewModels.Tenants.TenantViewModel)viewResult.Model).Name);
+            Assert.Equal("Test tenant 1", ((TenantViewModel)viewResult.Model).Name);
         }
 
         [Fact]
@@ -302,11 +301,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
         {
             var tenantController = SetupController();
 
-            var result = await tenantController.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new BasicWebApp.ViewModels.Tenants.TenantViewModel
+            var result = await tenantController.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantViewModel
             {
                 Name = "Test tenant 1",
-                Alias = "test-tenant-1",
-                Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")
+                Alias = "test-tenant-1"
             });
 
             var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
@@ -321,16 +319,15 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
 
             tenantController.ModelState.AddModelError("Sample key", "Sample error message");
             
-            var result = await tenantController.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new BasicWebApp.ViewModels.Tenants.TenantViewModel
+            var result = await tenantController.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantViewModel
             {
                 Name = "Test tenant 1",
-                Alias = "test-tenant-1",
-                Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")
+                Alias = "test-tenant-1"
             });
 
             var viewResult = Assert.IsType<ViewResult>(result);
             
-            Assert.Equal("Test tenant 1", ((BasicWebApp.ViewModels.Tenants.TenantViewModel)viewResult.Model).Name);
+            Assert.Equal("Test tenant 1", ((TenantViewModel)viewResult.Model).Name);
         }
 
         [Fact]
@@ -338,15 +335,14 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
         {
             var tenantController = SetupControllerWithThrowingException();
 
-            var result = await tenantController.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new BasicWebApp.ViewModels.Tenants.TenantViewModel
+            var result = await tenantController.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantViewModel
             {
                 Name = "Test tenant 1",
-                Alias = "test-tenant-1",
-                Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")
+                Alias = "test-tenant-1"
             });
 
             var viewResult = Assert.IsType<ViewResult>(result);
-            var model = (BasicWebApp.ViewModels.Tenants.TenantViewModel) viewResult.Model;
+            var model = (TenantViewModel) viewResult.Model;
             
             Assert.Equal("Test tenant 1", model.Name);            
         }
@@ -411,16 +407,15 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
         {
             var tenantController = SetupController();
 
-            var result = await tenantController.EditTenantDetails(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new BasicWebApp.ViewModels.Tenants.TenantViewModel
+            var result = await tenantController.EditTenantDetails(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantViewModel
             {
                 Name = "Test tenant 1",
-                Alias = "test-tenant-1",
-                Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF")
+                Alias = "test-tenant-1"
             });
 
             var viewResult = Assert.IsType<ViewResult>(result);
             
-            Assert.Equal("Test tenant 1", ((BasicWebApp.ViewModels.Tenants.TenantViewModel)viewResult.Model).Name);
+            Assert.Equal("Test tenant 1", ((TenantViewModel)viewResult.Model).Name);
         }        
         
         [Fact]
@@ -428,11 +423,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
         {
             var tenantController = SetupController();
 
-            var result = await tenantController.EditTenantDetails(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new BasicWebApp.ViewModels.Tenants.TenantViewModel
+            var result = await tenantController.EditTenantDetails(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantViewModel
             {
                 Name = "Test tenant 1",
-                Alias = "test-tenant-1",
-                Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")
+                Alias = "test-tenant-1"
             });
 
             var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
@@ -447,38 +441,30 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
 
             tenantController.ModelState.AddModelError("Sample key", "Sample error message");
             
-            var result = await tenantController.EditTenantDetails(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new BasicWebApp.ViewModels.Tenants.TenantViewModel
+            var result = await tenantController.EditTenantDetails(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantViewModel
             {
                 Name = "Test tenant 1",
-                Alias = "test-tenant-1",
-                Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")
+                Alias = "test-tenant-1"
             });
 
             var viewResult = Assert.IsType<ViewResult>(result);
             
-            Assert.Equal("Test tenant 1", ((BasicWebApp.ViewModels.Tenants.TenantViewModel)viewResult.Model).Name);
+            Assert.Equal("Test tenant 1", ((TenantViewModel)viewResult.Model).Name);
         }
-        
-        
-        
-        
-        
-        
         
         [Fact]
         public async Task TestingEditAction_PostingForm_GuidsAreEqual_ThrowsException_ReturnsBackToView_ShouldPass()
         {
             var tenantController = SetupControllerWithThrowingException();
 
-            var result = await tenantController.EditTenantDetails(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new BasicWebApp.ViewModels.Tenants.TenantViewModel
+            var result = await tenantController.EditTenantDetails(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantViewModel
             {
                 Name = "Test tenant 1",
-                Alias = "test-tenant-1",
-                Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")
+                Alias = "test-tenant-1"
             });
 
             var viewResult = Assert.IsType<ViewResult>(result);
-            var model = (BasicWebApp.ViewModels.Tenants.TenantViewModel) viewResult.Model;
+            var model = (TenantViewModel) viewResult.Model;
             
             Assert.Equal("Test tenant 1", model.Name);            
         }
@@ -490,11 +476,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
 
             try
             {
-                await tenantController.EditTenantDetails(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new BasicWebApp.ViewModels.Tenants.TenantViewModel
+                await tenantController.EditTenantDetails(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantViewModel
                 {
                     Name = "Test tenant 1",
-                    Alias = "test-tenant-1",
-                    Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")
+                    Alias = "test-tenant-1"
                 });
             }
             catch (NullReferenceException)
@@ -510,11 +495,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
 
             try
             {
-                await tenantController.EditTenantDetails(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new BasicWebApp.ViewModels.Tenants.TenantViewModel
+                await tenantController.EditTenantDetails(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantViewModel
                 {
                     Name = "Test tenant 1",
-                    Alias = "test-tenant-1",
-                    Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")
+                    Alias = "test-tenant-1"
                 });
             }
             catch (NullReferenceException)
@@ -522,7 +506,5 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
                 Assert.True(true, "NullReferenceException is thrown for mapper instance. This behaviour is legal");
             }
         }        
-        
-        
     }
 }

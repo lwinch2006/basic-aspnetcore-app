@@ -95,32 +95,26 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Update)]
         [HttpPut("{guid}")]
         [ActionName("edit")]
-        public async Task<IActionResult> EditTenant(Guid guid, [FromBody] TenantContract tenantToEditContract)
+        public async Task<IActionResult> EditTenant(Guid guid, [FromBody] EditTenantContract editTenantContract)
         {
-            if (guid != tenantToEditContract?.Guid)
-            {
-                _logger.LogWarning(LoggingEvents.UpdateItemBadData, "Different tenant update attempt.");
-                return BadRequest(tenantToEditContract);
-            }             
-            
             try
             {
+                var tenantToEdit = await _tenantLogic.GetByGuid(guid);
+
+                if (tenantToEdit == null)
+                {
+                    _logger.LogWarning(LoggingEvents.UpdateItemNotFound, "Tenant with GUID {guid} for updating not found.", guid);
+                    return NotFound();
+                }                
+                
                 _logger.LogInformation(LoggingEvents.UpdateItem, "Updating tenant with GUID {guid}.", guid);
                 
-                var tenantToEdit = _mapper.Map<Tenant>(tenantToEditContract);
+                _mapper.Map(editTenantContract, tenantToEdit);
                 await _tenantLogic.EditTenant(tenantToEdit);
                 return NoContent();
             }
             catch (BasicWebAppException ex)
             {
-                var tenant = await _tenantLogic.GetByGuid(guid);
-
-                if (tenant == null)
-                {
-                    _logger.LogWarning(LoggingEvents.UpdateItemNotFound, ex, "Tenant with GUID {guid} for updating not found.", guid);
-                    return NotFound();
-                }
-                
                 ExceptionProcessor.Process(LoggingEvents.UpdateItemFailed, _logger, ex, guid);
             }
             

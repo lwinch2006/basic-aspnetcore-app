@@ -92,18 +92,18 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         [ValidateAntiForgeryToken]
         [HttpPost]
         [ActionName("new")]
-        public async Task<IActionResult> CreateNewTenant([Bind("Alias", "Name")] ViewModels.Tenants.NewTenantViewModel newTenant)
+        public async Task<IActionResult> CreateNewTenant([Bind("Alias", "Name")] NewTenantViewModel newTenantViewModel)
         {
-            if (!ModelState.IsValid || newTenant == null)
+            if (!ModelState.IsValid || newTenantViewModel == null)
             {
                 _logger.LogWarning(LoggingEvents.CreateItemBadData, "Empty tenant cannot be created. {ErrorMessages}", ModelState.GetModelStateErrorMessages());
                 
-                return View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenant);
+                return View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenantViewModel);
             }
 
             try
             {
-                var newTenantApiContract = _mapper.Map<NewTenantContract>(newTenant);
+                var newTenantApiContract = _mapper.Map<NewTenantContract>(newTenantViewModel);
 
                 var newTenantGuid = await _internalApiClient.CreateNewTenant(newTenantApiContract);
 
@@ -111,10 +111,10 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.ProcessError(LoggingEvents.CreateItemFailed, _logger, HttpContext, ex, newTenant.Name);
+                ExceptionProcessor.ProcessError(LoggingEvents.CreateItemFailed, _logger, HttpContext, ex, newTenantViewModel.Name);
             }
 
-            return View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenant);
+            return View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenantViewModel);
         }
         
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Update)]
@@ -122,40 +122,39 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         [ActionName("edit")]
         public async Task<IActionResult> EditTenantDetails([FromRoute]Guid guid)
         {
-            ViewModels.Tenants.TenantViewModel tenantVm = null;
+            EditTenantViewModel editTenantViewModel = null;
 
             try
             {
-                var tenantBo = await _internalApiClient.GetTenantByGuid(guid);
-                
-                tenantVm = _mapper.Map<ViewModels.Tenants.TenantViewModel>(tenantBo);
+                var tenant = await _internalApiClient.GetTenantByGuid(guid);
+                editTenantViewModel = _mapper.Map<EditTenantViewModel>(tenant);
             }
             catch (BasicWebAppException ex)
             {
                 ExceptionProcessor.ProcessError(LoggingEvents.UpdateItemFailed, _logger, HttpContext, ex, guid);
             }
 
-            return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantVm);
+            return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", editTenantViewModel);
         }
 
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Update)]
         [ValidateAntiForgeryToken]
         [HttpPost("{guid}")]
         [ActionName("edit")]
-        public async Task<IActionResult> EditTenantDetails([FromRoute] Guid guid, [Bind("Alias", "Name", "Guid")] ViewModels.Tenants.TenantViewModel tenantToEditVm)
+        public async Task<IActionResult> EditTenantDetails([FromRoute] Guid guid, EditTenantViewModel editTenantViewModel)
         {
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning(LoggingEvents.UpdateItemBadData, "Edit tenant model is not valid. {ErrorMessages}", ModelState.GetModelStateErrorMessages());
                 
-                return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToEditVm);
+                return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", editTenantViewModel);
             }            
             
             try
             {
-                var tenantToEditApiContract = _mapper.Map<TenantContract>(tenantToEditVm);
+                var editTenantContract = _mapper.Map<EditTenantContract>(editTenantViewModel);
                 
-                await _internalApiClient.EditTenant(guid, tenantToEditApiContract);
+                await _internalApiClient.EditTenant(guid, editTenantContract);
 
                 return RedirectToAction("index");
             }
@@ -164,25 +163,25 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
                 ExceptionProcessor.ProcessError(LoggingEvents.UpdateItemFailed, _logger, HttpContext, ex, guid);
             }
 
-            return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToEditVm);
+            return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", editTenantViewModel);
         }
 
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Delete)]
         [ValidateAntiForgeryToken]
         [HttpPost("{guid}")]
         [ActionName("delete")]
-        public async Task<IActionResult> DeleteTenant([FromRoute]Guid guid, [Bind("Alias", "Name", "Guid")] ViewModels.Tenants.TenantViewModel tenantToDeleteVm)
+        public async Task<IActionResult> DeleteTenant(Guid guid, EditTenantViewModel editTenantViewModel)
         {
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning(LoggingEvents.DeleteItemBadData, "Delete tenant model is not valid. {ErrorMessages}", ModelState.GetModelStateErrorMessages());
                 
-                return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToDeleteVm);
+                return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", editTenantViewModel);
             }
             
             try
             {
-                await _internalApiClient.DeleteTenant(tenantToDeleteVm.Guid);
+                await _internalApiClient.DeleteTenant(guid);
 
                 return RedirectToAction("index");
             }
@@ -191,7 +190,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
                 ExceptionProcessor.ProcessError(LoggingEvents.DeleteItemFailed, _logger, HttpContext, ex, guid);
             }
             
-            return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", tenantToDeleteVm);
+            return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", editTenantViewModel);
         }
     }
 }

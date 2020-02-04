@@ -527,11 +527,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
         {
             var internalApiClient = SetupInternalApiClient();
 
-            await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new TenantContract
+            await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantContract
             {
                 Name = "Test company 1",
-                Alias = "test-company-1",
-                Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")
+                Alias = "test-company-1"
             });
             
             Assert.True(true, "If test completed without exception it means test passed successfully.");
@@ -562,11 +561,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             {
                 var internalApiClient = SetupInternalApiClientWithInternalServerErrorException();
 
-                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new TenantContract
+                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantContract
                 {
                     Name = "Test company 1",
-                    Alias = "test-company-1",
-                    Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")
+                    Alias = "test-company-1"
                 });
             }
             catch (ApiStatusCodeException)
@@ -585,11 +583,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             {
                 var internalApiClient = SetupInternalApiClientWithNullResponse();
 
-                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new TenantContract
+                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantContract
                 {
                     Name = "Test company 1",
-                    Alias = "test-company-1",
-                    Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")
+                    Alias = "test-company-1"
                 });
             }
             catch (ApiConnectionException)
@@ -608,11 +605,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             {
                 var internalApiClient = SetupInternalApiClientWithGeneralException();
 
-                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new TenantContract
+                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantContract
                 {
                     Name = "Test company 1",
-                    Alias = "test-company-1",
-                    Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")
+                    Alias = "test-company-1"
                 });
             }
             catch (ApiConnectionException)
@@ -631,11 +627,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             {
                 var internalApiClient = SetupInternalApiClientWithHttpRequestException();
 
-                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new TenantContract
+                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantContract
                 {
                     Name = "Test company 1",
-                    Alias = "test-company-1",
-                    Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")
+                    Alias = "test-company-1"
                 });
             }
             catch (ApiConnectionException)

@@ -4,7 +4,7 @@
 @using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService AuthorizationService;
 
-@model Dka.AspNetCore.BasicWebApp.ViewModels.Tenants.TenantViewModel
+@model Dka.AspNetCore.BasicWebApp.ViewModels.Tenants.EditTenantViewModel
 @{
     ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "Edit tenant details";
     ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "Edit tenant details";
@@ -16,25 +16,24 @@
         <div class="row">
             <div class="col-sm-12 text-sm-center">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                <input type="hidden" asp-for="Guid"/>
             </div>
         </div>
         <div class="row mb-3">
             <div class="col-sm-6 text-sm-right">
-                <label asp-for="Alias" class="font-weight-bold"></label>
+                <label asp-for="@Model.Alias" class="font-weight-bold"></label>
             </div>
             <div class="col-sm-6">
-                <input asp-for="Alias" class="form-control"/>
-                <span asp-validation-for="Alias" class="text-danger"></span>
+                <input asp-for="@Model.Alias" class="form-control"/>
+                <span asp-validation-for="@Model.Alias" class="text-danger"></span>
             </div>
         </div>
         <div class="row mb-3">
             <div class="col-sm-6 text-sm-right">
-                <label asp-for="Name" class="font-weight-bold"></label>
+                <label asp-for="@Model.Name" class="font-weight-bold"></label>
             </div>
             <div class="col-sm-6">
-                <input asp-for="Name" class="form-control"/>
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <input asp-for="@Model.Name" class="form-control"/>
+                <span asp-validation-for="@Model.Name" class="text-danger"></span>
             </div>
         </div>
         <div class="row mb-3">
@@ -42,17 +41,17 @@
                 <div class="d-flex justify-content-sm-between">
                     <div></div>
                     <div>
-                        <a asp-controller="Tenants" asp-action="details" asp-route-guid="@Model.Guid" class="btn btn-outline-secondary dka-btn">Cancel</a>
+                        <a asp-controller="Tenants" asp-action="details" asp-route-guid="@ViewContext.RouteData.Values["guid"]" class="btn btn-outline-secondary dka-btn">Cancel</a>
 
                         @if ((await AuthorizationService.AuthorizeAsync(Context.User, Model, new DataOperationRequirement(nameof(Tenant), DataOperationNames.Update))).Succeeded)
                         {
-                            <button type="submit" asp-controller="Tenants" asp-action="edit" asp-route-guid="@Model.Guid" class="btn btn-outline-secondary dka-btn">Save</button>
+                            <button type="submit" asp-controller="Tenants" asp-action="edit" asp-route-guid="@ViewContext.RouteData.Values["guid"]" class="btn btn-outline-secondary dka-btn">Save</button>
                         }
                     </div>
 
                     @if ((await AuthorizationService.AuthorizeAsync(Context.User, Model, new DataOperationRequirement(nameof(Tenant), DataOperationNames.Delete))).Succeeded)
                     {
-                        <button type="submit" asp-controller="Tenants" asp-action="delete" asp-route-guid="@Model.Guid" class="btn btn-outline-danger dka-btn ml-auto ml-sm-0">Remove</button>
+                        <button type="submit" asp-controller="Tenants" asp-action="delete" asp-route-guid="@ViewContext.RouteData.Values["guid"]" class="btn btn-outline-danger dka-btn ml-auto ml-sm-0">Remove</button>
                     }
                 </div>
             </div>

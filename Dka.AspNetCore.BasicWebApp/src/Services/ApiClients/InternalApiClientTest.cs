@@ -62,12 +62,12 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             return Task.FromResult(true);
         }
 
-        public Task EditTenant(Guid guid, TenantContract tenantApiContract)
+        public Task EditTenant(Guid guid, EditTenantContract editTenantContract)
         {
             return Task.CompletedTask;
         }
 
-        public async Task<Guid> CreateNewTenant(NewTenantContract newTenantApiContract)
+        public async Task<Guid> CreateNewTenant(NewTenantContract newTenantContract)
         {
             return await Task.FromResult(new Guid("C78C30E4-620E-4E2C-8BAF-2A81BA8470A1"));
         }

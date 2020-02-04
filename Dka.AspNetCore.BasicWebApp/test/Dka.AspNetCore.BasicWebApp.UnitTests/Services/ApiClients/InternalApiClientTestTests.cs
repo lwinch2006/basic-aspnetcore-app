@@ -85,11 +85,10 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
         {
             var internalApiClientTest = SetupInternalApiClientTest();
 
-            var result = internalApiClientTest.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new TenantContract
+            var result = internalApiClientTest.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantContract
             {
                 Name = "Test company 1",
-                Alias = "test-company-1",
-                Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")
+                Alias = "test-company-1"
             });
 
             Assert.Equal(Task.CompletedTask, result);

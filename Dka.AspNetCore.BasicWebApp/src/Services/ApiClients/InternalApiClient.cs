@@ -86,13 +86,13 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             }
         }
         
-        public async Task<Guid> CreateNewTenant(NewTenantContract newTenantApiContract)
+        public async Task<Guid> CreateNewTenant(NewTenantContract newTenantContract)
         {
             HttpResponseMessage response = null;
             
             try
             {
-                var newTenantApiContractAsJson = JsonSerializer.Serialize(newTenantApiContract);
+                var newTenantApiContractAsJson = JsonSerializer.Serialize(newTenantContract);
                 
                 var newTenantApiContractAsContent = new StringContent(newTenantApiContractAsJson, Encoding.UTF8, "application/json");
                 
@@ -119,17 +119,17 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             }
         }
 
-        public async Task EditTenant(Guid guid, TenantContract tenantToEditApiContract)
+        public async Task EditTenant(Guid guid, EditTenantContract editTenantContract)
         {
             HttpResponseMessage response = null;
             
             try
             {
-                var tenantToEditApiContractAsJson = JsonSerializer.Serialize(tenantToEditApiContract);
+                var editTenantContractAsJson = JsonSerializer.Serialize(editTenantContract);
                 
-                var tenantToEditApiContractAsContent = new StringContent(tenantToEditApiContractAsJson, Encoding.UTF8, "application/json");
+                var editTenantContractAsContent = new StringContent(editTenantContractAsJson, Encoding.UTF8, "application/json");
 
-                response = await _httpClient.PutAsync($"/Administration/Tenants/edit/{guid}", tenantToEditApiContractAsContent);
+                response = await _httpClient.PutAsync($"/Administration/Tenants/edit/{guid}", editTenantContractAsContent);
 
                 response.EnsureSuccessStatusCode();
             }

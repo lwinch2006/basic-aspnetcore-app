@@ -21,9 +21,9 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 
         Task<bool> CheckApiLiveStatus();
 
-        Task EditTenant(Guid guid, TenantContract tenantApiContract);
+        Task EditTenant(Guid guid, EditTenantContract editTenantContract);
 
-        Task<Guid> CreateNewTenant(NewTenantContract newTenantApiContract);
+        Task<Guid> CreateNewTenant(NewTenantContract newTenantContract);
 
         Task DeleteTenant(Guid guid);
 
