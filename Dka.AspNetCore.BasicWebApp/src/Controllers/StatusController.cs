@@ -23,9 +23,6 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
         
         public async Task<IActionResult> Index()
         {
-            throw new Exception("This is test exception");
-            
-            
             var apiLiveStatusResult = await _internalApiClient.CheckApiLiveStatus();
 
             ViewData[ViewDataKeys.ApiLiveStatus] = apiLiveStatusResult;
