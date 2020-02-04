@@ -8,13 +8,13 @@ using Microsoft.Extensions.Logging;
 namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
 {
     [Route("Administration/[controller]/{action=Index}")]
-    public class UserController : Controller
+    public class UsersController : Controller
     {
         private readonly IMapper _mapper;
 
         private readonly ILogger<TenantsController> _logger;
 
-        public UserController(IMapper mapper, ILogger<TenantsController> logger)
+        public UsersController(IMapper mapper, ILogger<TenantsController> logger)
         {
             _mapper = mapper;
             _logger = logger;

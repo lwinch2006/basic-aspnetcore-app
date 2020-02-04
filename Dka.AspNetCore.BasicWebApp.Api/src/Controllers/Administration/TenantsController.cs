@@ -1,8 +1,11 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Api.Services.ExceptionProcessing;
 using Dka.AspNetCore.BasicWebApp.Common.Logic;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Tenants;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ExceptionProcessing;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Logging;
@@ -37,7 +40,9 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
             _logger.LogInformation(LoggingEvents.ReadItems, "Getting all tenants.");
             
             var tenants = await _tenantLogic.GetAll();
-            return Ok(tenants);
+            var tenantsContract = _mapper.Map<IEnumerable<TenantContract>>(tenants);
+            
+            return Ok(tenantsContract);
         }
 
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Read)]
@@ -55,15 +60,17 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
                 return NotFound();
             }
             
-            return Ok(tenant);
+            var tenantContract = _mapper.Map<TenantContract>(tenant);
+            
+            return Ok(tenantContract);
         }
 
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Create)]
         [HttpPost]
         [ActionName("new")]
-        public async Task<IActionResult> CreateNewTenant([FromBody] Common.Models.ApiContracts.NewTenant newTenantApiContract)
+        public async Task<IActionResult> CreateNewTenant([FromBody] NewTenantContract newTenantContract)
         {
-            if (newTenantApiContract == null)
+            if (newTenantContract == null)
             {
                 _logger.LogWarning(LoggingEvents.CreateItemBadData, "Empty tenant cannot be created.");
                 return BadRequest();
@@ -71,15 +78,15 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
             
             try
             {
-                _logger.LogInformation(LoggingEvents.CreateItem, "Creating new tenant with name {Name}.", newTenantApiContract.Name);
+                _logger.LogInformation(LoggingEvents.CreateItem, "Creating new tenant with name {Name}.", newTenantContract.Name);
 
-                var newTenantBo = _mapper.Map<Tenant>(newTenantApiContract);
-                newTenantBo.Guid = await _tenantLogic.CreateNewTenant(newTenantBo);
-                return Ok(newTenantBo.Guid);
+                var newTenant = _mapper.Map<Tenant>(newTenantContract);
+                newTenant.Guid = await _tenantLogic.CreateNewTenant(newTenant);
+                return Ok(newTenant.Guid);
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.Process(LoggingEvents.CreateItemFailed, _logger, ex, newTenantApiContract.Name);
+                ExceptionProcessor.Process(LoggingEvents.CreateItemFailed, _logger, ex, newTenantContract.Name);
             }
 
             return StatusCode(StatusCodes.Status500InternalServerError);
@@ -88,20 +95,20 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Update)]
         [HttpPut("{guid}")]
         [ActionName("edit")]
-        public async Task<IActionResult> EditTenant(Guid guid, [FromBody] Common.Models.ApiContracts.Tenant tenantToEditApiContract)
+        public async Task<IActionResult> EditTenant(Guid guid, [FromBody] TenantContract tenantToEditContract)
         {
-            if (guid != tenantToEditApiContract?.Guid)
+            if (guid != tenantToEditContract?.Guid)
             {
                 _logger.LogWarning(LoggingEvents.UpdateItemBadData, "Different tenant update attempt.");
-                return BadRequest(tenantToEditApiContract);
+                return BadRequest(tenantToEditContract);
             }             
             
             try
             {
                 _logger.LogInformation(LoggingEvents.UpdateItem, "Updating tenant with GUID {guid}.", guid);
                 
-                var tenantToEditBo = _mapper.Map<Tenant>(tenantToEditApiContract);
-                await _tenantLogic.EditTenant(tenantToEditBo);
+                var tenantToEdit = _mapper.Map<Tenant>(tenantToEditContract);
+                await _tenantLogic.EditTenant(tenantToEdit);
                 return NoContent();
             }
             catch (BasicWebAppException ex)
@@ -129,16 +136,16 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
             
             try
             {
-                var tenantToDeleteBo = await _tenantLogic.GetByGuid(guid);
+                var tenantToDelete = await _tenantLogic.GetByGuid(guid);
 
-                if (tenantToDeleteBo == null)
+                if (tenantToDelete == null)
                 {
                     _logger.LogWarning(LoggingEvents.UpdateItemNotFound, "Tenant with GUID {guid} for deleting not found.", guid);
                     return NotFound();
                 }
                 
-                await _tenantLogic.DeleteTenant(tenantToDeleteBo.Guid);
-                return Ok(tenantToDeleteBo);
+                await _tenantLogic.DeleteTenant(tenantToDelete.Guid);
+                return Ok(tenantToDelete);
             }
             catch (BasicWebAppException ex)
             {

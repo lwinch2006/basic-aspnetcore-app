@@ -1,10 +1,11 @@
 @using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization
 @using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants
+@using Dka.AspNetCore.BasicWebApp.ViewModels.Tenants
 @using Dka.AspNetCore.BasicWebApp.Models.Constants
 @using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService AuthorizationService;
 
-@model IEnumerable<Tenant>
+@model IEnumerable<TenantViewModel>
 @{
     ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "Tenant list";
     ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "Tenant list";

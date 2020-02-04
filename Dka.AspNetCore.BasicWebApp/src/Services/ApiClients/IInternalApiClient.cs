@@ -2,15 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication;
-using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Tenants;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Users;
 
 namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 {
     public interface IInternalApiClient
     {
-        Task<IEnumerable<Tenant>> GetTenants();
+        Task<IEnumerable<TenantContract>> GetTenants();
         
-        Task<Tenant> GetTenantByGuid(Guid guid);
+        Task<IEnumerable<ApplicationUserContract>> GetApplicationUsers();
+
+        Task<TenantContract> GetTenantByGuid(Guid guid);
 
         Task<bool> CheckApiOverallStatus();
 
@@ -18,9 +21,9 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 
         Task<bool> CheckApiLiveStatus();
 
-        Task EditTenant(Guid guid, Common.Models.ApiContracts.Tenant tenantApiContract);
+        Task EditTenant(Guid guid, TenantContract tenantApiContract);
 
-        Task<Guid> CreateNewTenant(Common.Models.ApiContracts.NewTenant newTenantApiContract);
+        Task<Guid> CreateNewTenant(NewTenantContract newTenantApiContract);
 
         Task DeleteTenant(Guid guid);
 

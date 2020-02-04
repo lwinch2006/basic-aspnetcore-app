@@ -1,6 +1,6 @@
-namespace Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts
+namespace Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Tenants
 {
-    public class NewTenant
+    public class NewTenantContract
     {
         public string Name { get; set; }
 

@@ -8,31 +8,31 @@ namespace Dka.AspNetCore.BasicWebApp.Models.AutoMapper
         public BasicWebAppProfile()
         {
             // Logic model -> API contract.
-            CreateMap<Common.Models.Tenants.Tenant, Common.Models.ApiContracts.Tenant>();
-            CreateMap<Common.Models.Tenants.Tenant, Common.Models.ApiContracts.NewTenant>();
+            CreateMap<Common.Models.Tenants.Tenant, Common.Models.ApiContracts.Tenants.TenantContract>();
+            CreateMap<Common.Models.Tenants.Tenant, Common.Models.ApiContracts.Tenants.NewTenantContract>();
             
             // Logic model -> ViewModel.
-            CreateMap<Common.Models.Tenants.Tenant, ViewModels.Tenants.Tenant>();
-            CreateMap<Common.Models.Tenants.Tenant, ViewModels.Tenants.NewTenant>();
+            CreateMap<Common.Models.Tenants.Tenant, ViewModels.Tenants.TenantViewModel>();
+            CreateMap<Common.Models.Tenants.Tenant, ViewModels.Tenants.NewTenantViewModel>();
             CreateMap<WebAppStatusCodeException, ViewModels.ExceptionProcessing.ErrorViewModel>();
             
             // API contract -> Logic model.
-            CreateMap<Common.Models.ApiContracts.Tenant, Common.Models.Tenants.Tenant>();
-            CreateMap<Common.Models.ApiContracts.NewTenant, Common.Models.Tenants.Tenant>();
+            CreateMap<Common.Models.ApiContracts.Tenants.TenantContract, Common.Models.Tenants.Tenant>();
+            CreateMap<Common.Models.ApiContracts.Tenants.NewTenantContract, Common.Models.Tenants.Tenant>();
             
             // API contract -> ViewModel.
-            CreateMap<Common.Models.ApiContracts.Tenant, ViewModels.Tenants.Tenant>();
-            CreateMap<Common.Models.ApiContracts.NewTenant, ViewModels.Tenants.NewTenant>();
+            CreateMap<Common.Models.ApiContracts.Tenants.TenantContract, ViewModels.Tenants.TenantViewModel>();
+            CreateMap<Common.Models.ApiContracts.Tenants.NewTenantContract, ViewModels.Tenants.NewTenantViewModel>();
             CreateMap<Common.Models.ApiContracts.Authentication.SignInRequestContract, ViewModels.Authentication.SignInViewModel>();
             
             // ViewModel -> API contract.
-            CreateMap<ViewModels.Tenants.Tenant, Common.Models.ApiContracts.Tenant>();
-            CreateMap<ViewModels.Tenants.NewTenant, Common.Models.ApiContracts.NewTenant>();
+            CreateMap<ViewModels.Tenants.TenantViewModel, Common.Models.ApiContracts.Tenants.TenantContract>();
+            CreateMap<ViewModels.Tenants.NewTenantViewModel, Common.Models.ApiContracts.Tenants.NewTenantContract>();
             CreateMap<ViewModels.Authentication.SignInViewModel, Common.Models.ApiContracts.Authentication.SignInRequestContract>();
             
             // ViewModel -> Logic model.
-            CreateMap<ViewModels.Tenants.Tenant, Common.Models.Tenants.Tenant>();
-            CreateMap<ViewModels.Tenants.NewTenant, Common.Models.Tenants.Tenant>();
+            CreateMap<ViewModels.Tenants.TenantViewModel, Common.Models.Tenants.Tenant>();
+            CreateMap<ViewModels.Tenants.NewTenantViewModel, Common.Models.Tenants.Tenant>();
             CreateMap<ViewModels.ExceptionProcessing.ErrorViewModel, WebAppStatusCodeException>();            
         }
     }

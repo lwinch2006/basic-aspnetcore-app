@@ -1,4 +1,5 @@
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Tenants;
 using Xunit;
 
 namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests.ModelTests.ApiContractTests
@@ -8,7 +9,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests.ModelTests.ApiContractTest
         [Fact]
         public void TestingNewTenantApiContract_GettingSettingProperties_ShouldPass()
         {
-            var newTenantApiContract = new NewTenant
+            var newTenantApiContract = new NewTenantContract
             {
                 Name = "Test tenant",
                 Alias = "test-tenant"

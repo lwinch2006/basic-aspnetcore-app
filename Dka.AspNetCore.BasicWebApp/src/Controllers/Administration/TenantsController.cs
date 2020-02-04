@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ExceptionProcessing;
@@ -9,9 +10,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Tenants;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Logging;
 using Dka.AspNetCore.BasicWebApp.Services.ModelState;
+using Dka.AspNetCore.BasicWebApp.ViewModels.Tenants;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
@@ -40,18 +43,19 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         [ActionName("index")]
         public async Task<IActionResult> GetAll()
         {
-            var tenants = (IEnumerable<Tenant>)new List<Tenant>();
+            var tenantsViewModel = (IEnumerable<TenantViewModel>)new List<TenantViewModel>();
             
             try
             {
-                tenants = await _internalApiClient.GetTenants();
+                var tenantsContract = await _internalApiClient.GetTenants();
+                tenantsViewModel = _mapper.Map<IEnumerable<TenantViewModel>>(tenantsContract);
             }
             catch (BasicWebAppException ex)
             {
                 ExceptionProcessor.ProcessError(LoggingEvents.ReadItemsFailed, _logger, HttpContext, ex);
             }
 
-            return View("~/Views/Administration/Tenants/TenantList.cshtml", tenants);
+            return View("~/Views/Administration/Tenants/TenantList.cshtml", tenantsViewModel);
         }
 
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Read)]
@@ -59,20 +63,19 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         [ActionName("details")]
         public async Task<IActionResult> GetByGuid([FromRoute]Guid guid)
         {
-            ViewModels.Tenants.Tenant tenantVm = null;
+            TenantViewModel tenantViewModel = null;
 
             try
             {
-                var tenantBo = await _internalApiClient.GetTenantByGuid(guid);
-
-                tenantVm = _mapper.Map<ViewModels.Tenants.Tenant>(tenantBo);
+                var tenant = await _internalApiClient.GetTenantByGuid(guid);
+                tenantViewModel = _mapper.Map<TenantViewModel>(tenant);
             }
             catch (BasicWebAppException ex)
             {
                 ExceptionProcessor.ProcessError(LoggingEvents.ReadItemFailed, _logger, HttpContext, ex, guid);
             }
 
-            return View("~/Views/Administration/Tenants/TenantDetails.cshtml", tenantVm);
+            return View("~/Views/Administration/Tenants/TenantDetails.cshtml", tenantViewModel);
         }
 
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Create)]
@@ -80,7 +83,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         [ActionName("new")]
         public async Task<IActionResult> CreateNewTenant()
         {
-            var newTenant = new ViewModels.Tenants.NewTenant();
+            var newTenant = new ViewModels.Tenants.NewTenantViewModel();
 
             return await Task.FromResult(View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenant));
         }
@@ -89,7 +92,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         [ValidateAntiForgeryToken]
         [HttpPost]
         [ActionName("new")]
-        public async Task<IActionResult> CreateNewTenant([Bind("Alias", "Name")] ViewModels.Tenants.NewTenant newTenant)
+        public async Task<IActionResult> CreateNewTenant([Bind("Alias", "Name")] ViewModels.Tenants.NewTenantViewModel newTenant)
         {
             if (!ModelState.IsValid || newTenant == null)
             {
@@ -100,7 +103,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
 
             try
             {
-                var newTenantApiContract = _mapper.Map<Common.Models.ApiContracts.NewTenant>(newTenant);
+                var newTenantApiContract = _mapper.Map<NewTenantContract>(newTenant);
 
                 var newTenantGuid = await _internalApiClient.CreateNewTenant(newTenantApiContract);
 
@@ -119,13 +122,13 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         [ActionName("edit")]
         public async Task<IActionResult> EditTenantDetails([FromRoute]Guid guid)
         {
-            ViewModels.Tenants.Tenant tenantVm = null;
+            ViewModels.Tenants.TenantViewModel tenantVm = null;
 
             try
             {
                 var tenantBo = await _internalApiClient.GetTenantByGuid(guid);
                 
-                tenantVm = _mapper.Map<ViewModels.Tenants.Tenant>(tenantBo);
+                tenantVm = _mapper.Map<ViewModels.Tenants.TenantViewModel>(tenantBo);
             }
             catch (BasicWebAppException ex)
             {
@@ -139,7 +142,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         [ValidateAntiForgeryToken]
         [HttpPost("{guid}")]
         [ActionName("edit")]
-        public async Task<IActionResult> EditTenantDetails([FromRoute] Guid guid, [Bind("Alias", "Name", "Guid")] ViewModels.Tenants.Tenant tenantToEditVm)
+        public async Task<IActionResult> EditTenantDetails([FromRoute] Guid guid, [Bind("Alias", "Name", "Guid")] ViewModels.Tenants.TenantViewModel tenantToEditVm)
         {
             if (!ModelState.IsValid)
             {
@@ -150,7 +153,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
             
             try
             {
-                var tenantToEditApiContract = _mapper.Map<Common.Models.ApiContracts.Tenant>(tenantToEditVm);
+                var tenantToEditApiContract = _mapper.Map<TenantContract>(tenantToEditVm);
                 
                 await _internalApiClient.EditTenant(guid, tenantToEditApiContract);
 
@@ -168,7 +171,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         [ValidateAntiForgeryToken]
         [HttpPost("{guid}")]
         [ActionName("delete")]
-        public async Task<IActionResult> DeleteTenant([FromRoute]Guid guid, [Bind("Alias", "Name", "Guid")] ViewModels.Tenants.Tenant tenantToDeleteVm)
+        public async Task<IActionResult> DeleteTenant([FromRoute]Guid guid, [Bind("Alias", "Name", "Guid")] ViewModels.Tenants.TenantViewModel tenantToDeleteVm)
         {
             if (!ModelState.IsValid)
             {

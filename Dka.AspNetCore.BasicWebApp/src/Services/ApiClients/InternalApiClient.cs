@@ -5,14 +5,13 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Tenants;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Users;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-
-using Tenant = Dka.AspNetCore.BasicWebApp.Common.Models.Tenants.Tenant;
 
 namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 {
@@ -35,7 +34,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             }
         }
 
-        public async Task<IEnumerable<Tenant>> GetTenants()
+        public async Task<IEnumerable<TenantContract>> GetTenants()
         {
             try
             {
@@ -43,7 +42,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 
                 response.EnsureSuccessStatusCode();
 
-                var tenants = await response.Content.ReadAsAsync<IEnumerable<Tenant>>();
+                var tenants = await response.Content.ReadAsAsync<IEnumerable<TenantContract>>();
 
                 return tenants;
             }
@@ -53,7 +52,12 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             }
         }
 
-        public async Task<Tenant> GetTenantByGuid(Guid guid)
+        public async Task<IEnumerable<ApplicationUserContract>> GetApplicationUsers()
+        {
+            return await Task.FromResult(new List<ApplicationUserContract>());
+        }
+        
+        public async Task<TenantContract> GetTenantByGuid(Guid guid)
         {
             HttpResponseMessage response = null;
             
@@ -63,7 +67,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 
                 response.EnsureSuccessStatusCode();
 
-                var tenant = await response.Content.ReadAsAsync<Tenant>();
+                var tenant = await response.Content.ReadAsAsync<TenantContract>();
 
                 return tenant;
             }
@@ -82,7 +86,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             }
         }
         
-        public async Task<Guid> CreateNewTenant(NewTenant newTenantApiContract)
+        public async Task<Guid> CreateNewTenant(NewTenantContract newTenantApiContract)
         {
             HttpResponseMessage response = null;
             
@@ -115,7 +119,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             }
         }
 
-        public async Task EditTenant(Guid guid, Common.Models.ApiContracts.Tenant tenantToEditApiContract)
+        public async Task EditTenant(Guid guid, TenantContract tenantToEditApiContract)
         {
             HttpResponseMessage response = null;
             

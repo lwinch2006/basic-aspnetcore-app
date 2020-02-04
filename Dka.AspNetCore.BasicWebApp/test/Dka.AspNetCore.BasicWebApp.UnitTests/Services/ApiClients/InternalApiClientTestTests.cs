@@ -2,7 +2,10 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Tenants;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
 using Moq;
 using Xunit;
@@ -13,8 +16,14 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
     {
         private InternalApiClientTest SetupInternalApiClientTest()
         {
+            var mapperConfig = new MapperConfiguration(cfg => {
+                cfg.CreateMap<TenantContract, Tenant>();
+                cfg.CreateMap<Tenant, TenantContract>();
+            });
+            
+            var mapper = mapperConfig.CreateMapper();            
             var httpClient = new Mock<HttpClient>();
-            var internalApiClientTest = new InternalApiClientTest(httpClient.Object);
+            var internalApiClientTest = new InternalApiClientTest(httpClient.Object, mapper);
 
             return internalApiClientTest;
         }
@@ -62,7 +71,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
         {
             var internalApiClientTest = SetupInternalApiClientTest();
 
-            var result = await internalApiClientTest.CreateNewTenant(new NewTenant
+            var result = await internalApiClientTest.CreateNewTenant(new NewTenantContract
             {
                 Name = "Test company 1",
                 Alias = "test-company-1"
@@ -76,7 +85,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
         {
             var internalApiClientTest = SetupInternalApiClientTest();
 
-            var result = internalApiClientTest.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new Tenant
+            var result = internalApiClientTest.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new TenantContract
             {
                 Name = "Test company 1",
                 Alias = "test-company-1",

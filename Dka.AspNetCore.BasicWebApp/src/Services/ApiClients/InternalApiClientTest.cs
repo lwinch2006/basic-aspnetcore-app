@@ -4,34 +4,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts;
+using AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Tenants;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Users;
 using Tenant = Dka.AspNetCore.BasicWebApp.Common.Models.Tenants.Tenant;
 
 namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 {
     public class InternalApiClientTest : IInternalApiClient
     {
-        public InternalApiClientTest(HttpClient httpClient)
-        {}
+        private readonly IMapper _mapper;
+
+        public InternalApiClientTest(HttpClient httpClient, IMapper mapper)
+        {
+            _mapper = mapper;
+        }
         
         public Task<string> GetPageNameAsync(string pageName)
         {
             return Task.FromResult(pageName);
         }
 
-        public async Task<IEnumerable<Tenant>> GetTenants()
+        public async Task<IEnumerable<TenantContract>> GetTenants()
         {
             var dummyTenants = await Tenant.GetDummyTenantSet();
-
-            return dummyTenants;
+            var dummyTenantsContract = _mapper.Map<IEnumerable<TenantContract>>(dummyTenants); 
+            
+            return dummyTenantsContract;
         }
 
-        public async Task<Tenant> GetTenantByGuid(Guid guid)
+        public Task<IEnumerable<ApplicationUserContract>> GetApplicationUsers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<TenantContract> GetTenantByGuid(Guid guid)
         {
             var dummyTenant = (await Tenant.GetDummyTenantSet()).First();
-
-            return dummyTenant;
+            var dummyTenantContract = _mapper.Map<TenantContract>(dummyTenant); 
+            
+            return dummyTenantContract;
         }
 
         public Task<bool> CheckApiOverallStatus()
@@ -49,12 +62,12 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             return Task.FromResult(true);
         }
 
-        public Task EditTenant(Guid guid, Common.Models.ApiContracts.Tenant tenantApiContract)
+        public Task EditTenant(Guid guid, TenantContract tenantApiContract)
         {
             return Task.CompletedTask;
         }
 
-        public async Task<Guid> CreateNewTenant(NewTenant newTenantApiContract)
+        public async Task<Guid> CreateNewTenant(NewTenantContract newTenantApiContract)
         {
             return await Task.FromResult(new Guid("C78C30E4-620E-4E2C-8BAF-2A81BA8470A1"));
         }

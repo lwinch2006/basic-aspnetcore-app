@@ -2,7 +2,7 @@ using System;
 
 namespace Dka.AspNetCore.BasicWebApp.ViewModels.Tenants
 {
-    public class Tenant
+    public class TenantViewModel
     {
         public Guid Guid { get; set; }
 

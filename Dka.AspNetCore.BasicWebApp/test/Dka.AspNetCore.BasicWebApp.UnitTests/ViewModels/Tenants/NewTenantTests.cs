@@ -8,7 +8,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.ViewModels.Tenants
         [Fact]
         public void TestingNewTenant_ShouldPass()
         {
-            var newTenantVm = new NewTenant
+            var newTenantVm = new NewTenantViewModel
             {
                 Name = "string-1",
                 Alias = "string-2"

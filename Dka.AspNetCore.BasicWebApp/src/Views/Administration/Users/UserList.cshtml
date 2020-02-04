@@ -1,0 +1,12 @@
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization
+
+@using Dka.AspNetCore.BasicWebApp.Models.Constants
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService;
+
+@* @model IEnumerable<Tenant> *@
+@{
+    ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "User list";
+    ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "User list";
+    ViewData[ViewDataKeys.ActiveNavigationLink] = "administration";
+}

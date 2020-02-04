@@ -3,7 +3,7 @@
 @using Dka.AspNetCore.BasicWebApp.Models.Constants
 @using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService AuthorizationService; 
-@model Dka.AspNetCore.BasicWebApp.ViewModels.Tenants.NewTenant
+@model Dka.AspNetCore.BasicWebApp.ViewModels.Tenants.NewTenantViewModel
 @{
     ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "New tenant";
     ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "New tenant";
@@ -18,20 +18,20 @@
     </div>
     <div class="row mb-3">
         <div class="col-sm-6 text-sm-right">
-            <label asp-for="Alias" class="font-weight-bold"></label>
+            <label asp-for="@Model.Alias" class="font-weight-bold"></label>
         </div>
         <div class="col-sm-6">
-            <input asp-for="Alias" class="form-control"/>
-            <span asp-validation-for="Alias" class="text-danger"></span>
+            <input asp-for="@Model.Alias" class="form-control"/>
+            <span asp-validation-for="@Model.Alias" class="text-danger"></span>
         </div>
     </div>
     <div class="row mb-3">
         <div class="col-sm-6 text-sm-right">
-            <label asp-for="Name" class="font-weight-bold"></label>
+            <label asp-for="@Model.Name" class="font-weight-bold"></label>
         </div>
         <div class="col-sm-6">
-            <input asp-for="Name" class="form-control"/>
-            <span asp-validation-for="Name" class="text-danger"></span>
+            <input asp-for="@Model.Name" class="form-control"/>
+            <span asp-validation-for="@Model.Name" class="text-danger"></span>
         </div>
     </div>
     <div class="row mb-3">

@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Tenants;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
 using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
@@ -121,7 +122,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
                         if (tenants.Find(record => record.Guid == new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")) is { } foundTenant)
                         {
                             var tenantContract =
-                                httpRequestMessage.Content.ReadAsAsync<Common.Models.ApiContracts.Tenant>(cancellationToken).GetAwaiter().GetResult();
+                                httpRequestMessage.Content.ReadAsAsync<TenantContract>(cancellationToken).GetAwaiter().GetResult();
 
                             foundTenant.Name = tenantContract.Name;
                             foundTenant.Alias = tenantContract.Alias;
@@ -142,7 +143,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
                         if (tenants.Find(record => record.Guid == new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF")) is { } foundTenant)
                         {
                             var tenantContract =
-                                httpRequestMessage.Content.ReadAsAsync<Common.Models.ApiContracts.Tenant>(cancellationToken).GetAwaiter().GetResult();
+                                httpRequestMessage.Content.ReadAsAsync<TenantContract>(cancellationToken).GetAwaiter().GetResult();
 
                             foundTenant.Name = tenantContract.Name;
                             foundTenant.Alias = tenantContract.Alias;
@@ -161,7 +162,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
                         response.StatusCode = HttpStatusCode.OK;
 
                         var newTenantContract =
-                            httpRequestMessage.Content.ReadAsAsync<Common.Models.ApiContracts.NewTenant>(cancellationToken).GetAwaiter().GetResult();
+                            httpRequestMessage.Content.ReadAsAsync<NewTenantContract>(cancellationToken).GetAwaiter().GetResult();
                         
                         var newTenantBo = new Tenant
                         {
@@ -406,7 +407,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
         {
             var internalApiClient = SetupInternalApiClient();
 
-            var result = await internalApiClient.CreateNewTenant(new Common.Models.ApiContracts.NewTenant
+            var result = await internalApiClient.CreateNewTenant(new NewTenantContract
             {
                 Name = "Test company 1",
                 Alias = "test-company-1"
@@ -440,7 +441,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             {
                 var internalApiClient = SetupInternalApiClientWithInternalServerErrorException();
 
-                await internalApiClient.CreateNewTenant(new Common.Models.ApiContracts.NewTenant
+                await internalApiClient.CreateNewTenant(new NewTenantContract
                 {
                     Name = "Test company 1",
                     Alias = "test-company-1"
@@ -462,7 +463,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             {
                 var internalApiClient = SetupInternalApiClientWithNullResponse();
 
-                await internalApiClient.CreateNewTenant(new Common.Models.ApiContracts.NewTenant
+                await internalApiClient.CreateNewTenant(new NewTenantContract
                 {
                     Name = "Test company 1",
                     Alias = "test-company-1"
@@ -484,7 +485,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             {
                 var internalApiClient = SetupInternalApiClientWithGeneralException();
 
-                await internalApiClient.CreateNewTenant(new Common.Models.ApiContracts.NewTenant
+                await internalApiClient.CreateNewTenant(new NewTenantContract
                 {
                     Name = "Test company 1",
                     Alias = "test-company-1"
@@ -506,7 +507,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             {
                 var internalApiClient = SetupInternalApiClientWithHttpRequestException();
 
-                await internalApiClient.CreateNewTenant(new Common.Models.ApiContracts.NewTenant
+                await internalApiClient.CreateNewTenant(new NewTenantContract
                 {
                     Name = "Test company 1",
                     Alias = "test-company-1"
@@ -526,7 +527,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
         {
             var internalApiClient = SetupInternalApiClient();
 
-            await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new Common.Models.ApiContracts.Tenant
+            await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new TenantContract
             {
                 Name = "Test company 1",
                 Alias = "test-company-1",
@@ -561,7 +562,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             {
                 var internalApiClient = SetupInternalApiClientWithInternalServerErrorException();
 
-                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new Common.Models.ApiContracts.Tenant
+                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new TenantContract
                 {
                     Name = "Test company 1",
                     Alias = "test-company-1",
@@ -584,7 +585,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             {
                 var internalApiClient = SetupInternalApiClientWithNullResponse();
 
-                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new Common.Models.ApiContracts.Tenant
+                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new TenantContract
                 {
                     Name = "Test company 1",
                     Alias = "test-company-1",
@@ -607,7 +608,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             {
                 var internalApiClient = SetupInternalApiClientWithGeneralException();
 
-                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new Common.Models.ApiContracts.Tenant
+                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new TenantContract
                 {
                     Name = "Test company 1",
                     Alias = "test-company-1",
@@ -630,7 +631,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
             {
                 var internalApiClient = SetupInternalApiClientWithHttpRequestException();
 
-                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new Common.Models.ApiContracts.Tenant
+                await internalApiClient.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new TenantContract
                 {
                     Name = "Test company 1",
                     Alias = "test-company-1",

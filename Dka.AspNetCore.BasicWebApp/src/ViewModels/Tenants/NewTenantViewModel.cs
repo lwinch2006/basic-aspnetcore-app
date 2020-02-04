@@ -1,6 +1,6 @@
 namespace Dka.AspNetCore.BasicWebApp.ViewModels.Tenants
 {
-    public class NewTenant
+    public class NewTenantViewModel
     {
         public string Name { get; set; }
 
