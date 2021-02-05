@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.0</TargetFramework>
-        <LangVersion>8</LangVersion>
-        <Nullable>enable</Nullable>
+        <TargetFramework>net5.0</TargetFramework>
+        <LangVersion>9</LangVersion>
+        <Nullable>disable</Nullable>
         <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
         <Authors>D.K.</Authors>
         <Description>Common library for BasicWebApp</Description>
@@ -12,11 +12,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Dapper" Version="2.0.30" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.0.0" />
+      <PackageReference Include="Dapper" Version="2.0.78" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.2" />
       <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-      <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="3.1.0" />
-      <PackageReference Include="System.Data.SqlClient" Version="4.5.0" />
+      <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="5.0.2" />
+      <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     </ItemGroup>
 
 </Project>

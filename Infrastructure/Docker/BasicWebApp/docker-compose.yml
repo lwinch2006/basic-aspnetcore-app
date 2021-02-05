@@ -43,7 +43,7 @@ services:
       - docker-network
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=<Yg!P0rdWde77>
+      - SA_PASSWORD=DevelopmentPassword@1
 
   # Unleash web service
   bwa-unleash-web:

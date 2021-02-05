@@ -43,7 +43,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
                 
                 
                 
-                //var usersContract = await _internalApiClient.GetApplicationUsers();
+                var usersContract = await _internalApiClient.GetApplicationUsers();
                 
                 
                 

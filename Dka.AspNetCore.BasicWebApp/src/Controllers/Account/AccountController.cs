@@ -101,7 +101,7 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Account
             return View("~/Views/Account/SignIn.cshtml", signInViewModel);
         }
 
-        public async Task<IActionResult> SignOut()
+        public new async Task<IActionResult> SignOut()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             

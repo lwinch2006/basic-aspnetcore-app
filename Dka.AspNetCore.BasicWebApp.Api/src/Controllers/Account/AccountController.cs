@@ -97,7 +97,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
             return await Task.FromResult(Ok(signInResponseContract));
         }
         
-        public async Task<IActionResult> SignOut()
+        public new async Task<IActionResult> SignOut()
         {
             _logger.LogInformation(LoggingEvents.SignOutUser, "Signing out user with GUID {Guid}.", HttpContext.GetAuthenticatedUserGuid());
             
