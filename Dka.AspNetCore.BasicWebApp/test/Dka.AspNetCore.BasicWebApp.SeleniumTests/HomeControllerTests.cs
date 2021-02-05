@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -8,13 +9,11 @@ namespace Dka.AspNetCore.BasicWebApp.SeleniumTests
 {
     public class HomeControllerTests : IClassFixture<BasicWebAppServerFactory<StartupTest>>
     {
+        private readonly ChromeOptions _chromeOptions;
+        
         private BasicWebAppServerFactory<StartupTest> Server { get; }
         
-        private IWebDriver Browser { get; }
-        
         private HttpClient Client { get; }
-        
-        private ILogs Logs { get; }
 
         public HomeControllerTests(
             BasicWebAppServerFactory<StartupTest> server)
@@ -22,38 +21,48 @@ namespace Dka.AspNetCore.BasicWebApp.SeleniumTests
             Server = server;
             Client = Server.CreateClient();
 
-            var chromeOptions = new ChromeOptions();
-            chromeOptions.AddArgument("--headless"); 
-            chromeOptions.SetLoggingPreference(LogType.Browser, LogLevel.All);
-
-            var driver = new RemoteWebDriver(chromeOptions);
-            Browser = driver;
-            Logs = new RemoteLogs(driver);
+            _chromeOptions = new ChromeOptions();
+            _chromeOptions.AddArgument("--headless"); 
+            _chromeOptions.SetLoggingPreference(LogType.Browser, LogLevel.All);
             
             Assert.NotNull(Server);
             Assert.NotNull(Client);
-            Assert.NotNull(Browser);
-            Assert.NotNull(Logs);
         }
         
         [Fact]
         public void LoadHomePage_CheckPageTitle_ShouldPass()
         {
-            Browser.Navigate().GoToUrl(Server.RootUri);
+            using (var browser = new ChromeDriver(".", _chromeOptions))
+            {
+                var logs = new RemoteLogs(browser); 
+                
+                Assert.NotNull(browser);
+                Assert.NotNull(logs);
+                
+                browser.Navigate().GoToUrl(Server.RootUri);
             
-            Assert.Equal("Home", Browser.Title);
+                Assert.Equal("Sign in", browser.Title);
             
-            Browser.Close();
+                browser.Close();
+            }
         }
         
         [Fact]
         public void LoadHomePage_CheckPageTitle_ShouldNotPass()
         {
-            Browser.Navigate().GoToUrl(Server.RootUri);
+            using (var browser = new ChromeDriver(".", _chromeOptions))
+            {
+                var logs = new RemoteLogs(browser); 
+                
+                Assert.NotNull(browser);
+                Assert.NotNull(logs);
+                
+                browser.Navigate().GoToUrl(Server.RootUri);
             
-            Assert.NotEqual("About", Browser.Title);
+                Assert.NotEqual("About", browser.Title);
             
-            Browser.Close();
+                browser.Close();
+            }            
         }        
     }
 }

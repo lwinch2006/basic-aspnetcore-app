@@ -31,6 +31,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
                 cfg.CreateMap<Tenant, NewTenantContract>();
                 cfg.CreateMap<TenantContract, Tenant>();
                 cfg.CreateMap<Tenant, TenantContract>();
+                cfg.CreateMap<EditTenantContract, Tenant>().ReverseMap();
             });
             
             var mapper = mapperConfig.CreateMapper();
@@ -100,7 +101,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
             var result = await tenantController.GetAll();
 
             var apiResult = Assert.IsType<OkObjectResult>(result);
-            var model = Assert.IsAssignableFrom<IEnumerable<Tenant>>(apiResult.Value).ToList();
+            var model = Assert.IsAssignableFrom<IEnumerable<TenantContract>>(apiResult.Value).ToList();
             
             Assert.Equal(3, model.Count);
             Assert.Contains(model, record => record.Name.Equals("Umbrella Corporation", StringComparison.OrdinalIgnoreCase));
@@ -114,7 +115,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
             var result = await tenantController.GetByGuid(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"));
 
             var apiResult = Assert.IsType<OkObjectResult>(result);
-            var model = Assert.IsAssignableFrom<Tenant>(apiResult.Value);
+            var model = Assert.IsAssignableFrom<TenantContract>(apiResult.Value);
 
             Assert.NotNull(model);
             Assert.Equal("Umbrella Corporation", model.Name);
@@ -213,9 +214,9 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
             
             var result = await tenantController.EditTenant(new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), new EditTenantContract { Name = "Test Company", Alias = "test-company" });
 
-            var apiResult = Assert.IsType<BadRequestObjectResult>(result);
+            var apiResult = Assert.IsType<NotFoundResult>(result);
             
-            Assert.Equal(StatusCodes.Status400BadRequest, apiResult.StatusCode);  
+            Assert.Equal(StatusCodes.Status404NotFound, apiResult.StatusCode);  
         }
 
         [Fact]
@@ -224,9 +225,9 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
             var tenantController = SetupTenantController();
             var result = await tenantController.EditTenant(new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), null);
 
-            var apiResult = Assert.IsType<BadRequestObjectResult>(result);
+            var apiResult = Assert.IsType<NotFoundResult>(result);
 
-            Assert.Equal(StatusCodes.Status400BadRequest, apiResult.StatusCode);
+            Assert.Equal(StatusCodes.Status404NotFound, apiResult.StatusCode);
         }
 
         [Fact]

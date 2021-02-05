@@ -41,7 +41,7 @@ namespace Dka.AspNetCore.BasicWebApp.IntegrationTests
             var context = BrowsingContext.New(config);
             var document = await context.OpenAsync(req => req.Content(contentFromResponse));
             
-            Assert.Equal("Home", document.Head.QuerySelector("title").Text());
+            Assert.Equal("Sign in", document.Head.QuerySelector("title").Text());
         }
     }
 }

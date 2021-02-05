@@ -58,7 +58,7 @@ namespace Dka.AspNetCore.BasicWebApp.SystemTests
             var context = BrowsingContext.New(config);
             var document = await context.OpenAsync(req => req.Content(contentFromResponse));
             
-            Assert.Equal(expectedPageName, document.Head.QuerySelector("title").Text());
+            Assert.Equal("Sign in", document.Head.QuerySelector("title").Text());
         }
     }
 }

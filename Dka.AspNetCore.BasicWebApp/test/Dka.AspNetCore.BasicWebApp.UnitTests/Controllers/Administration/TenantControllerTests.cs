@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Tenants;
@@ -27,11 +28,12 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
             var mapperConfig = new MapperConfiguration(cfg => {
                 cfg.CreateMap<Tenant, TenantViewModel>();
                 cfg.CreateMap<NewTenantViewModel, NewTenantContract>();
-                cfg.CreateMap<TenantViewModel, TenantContract>();
-                
+                cfg.CreateMap<TenantViewModel, TenantContract>().ReverseMap();
                 cfg.CreateMap<Tenant, TenantContract>();
                 cfg.CreateMap<TenantContract, Tenant>();
-                
+                cfg.CreateMap<EditTenantViewModel, TenantViewModel>();
+                cfg.CreateMap<TenantContract, EditTenantViewModel>();
+                cfg.CreateMap<EditTenantViewModel, EditTenantContract>();
             });
             
             var mapper = mapperConfig.CreateMapper();
@@ -61,9 +63,6 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
                 var foundTenant = tenants.SingleOrDefault(record => record.Guid == tenantGuid);
 
                 var foundTenantContract = mapper.Map<TenantContract>(foundTenant);
-                
-                
-                
                 
                 return Task.FromResult(foundTenantContract);
             });            
@@ -112,6 +111,11 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
             });
 
             var tenantController = new TenantsController(internalApiClient.Object, logger.Object, mapper);
+            
+            tenantController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext()
+            };            
 
             return tenantController;
         }
@@ -129,6 +133,11 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
             
             var tenantController = new TenantsController(internalApiClient.Object, logger.Object, mapper);
 
+            tenantController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+            
             return tenantController;
         }
         
@@ -138,6 +147,12 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
             IMapper mapper = null;
             var internalApiClient = new Mock<IInternalApiClient>();
             var tenantController = new TenantsController(internalApiClient.Object, logger.Object, mapper);
+            
+            tenantController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext()
+            };            
+            
             return tenantController;
         }     
         
@@ -146,6 +161,12 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
             var logger = new Mock<ILogger<TenantsController>>();
             var mapper = SetupMapper();
             var tenantController = new TenantsController(null, logger.Object, mapper);
+            
+            tenantController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext()
+            };            
+            
             return tenantController;
         }         
         
@@ -158,7 +179,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
 
             var viewResult = Assert.IsType<ViewResult>(result);
 
-            var model = ((IEnumerable<Tenant>) viewResult.Model).ToList();
+            var model = ((IEnumerable<TenantViewModel>) viewResult.Model).ToList();
             
             Assert.Equal(3, model.Count);
             Assert.Equal("Umbrella Corporation", model[0].Name);
@@ -173,7 +194,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
 
             var viewResult = Assert.IsType<ViewResult>(result);
 
-            var model = ((IEnumerable<Tenant>) viewResult.Model).ToList();
+            var model = ((IEnumerable<TenantViewModel>) viewResult.Model).ToList();
             
             Assert.Empty(model);
         }
@@ -269,34 +290,6 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
         }
 
         [Fact]
-        public async Task TestingDeleteAction_TenantViewModelIsNull_ThrowsTenantNotFoundException_ReturnsBackToForm_ShouldPass()
-        {
-            var tenantController = SetupController();
-
-            var result = await tenantController.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), null);
-
-            var viewResult = Assert.IsType<ViewResult>(result);
-
-            Assert.Null(viewResult.Model);
-        }
-
-        [Fact]
-        public async Task TestingDeleteAction_TenantViewModelIsNotNull_GuidsAreDifferent_ReturnsBackToForm_ShouldPass()
-        {
-            var tenantController = SetupController();
-
-            var result = await tenantController.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantViewModel
-            {
-                Name = "Test tenant 1",
-                Alias = "test-tenant-1"
-            });
-
-            var viewResult = Assert.IsType<ViewResult>(result);
-            
-            Assert.Equal("Test tenant 1", ((TenantViewModel)viewResult.Model).Name);
-        }
-
-        [Fact]
         public async Task TestingDeleteAction_TenantViewModelIsNotNull_GuidsAreEqual_RedirectsToActionIndex_ShouldPass()
         {
             var tenantController = SetupController();
@@ -327,7 +320,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
 
             var viewResult = Assert.IsType<ViewResult>(result);
             
-            Assert.Equal("Test tenant 1", ((TenantViewModel)viewResult.Model).Name);
+            Assert.Equal("Test tenant 1", ((EditTenantViewModel)viewResult.Model).Name);
         }
 
         [Fact]
@@ -342,7 +335,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
             });
 
             var viewResult = Assert.IsType<ViewResult>(result);
-            var model = (TenantViewModel) viewResult.Model;
+            var model = (EditTenantViewModel) viewResult.Model;
             
             Assert.Equal("Test tenant 1", model.Name);            
         }
@@ -356,7 +349,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
 
             var viewResult = Assert.IsType<ViewResult>(result);
 
-            var model = (BasicWebApp.ViewModels.Tenants.TenantViewModel) viewResult.Model;
+            var model = (EditTenantViewModel) viewResult.Model;
 
             Assert.NotNull(model);
             Assert.Equal("Umbrella Corporation", model.Name);
@@ -371,7 +364,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
 
             var viewResult = Assert.IsType<ViewResult>(result);
 
-            var model = (BasicWebApp.ViewModels.Tenants.TenantViewModel) viewResult.Model;
+            var model = (EditTenantViewModel) viewResult.Model;
 
             Assert.Null(model);
         }
@@ -385,39 +378,11 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
 
             var viewResult = Assert.IsType<ViewResult>(result);
 
-            var model = (BasicWebApp.ViewModels.Tenants.TenantViewModel) viewResult.Model;
+            var model = (TenantViewModel) viewResult.Model;
 
             Assert.Null(model);
         }
 
-        [Fact]
-        public async Task TestingEditAction_PostingForm_TenantModelIsNull_ReturnsBackToForm_ShouldPass()
-        {
-            var tenantController = SetupController();
-
-            var result = await tenantController.EditTenantDetails(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), null);
-
-            var viewResult = Assert.IsType<ViewResult>(result);
-
-            Assert.Null(viewResult.Model);            
-        }
-
-        [Fact]
-        public async Task TestingEditAction_PostingForm_GuidsAreDifferent_ReturnsBackToForm_ShouldPass()
-        {
-            var tenantController = SetupController();
-
-            var result = await tenantController.EditTenantDetails(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantViewModel
-            {
-                Name = "Test tenant 1",
-                Alias = "test-tenant-1"
-            });
-
-            var viewResult = Assert.IsType<ViewResult>(result);
-            
-            Assert.Equal("Test tenant 1", ((TenantViewModel)viewResult.Model).Name);
-        }        
-        
         [Fact]
         public async Task TestingEditAction_PostingForm_GuidsAreEqual_RedirectsToActionIndex_ShouldPass()
         {
@@ -449,7 +414,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
 
             var viewResult = Assert.IsType<ViewResult>(result);
             
-            Assert.Equal("Test tenant 1", ((TenantViewModel)viewResult.Model).Name);
+            Assert.Equal("Test tenant 1", ((EditTenantViewModel)viewResult.Model).Name);
         }
         
         [Fact]
@@ -464,7 +429,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
             });
 
             var viewResult = Assert.IsType<ViewResult>(result);
-            var model = (TenantViewModel) viewResult.Model;
+            var model = (EditTenantViewModel) viewResult.Model;
             
             Assert.Equal("Test tenant 1", model.Name);            
         }
@@ -505,6 +470,31 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers.Administration
             {
                 Assert.True(true, "NullReferenceException is thrown for mapper instance. This behaviour is legal");
             }
-        }        
+        }
+        
+        private HttpContext GetHttpContextWithClaims()
+        {
+            var sampleEmail = "sample-authenticated-user@test.com";
+            
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Email, sampleEmail),
+                new Claim("email", sampleEmail)
+            }, "mock"));
+
+            var sampleHttpContext = new DefaultHttpContext {User = user};
+            return sampleHttpContext;
+        }         
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     }
 }

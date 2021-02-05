@@ -45,17 +45,5 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers
 
             Assert.Equal("Home", viewResult.ViewData[ViewDataKeys.HtmlPageNameReceivedFromApi]);
         }
-        
-        [Fact]
-        public void TestingIndexAction_ThrowingException_ShouldPass()
-        {
-            var (homeController, internalApiClient) = SetupControllerWithThrowingException();
-
-            var result = homeController.Index();
-
-            var viewResult = Assert.IsType<ViewResult>(result);
-
-            Assert.Equal(string.Empty, viewResult.ViewData[ViewDataKeys.HtmlPageNameReceivedFromApi]);
-        }
     }
 }
