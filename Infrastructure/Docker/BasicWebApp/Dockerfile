@@ -1,8 +1,10 @@
-FROM node:10-alpine
+FROM node:12-alpine
 
-COPY package.json ./
+ENV NODE_ENV production
 
-RUN yarn install --production
+COPY package.json package-lock.json ./
+
+RUN npm ci
 
 COPY . .
 

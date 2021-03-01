@@ -34,6 +34,7 @@ ProjectSection(SolutionItems) = preProject
 	Infrastructure\Docker\BasicWebApp\LICENSE.md = Infrastructure\Docker\BasicWebApp\LICENSE.md
 	Infrastructure\Docker\BasicWebApp\package.json = Infrastructure\Docker\BasicWebApp\package.json
 	Infrastructure\Docker\BasicWebApp\README.md = Infrastructure\Docker\BasicWebApp\README.md
+	Infrastructure\Docker\BasicWebApp\package-lock.json = Infrastructure\Docker\BasicWebApp\package-lock.json
 EndProjectSection
 EndProject
 Global
