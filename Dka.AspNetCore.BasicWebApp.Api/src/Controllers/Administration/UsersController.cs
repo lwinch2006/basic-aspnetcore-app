@@ -12,9 +12,9 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration
     {
         private readonly IMapper _mapper;
 
-        private readonly ILogger<TenantsController> _logger;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(IMapper mapper, ILogger<TenantsController> logger)
+        public UsersController(IMapper mapper, ILogger<UsersController> logger)
         {
             _mapper = mapper;
             _logger = logger;

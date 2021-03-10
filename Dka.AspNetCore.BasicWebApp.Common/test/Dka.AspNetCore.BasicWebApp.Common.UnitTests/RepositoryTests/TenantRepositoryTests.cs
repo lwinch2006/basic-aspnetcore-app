@@ -60,7 +60,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests.RepositoryTests
             var tenants = (await Tenant.GetDummyTenantSet()).ToList();
             var tenantRepository = await SetupTenantRepository();
             
-            var result = (await tenantRepository.GetAll()).ToList();
+            var result = (await tenantRepository.Get()).Items.ToList();
             Assert.Equal(tenants.Count, result.Count);
             Assert.True(tenants.All(record1 => result.SingleOrDefault(record2 => record2.Id == record1.Id && record2.Name == record1.Name && record2.Alias == record1.Alias && record2.Guid == record1.Guid) != null));
 
@@ -70,7 +70,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests.RepositoryTests
         public async Task GetByGuid_PassValidGuid_ReturnsTenant_ShouldPass()
         {
             var tenantRepository = await SetupTenantRepository();
-            var foundTenant = await tenantRepository.GetByGuid(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"));
+            var foundTenant = await tenantRepository.Get(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"));
             
             Assert.Equal("Umbrella Corporation", foundTenant.Name);
             Assert.Equal("umbrella", foundTenant.Alias);
@@ -80,7 +80,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests.RepositoryTests
         public async Task GetByGuid_PassInvalidGuid_ReturnsNull_ShouldPass()
         {
             var tenantRepository = await SetupTenantRepository();
-            var foundTenant = await tenantRepository.GetByGuid(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF"));
+            var foundTenant = await tenantRepository.Get(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF"));
             
             Assert.Null(foundTenant);
         }
@@ -89,7 +89,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests.RepositoryTests
         public async Task CreateNewTenant_PassValidTenant_ReturnsGuid_ShouldPass()
         {
             var tenantRepository = await SetupTenantRepository();
-            var newTenantGuid = await tenantRepository.CreateNewTenant(new Tenant
+            var newTenantGuid = await tenantRepository.Create(new Tenant
             {
                 Name = "Test company",
                 Alias = "test-company"
@@ -105,7 +105,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests.RepositoryTests
 
             try
             {
-                await tenantRepository.CreateNewTenant(null);
+                await tenantRepository.Create(null);
             }
             catch (NullReferenceException)
             {
@@ -120,7 +120,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests.RepositoryTests
         public async Task DeleteTenant_PassValidGuid_TenantListReduced_ShouldPass()
         {
             var tenantRepository = await SetupTenantRepository();
-            var affectedRows = await tenantRepository.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"));
+            var affectedRows = await tenantRepository.Delete(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"));
             
             Assert.Equal(1, affectedRows);
         }
@@ -129,7 +129,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests.RepositoryTests
         public async Task DeleteTenant_PassInvalidGuid_TenantListNotChanged_ShouldPass()
         {
             var tenantRepository = await SetupTenantRepository();
-            var affectedRows = await tenantRepository.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF"));
+            var affectedRows = await tenantRepository.Delete(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF"));
             
             Assert.Equal(0, affectedRows);
         }
@@ -138,7 +138,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests.RepositoryTests
         public async Task EditTenant_PassValidTenant_TenantIsChanged_ShouldPass()
         {
             var tenantRepository = await SetupTenantRepository();
-            var affectedRows = await tenantRepository.EditTenant(new Tenant
+            var affectedRows = await tenantRepository.Update(new Tenant
             {
                 Name = "Umbrella Corporation 111",
                 Alias = "umbrella-111",
@@ -152,7 +152,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests.RepositoryTests
         public async Task EditTenant_PassInvalidTenant_NoTenantIsChanged_ShouldPass()
         {
             var tenantRepository = await SetupTenantRepository();
-            var affectedRows = await tenantRepository.EditTenant(new Tenant
+            var affectedRows = await tenantRepository.Update(new Tenant
             {
                 Name = "Umbrella Corporation 111",
                 Alias = "umbrella-111",

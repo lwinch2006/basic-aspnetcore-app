@@ -8,6 +8,7 @@ using Dka.AspNetCore.BasicWebApp.Api.Services.HttpContext;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Configurations;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -73,7 +74,8 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
                 Subject = new ClaimsIdentity(new[] 
                 {
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Guid.ToString())
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Guid.ToString()),
+                    new Claim(ClaimsCustomTypes.UserId, user.Id.ToString())
                 }),
                 Expires = tokenExpireAt,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -99,7 +101,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
         
         public new async Task<IActionResult> SignOut()
         {
-            _logger.LogInformation(LoggingEvents.SignOutUser, "Signing out user with GUID {Guid}.", HttpContext.GetAuthenticatedUserGuid());
+            _logger.LogInformation(LoggingEvents.SignOutUser, "Signing out user with GUID {Guid}.", HttpContext.GetUserGuid());
             
             return await Task.FromResult(Ok(new SignOutResponseContract()));
         }

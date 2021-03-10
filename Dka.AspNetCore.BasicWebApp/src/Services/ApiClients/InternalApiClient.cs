@@ -5,10 +5,12 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Web;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Tenants;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Users;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Pagination;
 using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -34,15 +36,24 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             }
         }
 
-        public async Task<IEnumerable<TenantContract>> GetTenants()
+        public async Task<PagedResults<TenantContract>> GetTenants(Common.Models.Pagination.Pagination pagination = null)
         {
             try
             {
-                var response = await _httpClient.GetAsync("/Administration/Tenants");
+                var relativeUrl = "/Administration/Tenants/";
+                
+                if (pagination != null)
+                {
+                    var query = HttpUtility.ParseQueryString(string.Empty);
+                    query[nameof(pagination.PageIndex)] = pagination.PageIndex.ToString();
+                    query[nameof(pagination.PageSize)] = pagination.PageSize.ToString();
+                    relativeUrl = $"{relativeUrl}?{query}";
+                }
 
+                var response = await _httpClient.GetAsync(relativeUrl);
                 response.EnsureSuccessStatusCode();
 
-                var tenants = await response.Content.ReadAsAsync<IEnumerable<TenantContract>>();
+                var tenants = await response.Content.ReadAsAsync<PagedResults<TenantContract>>();
 
                 return tenants;
             }
@@ -63,7 +74,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             
             try
             {
-                response = await _httpClient.GetAsync($"/Administration/Tenants/Details/{guid}");
+                response = await _httpClient.GetAsync($"/Administration/Tenants/{guid}");
 
                 response.EnsureSuccessStatusCode();
 
@@ -96,7 +107,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
                 
                 var newTenantApiContractAsContent = new StringContent(newTenantApiContractAsJson, Encoding.UTF8, "application/json");
                 
-                response = await _httpClient.PostAsync("/Administration/Tenants/new", newTenantApiContractAsContent);
+                response = await _httpClient.PostAsync("/Administration/Tenants/", newTenantApiContractAsContent);
 
                 response.EnsureSuccessStatusCode();
 
@@ -129,7 +140,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
                 
                 var editTenantContractAsContent = new StringContent(editTenantContractAsJson, Encoding.UTF8, "application/json");
 
-                response = await _httpClient.PutAsync($"/Administration/Tenants/edit/{guid}", editTenantContractAsContent);
+                response = await _httpClient.PutAsync($"/Administration/Tenants/{guid}", editTenantContractAsContent);
 
                 response.EnsureSuccessStatusCode();
             }
@@ -154,7 +165,7 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             
             try
             {
-                response = await _httpClient.DeleteAsync($"/Administration/Tenants/delete/{guid}");
+                response = await _httpClient.DeleteAsync($"/Administration/Tenants/{guid}");
 
                 response.EnsureSuccessStatusCode();
             }

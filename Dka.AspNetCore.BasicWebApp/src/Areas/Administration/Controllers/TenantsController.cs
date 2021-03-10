@@ -1,25 +1,25 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ExceptionProcessing;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Services.ExceptionProcessing;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
+using Dka.AspNetCore.BasicWebApp.Areas.Administration.ViewModels.Tenants;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Tenants;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Logging;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Pagination;
+using Dka.AspNetCore.BasicWebApp.Services.HttpContext;
 using Dka.AspNetCore.BasicWebApp.Services.ModelState;
-using Dka.AspNetCore.BasicWebApp.ViewModels.Tenants;
-using Microsoft.AspNetCore.Authorization;
+using Dka.AspNetCore.BasicWebApp.ViewModels.Pagination;
 
-namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
+namespace Dka.AspNetCore.BasicWebApp.Areas.Administration.Controllers
 {
-    [Route("Administration/[controller]/{action=Index}")]
+    [Area(CommonConstants.Controllers.Areas.Administration)]
     public class TenantsController : Controller
     {
         private readonly IInternalApiClient _internalApiClient;
@@ -39,66 +39,60 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
         }
         
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Read)]
-        [HttpGet]
-        [ActionName("index")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> Index(PaginationRequestViewModel paginationRequestViewModel)
         {
-            var tenantsViewModel = (IEnumerable<TenantViewModel>)new List<TenantViewModel>();
+            var pagedTenantsViewModel = PagedResultsViewModel<TenantViewModel>.InitEmpty();
             
             try
             {
-                var tenantsContract = await _internalApiClient.GetTenants();
-                tenantsViewModel = _mapper.Map<IEnumerable<TenantViewModel>>(tenantsContract);
+                paginationRequestViewModel.PageSize ??= HttpContext.TryGetPageSizeFromCookie();
+                var pagination = _mapper.Map<Pagination>(paginationRequestViewModel);
+                var pagedTenants = await _internalApiClient.GetTenants(pagination);
+                pagedTenantsViewModel = _mapper.Map<PagedResultsViewModel<TenantViewModel>>(pagedTenants);
+                _mapper.Map(pagination, pagedTenantsViewModel);
             }
             catch (BasicWebAppException ex)
             {
                 ExceptionProcessor.ProcessError(LoggingEvents.ReadItemsFailed, _logger, HttpContext, ex);
             }
 
-            return View("~/Views/Administration/Tenants/TenantList.cshtml", tenantsViewModel);
+            return View(pagedTenantsViewModel);
         }
 
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Read)]
-        [HttpGet("{guid}")]
-        [ActionName("details")]
-        public async Task<IActionResult> GetByGuid([FromRoute]Guid guid)
+        public async Task<IActionResult> Details(Guid id)
         {
             TenantViewModel tenantViewModel = null;
 
             try
             {
-                var tenant = await _internalApiClient.GetTenantByGuid(guid);
+                var tenant = await _internalApiClient.GetTenantByGuid(id);
                 tenantViewModel = _mapper.Map<TenantViewModel>(tenant);
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.ProcessError(LoggingEvents.ReadItemFailed, _logger, HttpContext, ex, guid);
+                ExceptionProcessor.ProcessError(LoggingEvents.ReadItemFailed, _logger, HttpContext, ex, id);
             }
 
-            return View("~/Views/Administration/Tenants/TenantDetails.cshtml", tenantViewModel);
+            return View(tenantViewModel);
         }
 
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Create)]
-        [HttpGet]
-        [ActionName("new")]
-        public async Task<IActionResult> CreateNewTenant()
+        public IActionResult Create()
         {
-            var newTenant = new ViewModels.Tenants.NewTenantViewModel();
-
-            return await Task.FromResult(View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenant));
+            return View();
         }
         
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Create)]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        [ActionName("new")]
-        public async Task<IActionResult> CreateNewTenant([Bind("Alias", "Name")] NewTenantViewModel newTenantViewModel)
+        public async Task<IActionResult> Create(NewTenantViewModel newTenantViewModel)
         {
-            if (!ModelState.IsValid || newTenantViewModel == null)
+            if (!ModelState.IsValid)
             {
                 _logger.LogWarning(LoggingEvents.CreateItemBadData, "Empty tenant cannot be created. {ErrorMessages}", ModelState.GetModelStateErrorMessages());
                 
-                return View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenantViewModel);
+                return View(newTenantViewModel);
             }
 
             try
@@ -107,90 +101,85 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers.Administration
 
                 var newTenantGuid = await _internalApiClient.CreateNewTenant(newTenantApiContract);
 
-                return RedirectToAction("details", new { Guid = newTenantGuid });
+                return RedirectToAction(nameof(Details), new { Id = newTenantGuid });
             }
             catch (BasicWebAppException ex)
             {
                 ExceptionProcessor.ProcessError(LoggingEvents.CreateItemFailed, _logger, HttpContext, ex, newTenantViewModel.Name);
             }
 
-            return View("~/Views/Administration/Tenants/CreateNewTenant.cshtml", newTenantViewModel);
+            return View(newTenantViewModel);
         }
         
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Update)]
-        [HttpGet("{guid}")]
-        [ActionName("edit")]
-        public async Task<IActionResult> EditTenantDetails([FromRoute]Guid guid)
+        public async Task<IActionResult> Update(Guid id)
         {
             EditTenantViewModel editTenantViewModel = null;
 
             try
             {
-                var tenant = await _internalApiClient.GetTenantByGuid(guid);
+                var tenant = await _internalApiClient.GetTenantByGuid(id);
                 editTenantViewModel = _mapper.Map<EditTenantViewModel>(tenant);
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.ProcessError(LoggingEvents.UpdateItemFailed, _logger, HttpContext, ex, guid);
+                ExceptionProcessor.ProcessError(LoggingEvents.UpdateItemFailed, _logger, HttpContext, ex, id);
             }
 
-            return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", editTenantViewModel);
+            return View(editTenantViewModel);
         }
 
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Update)]
         [ValidateAntiForgeryToken]
-        [HttpPost("{guid}")]
-        [ActionName("edit")]
-        public async Task<IActionResult> EditTenantDetails([FromRoute] Guid guid, EditTenantViewModel editTenantViewModel)
+        [HttpPost]
+        public async Task<IActionResult> Update(Guid id, EditTenantViewModel editTenantViewModel)
         {
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning(LoggingEvents.UpdateItemBadData, "Edit tenant model is not valid. {ErrorMessages}", ModelState.GetModelStateErrorMessages());
                 
-                return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", editTenantViewModel);
+                return View(editTenantViewModel);
             }            
             
             try
             {
                 var editTenantContract = _mapper.Map<EditTenantContract>(editTenantViewModel);
                 
-                await _internalApiClient.EditTenant(guid, editTenantContract);
+                await _internalApiClient.EditTenant(id, editTenantContract);
 
-                return RedirectToAction("index");
+                return RedirectToAction(nameof(Index));
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.ProcessError(LoggingEvents.UpdateItemFailed, _logger, HttpContext, ex, guid);
+                ExceptionProcessor.ProcessError(LoggingEvents.UpdateItemFailed, _logger, HttpContext, ex, id);
             }
 
-            return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", editTenantViewModel);
+            return View(editTenantViewModel);
         }
 
         [DataOperationAuthorize(nameof(Tenant), DataOperationNames.Delete)]
         [ValidateAntiForgeryToken]
-        [HttpPost("{guid}")]
-        [ActionName("delete")]
-        public async Task<IActionResult> DeleteTenant(Guid guid, EditTenantViewModel editTenantViewModel)
+        public async Task<IActionResult> Delete(Guid id, EditTenantViewModel editTenantViewModel)
         {
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning(LoggingEvents.DeleteItemBadData, "Delete tenant model is not valid. {ErrorMessages}", ModelState.GetModelStateErrorMessages());
                 
-                return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", editTenantViewModel);
+                return View(nameof(Update), editTenantViewModel);
             }
             
             try
             {
-                await _internalApiClient.DeleteTenant(guid);
+                await _internalApiClient.DeleteTenant(id);
 
                 return RedirectToAction("index");
             }
             catch (BasicWebAppException ex)
             {
-                ExceptionProcessor.ProcessError(LoggingEvents.DeleteItemFailed, _logger, HttpContext, ex, guid);
+                ExceptionProcessor.ProcessError(LoggingEvents.DeleteItemFailed, _logger, HttpContext, ex, id);
             }
             
-            return View("~/Views/Administration/Tenants/EditTenantDetails.cshtml", editTenantViewModel);
+            return View(nameof(Update), editTenantViewModel);
         }
     }
 }

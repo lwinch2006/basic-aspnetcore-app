@@ -4,7 +4,7 @@
 @using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService AuthorizationService;
 
-@model Dka.AspNetCore.BasicWebApp.ViewModels.Tenants.EditTenantViewModel
+@model Dka.AspNetCore.BasicWebApp.Areas.Administration.ViewModels.Tenants.EditTenantViewModel
 @{
     ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "Edit tenant details";
     ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "Edit tenant details";
@@ -12,7 +12,7 @@
 }
 @if (Model != null)
 {
-    <form asp-controller="Tenants" asp-action="edit" method="post">
+    <form asp-controller="Tenants" asp-action="Update" method="post">
         <div class="row">
             <div class="col-sm-12 text-sm-center">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -41,17 +41,17 @@
                 <div class="d-flex justify-content-sm-between">
                     <div></div>
                     <div>
-                        <a asp-controller="Tenants" asp-action="details" asp-route-guid="@ViewContext.RouteData.Values["guid"]" class="btn btn-outline-secondary dka-btn">Cancel</a>
+                        <a asp-controller="Tenants" asp-action="details" asp-route-id="@ViewContext.RouteData.Values["id"]" class="btn btn-outline-secondary dka-btn">Cancel</a>
 
                         @if ((await AuthorizationService.AuthorizeAsync(Context.User, Model, new DataOperationRequirement(nameof(Tenant), DataOperationNames.Update))).Succeeded)
                         {
-                            <button type="submit" asp-controller="Tenants" asp-action="edit" asp-route-guid="@ViewContext.RouteData.Values["guid"]" class="btn btn-outline-secondary dka-btn">Save</button>
+                            <button type="submit" asp-route-id="@ViewContext.RouteData.Values["id"]" class="btn btn-outline-secondary dka-btn">Save</button>
                         }
                     </div>
 
                     @if ((await AuthorizationService.AuthorizeAsync(Context.User, Model, new DataOperationRequirement(nameof(Tenant), DataOperationNames.Delete))).Succeeded)
                     {
-                        <button type="submit" asp-controller="Tenants" asp-action="delete" asp-route-guid="@ViewContext.RouteData.Values["guid"]" class="btn btn-outline-danger dka-btn ml-auto ml-sm-0">Remove</button>
+                        <button type="submit" asp-controller="Tenants" asp-action="Delete" asp-route-id="@ViewContext.RouteData.Values["id"]" class="btn btn-outline-danger dka-btn ml-auto ml-sm-0">Remove</button>
                     }
                 </div>
             </div>

@@ -1,15 +1,26 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
 using Dapper;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Pagination;
+using Dka.AspNetCore.BasicWebApp.Common.Repositories.Extensions;
 
 [assembly: InternalsVisibleTo("Dka.AspNetCore.BasicWebApp.Common.UnitTests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
 {
-    public class TenantRepository
+    public interface ITenantRepository
+    {
+        Task<PagedResults<Tenant>> Get(Pagination pagination = null);
+        Task<Tenant> Get(Guid guid);
+        Task<Guid> Create(Tenant newTenantBo);
+        Task<int> Update(Tenant tenantToEdit);
+        Task<int> Delete(Guid guid);
+        Task<bool> Exists(Guid guid);
+    }
+
+    public class TenantRepository : ITenantRepository
     {
         private readonly DatabaseConnectionFactory _databaseConnectionFactory;
 
@@ -18,28 +29,51 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
             _databaseConnectionFactory = databaseConnectionFactory;
         }
 
-        internal virtual async Task<IEnumerable<Tenant>> GetAll()
+        public async Task<PagedResults<Tenant>> Get(Pagination pagination = null)
         {
+            var dynamicParameters = new DynamicParameters();
+            
+            if (pagination?.PageSize > 0 && pagination.PageIndex >= 0)
+            {
+                var pageOffset = pagination.PageIndex * pagination.PageSize;
+                dynamicParameters.Add("@PageOffset", pageOffset);
+                dynamicParameters.Add("@PageSize", pagination.PageSize);
+            }            
+            
+            var query = $@"
+                SELECT *
+                FROM [Tenants]
+                {Sql.OrderWithPossiblePagination(pagination, "[Name]")}
+                
+                SELECT COUNT([Id])
+                FROM [Tenants]
+            ";
+            
             using (var connection = _databaseConnectionFactory.GetConnection())
             {
-                const string query = @"
-                    SELECT [Id], [Name], [Alias], [Guid]
-                    FROM [Tenants]
-                ";
-
-                var tenants = await connection.QueryAsync<Tenant>(query);
-
-                return tenants;
+                using (var multipleQuery = await connection.QueryMultipleAsync(query, dynamicParameters))
+                {
+                    var tenants = await multipleQuery.ReadAsync<Tenant>();
+                    var totalCount = multipleQuery.ReadFirst<int>();
+                    
+                    var result = new PagedResults<Tenant>
+                    {
+                        Items = tenants,
+                        TotalCount = totalCount
+                    };
+                    
+                    return result;
+                }
             }
         }
 
-        internal virtual async Task<Tenant> GetByGuid(Guid guid)
+        public async Task<Tenant> Get(Guid guid)
         {
             using (var connection = _databaseConnectionFactory.GetConnection())
             {
                 const string query = @"
-                    SELECT Id, Name, Alias, Guid
-                    FROM Tenants
+                    SELECT *
+                    FROM [Tenants]
                     WHERE Guid = @Guid
                 ";
 
@@ -49,25 +83,24 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
             }
         }
 
-        internal virtual async Task<Guid> CreateNewTenant(Tenant newTenantBo)
+        public async Task<Guid> Create(Tenant newTenantBo)
         {
             using (var connection = _databaseConnectionFactory.GetConnection())
             {
                 newTenantBo.Guid = Guid.NewGuid();
                 
                 const string query = @"
-                    INSERT INTO [Tenants] ([Alias], [Name], [Guid])
-                    VALUES (@Alias, @Name, @Guid);
+                    INSERT INTO [Tenants] ([Alias], [Name], [Guid], [CreatedOnUtc], [CreatedBy])
+                    VALUES (@Alias, @Name, @Guid, @CreatedOnUtc, @CreatedBy);
                 ";
 
-                var affectedRows = await connection.ExecuteAsync(query,
-                    new {newTenantBo.Alias, newTenantBo.Name, newTenantBo.Guid});
+                var affectedRows = await connection.ExecuteAsync(query, newTenantBo);
 
                 return affectedRows == 1 ? newTenantBo.Guid : Guid.Empty;
             }
         }
 
-        internal virtual async Task<int> EditTenant(Tenant tenantToEdit)
+        public async Task<int> Update(Tenant tenantToEdit)
         {
             using (var connection = _databaseConnectionFactory.GetConnection())
             {
@@ -86,7 +119,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
             }
         }
 
-        internal virtual async Task<int> DeleteTenant(Guid guid)
+        public async Task<int> Delete(Guid guid)
         {
             using (var connection = _databaseConnectionFactory.GetConnection())
             {
@@ -98,6 +131,21 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
                 var affectedRows = await connection.ExecuteAsync(query, new {@Guid = guid.ToString()});
 
                 return affectedRows;
+            }
+        }
+
+        public async Task<bool> Exists(Guid guid)
+        {
+            const string query = @"
+                SELECT COUNT(1)
+                FROM [Tenants]
+                WHERE [Guid] = @TenantGuid;
+            ";
+
+            using (var connection = _databaseConnectionFactory.GetConnection())
+            {
+                var result = await connection.ExecuteScalarAsync<bool>(query, new {@TenantGuid = guid});
+                return result;
             }
         }
     }

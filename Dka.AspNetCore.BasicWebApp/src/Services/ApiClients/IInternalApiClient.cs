@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Tenants;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Users;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Pagination;
 
 namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
 {
     public interface IInternalApiClient
     {
-        Task<IEnumerable<TenantContract>> GetTenants();
+        Task<PagedResults<TenantContract>> GetTenants(Common.Models.Pagination.Pagination pagination = null);
         
         Task<IEnumerable<ApplicationUserContract>> GetApplicationUsers();
 

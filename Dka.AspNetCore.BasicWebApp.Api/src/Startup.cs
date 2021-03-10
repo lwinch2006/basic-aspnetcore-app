@@ -54,6 +54,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api
         {
             _configuration.GetSection($"{_appName}:{AppSettingsJsonFileSections.BaseWebAppContext}").Bind(_databaseConfiguration);
 
+            services.AddHttpContextAccessor();
             services.AddSingleton(_databaseConfiguration);
             services.AddDatabaseClasses(_databaseConfiguration);
             services

@@ -1,4 +1,4 @@
-using Dka.AspNetCore.BasicWebApp.ViewModels.Tenants;
+using Dka.AspNetCore.BasicWebApp.Areas.Administration.ViewModels.Tenants;
 using Xunit;
 
 namespace Dka.AspNetCore.BasicWebApp.UnitTests.ViewModels.Tenants

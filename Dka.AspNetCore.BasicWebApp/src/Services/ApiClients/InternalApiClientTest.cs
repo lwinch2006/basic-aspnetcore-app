@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -8,6 +7,7 @@ using AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Tenants;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Users;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Pagination;
 using Tenant = Dka.AspNetCore.BasicWebApp.Common.Models.Tenants.Tenant;
 
 namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
@@ -26,12 +26,18 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ApiClients
             return Task.FromResult(pageName);
         }
 
-        public async Task<IEnumerable<TenantContract>> GetTenants()
+        public async Task<PagedResults<TenantContract>> GetTenants(Common.Models.Pagination.Pagination pagination = null)
         {
             var dummyTenants = await Tenant.GetDummyTenantSet();
-            var dummyTenantsContract = _mapper.Map<IEnumerable<TenantContract>>(dummyTenants); 
+            var dummyTenantsContract = _mapper.Map<IEnumerable<TenantContract>>(dummyTenants);
+
+            var result = new PagedResults<TenantContract>
+            {
+                Items = dummyTenantsContract,
+                TotalCount = dummyTenantsContract.Count()
+            };
             
-            return dummyTenantsContract;
+            return result;
         }
 
         public Task<IEnumerable<ApplicationUserContract>> GetApplicationUsers()

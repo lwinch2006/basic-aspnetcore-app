@@ -1,13 +1,8 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using AutoMapper;
-using Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration;
 using Dka.AspNetCore.BasicWebApp.Api.Services.HttpContext;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Logging;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -18,9 +13,9 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
     {
         private readonly IMapper _mapper;
 
-        private readonly ILogger<TenantsController> _logger;
+        private readonly ILogger<ManageController> _logger;
         
-        public ManageController(IMapper mapper, ILogger<TenantsController> logger)
+        public ManageController(IMapper mapper, ILogger<ManageController> logger)
         {
             _mapper = mapper;
             _logger = logger;
@@ -31,7 +26,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Controllers.Account
         [ActionName("index")]
         public IActionResult Profile()
         {
-            _logger.LogInformation(LoggingEvents.ReadItems, "Getting user with GUID {Guid}.", HttpContext.GetAuthenticatedUserGuid());
+            _logger.LogInformation(LoggingEvents.ReadItems, "Getting user with GUID {Guid}.", HttpContext.GetUserGuid());
             
             return Ok();
         }

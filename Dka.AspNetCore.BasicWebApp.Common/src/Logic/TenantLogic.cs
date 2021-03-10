@@ -1,49 +1,52 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Pagination;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
 using Dka.AspNetCore.BasicWebApp.Common.Repositories;
 
 namespace Dka.AspNetCore.BasicWebApp.Common.Logic
 {
-    public class TenantLogic
+    public interface ITenantLogic
     {
-        private readonly TenantRepository _tenantRepository;
+        Task<PagedResults<Tenant>> Get(Pagination pagination = null);
+        Task<Tenant> Get(Guid guid);
+        Task<Guid> Create(Tenant newTenantBo);
+        Task<int> Update(Tenant tenantToEdit);
+        Task<int> Delete(Guid guid);
+    }
 
-        public TenantLogic(TenantRepository tenantRepository)
+    public class TenantLogic : ITenantLogic
+    {
+        private readonly ITenantRepository _tenantRepository;
+
+        public TenantLogic(ITenantRepository tenantRepository)
         {
             _tenantRepository = tenantRepository;
         }
 
-        public virtual async Task<IEnumerable<Tenant>> GetAll()
+        public async Task<PagedResults<Tenant>> Get(Pagination pagination = null)
         {
-            var tenants = await _tenantRepository.GetAll();
-
-            return tenants;
+            return await _tenantRepository.Get(pagination);
         }
 
-        public virtual async Task<Tenant> GetByGuid(Guid guid)
+        public async Task<Tenant> Get(Guid guid)
         {
-            var tenant = await _tenantRepository.GetByGuid(guid);
-
-            return tenant;
+            return await _tenantRepository.Get(guid);
         }
 
-        public virtual async Task<Guid> CreateNewTenant(Tenant newTenantBo)
+        public async Task<Guid> Create(Tenant newTenantBo)
         {
-            var newTenantGuid = await _tenantRepository.CreateNewTenant(newTenantBo);
-
-            return newTenantGuid;
+            return await _tenantRepository.Create(newTenantBo);
         }
 
-        public virtual async Task<int> EditTenant(Tenant tenantToEdit)
+        public async Task<int> Update(Tenant tenantToEdit)
         {
-            return await _tenantRepository.EditTenant(tenantToEdit);
+            return await _tenantRepository.Update(tenantToEdit);
         }
 
-        public virtual async Task<int> DeleteTenant(Guid guid)
+        public async Task<int> Delete(Guid guid)
         {
-            return await _tenantRepository.DeleteTenant(guid);
+            return await _tenantRepository.Delete(guid);
         }
     }
 }

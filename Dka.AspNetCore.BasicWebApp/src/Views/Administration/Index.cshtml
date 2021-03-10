@@ -14,7 +14,7 @@
     <div class="col-sm-3">
         @if ((await AuthorizationService.AuthorizeAsync(Context.User, new Tenant(), new DataOperationRequirement(nameof(Tenant), DataOperationNames.Read))).Succeeded)
         {
-            <a asp-controller="Tenants" asp-action="index" class="btn btn-link d-inline text-dark">
+            <a asp-area="Administration" asp-controller="Tenants" asp-action="Index" class="btn btn-link d-inline text-dark">
                 <div class="card">
                     <div class="card-body text-center">
                         <div class="mb-2">

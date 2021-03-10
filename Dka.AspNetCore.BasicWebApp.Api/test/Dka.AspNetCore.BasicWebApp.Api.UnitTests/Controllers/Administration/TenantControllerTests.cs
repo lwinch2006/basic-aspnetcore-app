@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Api.Controllers.Administration;
 using Dka.AspNetCore.BasicWebApp.Common.Logic;
-using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ApiContracts.Tenants;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Configurations;
 using Dka.AspNetCore.BasicWebApp.Common.Models.ExceptionProcessing;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Pagination;
 using Dka.AspNetCore.BasicWebApp.Common.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -39,9 +39,22 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
             var databaseConnectionFactory = new Mock<DatabaseConnectionFactory>(databaseConfiguration.Object);
             var tenantRepository = new Mock<TenantRepository>(databaseConnectionFactory.Object);
             var tenantLogic = new Mock<TenantLogic>(tenantRepository.Object);
-            tenantLogic.Setup(logic => logic.GetAll()).Returns(Tenant.GetDummyTenantSet());
-            tenantLogic.Setup(logic => logic.GetByGuid(It.IsAny<Guid>())).Returns<Guid>(guid => Task.FromResult(Tenant.GetDummyTenantSet().GetAwaiter().GetResult().ToList().FirstOrDefault(record => record.Guid == guid)));
-            tenantLogic.Setup(logic => logic.DeleteTenant(It.Is<Guid>(value => value != new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95")))).Returns<Guid>(guid =>
+            
+            tenantLogic.Setup(logic => logic.Get(It.IsAny<Pagination>())).Returns<Pagination>(pagination =>
+            {
+                var tenants = Tenant.GetDummyTenantSet().GetAwaiter().GetResult();
+
+                var result = new PagedResults<Tenant>
+                {
+                    Items = tenants,
+                    TotalCount = tenants.Count()
+                };
+                
+                return Task.FromResult(result);
+            });
+            
+            tenantLogic.Setup(logic => logic.Get(It.IsAny<Guid>())).Returns<Guid>(guid => Task.FromResult(Tenant.GetDummyTenantSet().GetAwaiter().GetResult().ToList().FirstOrDefault(record => record.Guid == guid)));
+            tenantLogic.Setup(logic => logic.Delete(It.Is<Guid>(value => value != new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95")))).Returns<Guid>(guid =>
             {
                 var tenantList = Tenant.GetDummyTenantSet().GetAwaiter().GetResult().ToList();
 
@@ -54,9 +67,9 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
                 return Task.FromResult(0);
             });
             
-            tenantLogic.Setup(logic => logic.DeleteTenant(It.Is<Guid>(value => value == new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95")))).Returns<Guid>(guid => throw new BasicWebAppException());
+            tenantLogic.Setup(logic => logic.Delete(It.Is<Guid>(value => value == new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95")))).Returns<Guid>(guid => throw new BasicWebAppException());
             
-            tenantLogic.Setup(logic => logic.CreateNewTenant(It.IsAny<Tenant>())).Returns<Tenant>(tenant =>
+            tenantLogic.Setup(logic => logic.Create(It.IsAny<Tenant>())).Returns<Tenant>(tenant =>
             {
                 var tenantList = Tenant.GetDummyTenantSet().GetAwaiter().GetResult().ToList();
 
@@ -73,7 +86,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
                 return Task.FromResult(tenantList[^1].Guid);
             });
 
-            tenantLogic.Setup(logic => logic.EditTenant(It.Is<Tenant>(tenant => new [] { new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95") }.Any(guid => tenant.Guid != guid)))).Returns<Tenant>(tenant =>
+            tenantLogic.Setup(logic => logic.Update(It.Is<Tenant>(tenant => new [] { new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95") }.Any(guid => tenant.Guid != guid)))).Returns<Tenant>(tenant =>
             {
                 var tenantList = Tenant.GetDummyTenantSet().GetAwaiter().GetResult().ToList();
                 
@@ -86,7 +99,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
                 return Task.FromResult(0);
             });
             
-            tenantLogic.Setup(logic => logic.EditTenant(It.Is<Tenant>(tenant => new [] { new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95") }.Any(guid => tenant.Guid == guid)))).Returns<Tenant>(tenant => throw new BasicWebAppException());            
+            tenantLogic.Setup(logic => logic.Update(It.Is<Tenant>(tenant => new [] { new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95") }.Any(guid => tenant.Guid == guid)))).Returns<Tenant>(tenant => throw new BasicWebAppException());            
             
             var tenantController = new TenantsController(tenantLogic.Object, mapper, logger.Object);
 
@@ -98,7 +111,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         {
             var tenantController = SetupTenantController();
 
-            var result = await tenantController.GetAll();
+            var result = await tenantController.Index(null);
 
             var apiResult = Assert.IsType<OkObjectResult>(result);
             var model = Assert.IsAssignableFrom<IEnumerable<TenantContract>>(apiResult.Value).ToList();
@@ -112,7 +125,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         {
             var tenantController = SetupTenantController();
 
-            var result = await tenantController.GetByGuid(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"));
+            var result = await tenantController.Details(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"));
 
             var apiResult = Assert.IsType<OkObjectResult>(result);
             var model = Assert.IsAssignableFrom<TenantContract>(apiResult.Value);
@@ -126,7 +139,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         {
             var tenantController = SetupTenantController();
 
-            var result = await tenantController.GetByGuid(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF"));
+            var result = await tenantController.Details(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF"));
 
             var apiResult = Assert.IsType<NotFoundResult>(result);
 
@@ -138,7 +151,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         {
             var tenantController = SetupTenantController();
 
-            var result = await tenantController.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF"));
+            var result = await tenantController.Delete(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF"));
 
             var apiResult = Assert.IsType<NotFoundResult>(result);
             
@@ -150,7 +163,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         {
             var tenantController = SetupTenantController();
 
-            var result = await tenantController.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"));
+            var result = await tenantController.Delete(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"));
 
             var apiResult = Assert.IsType<OkObjectResult>(result);
             var model = Assert.IsAssignableFrom<Tenant>(apiResult.Value);
@@ -163,7 +176,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         {
             var tenantController = SetupTenantController();
 
-            var result = await tenantController.DeleteTenant(new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95"));
+            var result = await tenantController.Delete(new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95"));
 
             var apiResult = Assert.IsType<StatusCodeResult>(result);
             
@@ -175,7 +188,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         {
             var tenantController = SetupTenantController();
             
-            var result = await tenantController.CreateNewTenant(new NewTenantContract { Name = "Test Company", Alias = "test-company" });
+            var result = await tenantController.Create(new NewTenantContract { Name = "Test Company", Alias = "test-company" });
 
             var apiResult = Assert.IsType<OkObjectResult>(result);
             var model = Assert.IsAssignableFrom<Guid>(apiResult.Value);
@@ -188,7 +201,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         {
             var tenantController = SetupTenantController();
             
-            var result = await tenantController.CreateNewTenant(new NewTenantContract { Name = "Umbrella Corporation", Alias = "umbrella" });
+            var result = await tenantController.Create(new NewTenantContract { Name = "Umbrella Corporation", Alias = "umbrella" });
 
             var apiResult = Assert.IsType<StatusCodeResult>(result);
             
@@ -200,7 +213,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         {
             var tenantController = SetupTenantController();
             
-            var result = await tenantController.CreateNewTenant(null);
+            var result = await tenantController.Create(null);
             
             var apiResult = Assert.IsType<BadRequestResult>(result);
             
@@ -212,7 +225,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         {
             var tenantController = SetupTenantController();
             
-            var result = await tenantController.EditTenant(new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), new EditTenantContract { Name = "Test Company", Alias = "test-company" });
+            var result = await tenantController.Update(new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), new EditTenantContract { Name = "Test Company", Alias = "test-company" });
 
             var apiResult = Assert.IsType<NotFoundResult>(result);
             
@@ -223,7 +236,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         public async Task EditTenant_PassNullTenantAndInvalidGuid_ReturnsBadRequest_ShouldPass()
         {
             var tenantController = SetupTenantController();
-            var result = await tenantController.EditTenant(new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), null);
+            var result = await tenantController.Update(new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), null);
 
             var apiResult = Assert.IsType<NotFoundResult>(result);
 
@@ -234,7 +247,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         public async Task EditTenant_PassValidTenantAndGuid_ReturnsNoContent_ShouldPass()
         {
             var tenantController = SetupTenantController();
-            var result = await tenantController.EditTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantContract { Name = "Umbrella Corporation1", Alias = "umbrella1" });
+            var result = await tenantController.Update(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"), new EditTenantContract { Name = "Umbrella Corporation1", Alias = "umbrella1" });
             
             var apiResult = Assert.IsType<NoContentResult>(result);
             
@@ -245,7 +258,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         public async Task EditTenant_PassValidTenantAndGuid_ThrowsException_ReturnsNotFound_ShouldPass()
         {
             var tenantController = SetupTenantController();
-            var result = await tenantController.EditTenant(new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), new EditTenantContract { Name = "Umbrella Corporation1", Alias = "umbrella1" });
+            var result = await tenantController.Update(new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47CFFF"), new EditTenantContract { Name = "Umbrella Corporation1", Alias = "umbrella1" });
             var apiResult = Assert.IsType<NotFoundResult>(result);
             
             Assert.Equal(StatusCodes.Status404NotFound, apiResult.StatusCode);
@@ -255,7 +268,7 @@ namespace Dka.AspNetCore.BasicWebApp.Api.UnitTests.Controllers.Administration
         public async Task EditTenant_PassValidTenantAndGuid_ThrowsException_ReturnsInternalServerError_ShouldPass()
         {
             var tenantController = SetupTenantController();
-            var result = await tenantController.EditTenant(new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95"), new EditTenantContract { Name = "Cyberdyne Systems1", Alias = "cyberdyne1" });
+            var result = await tenantController.Update(new Guid("F02E8F1F-0BBA-4049-9ED6-902F610DEE95"), new EditTenantContract { Name = "Cyberdyne Systems1", Alias = "cyberdyne1" });
             var apiResult = Assert.IsType<StatusCodeResult>(result);
             
             Assert.Equal(StatusCodes.Status500InternalServerError, apiResult.StatusCode);

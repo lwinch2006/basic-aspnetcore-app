@@ -41,7 +41,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
         {
             var internalApiClientTest = SetupInternalApiClientTest();
 
-            var result = (await internalApiClientTest.GetTenants()).ToList();
+            var result = (await internalApiClientTest.GetTenants()).Items.ToList();
 
             Assert.Equal(3, result.Count);
         }

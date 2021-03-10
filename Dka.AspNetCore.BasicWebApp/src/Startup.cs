@@ -1,32 +1,24 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Common.Logic;
-using Dka.AspNetCore.BasicWebApp.Common.Logic.Authentication;
 using Dka.AspNetCore.BasicWebApp.Common.Logic.Authorization;
-using Dka.AspNetCore.BasicWebApp.Common.Models.Authentication;
-using Dka.AspNetCore.BasicWebApp.Common.Models.Configurations;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Models.AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Models.Configurations;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
+using Dka.AspNetCore.BasicWebApp.Services.Pagination;
 using Dka.AspNetCore.BasicWebApp.Services.Unleash;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 namespace Dka.AspNetCore.BasicWebApp
@@ -115,10 +107,12 @@ namespace Dka.AspNetCore.BasicWebApp
             app.UseAuthentication();
             app.UseAuthorization();
             
-            app.UseUnleashMiddleware(); 
+            app.UseUnleashMiddleware();
+            app.UsePaginationMiddleware();
             
             app.UseEndpoints(configure =>
             {
+                configure.MapControllerRoute("areas", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
                 configure.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 configure.MapRazorPages();
             });

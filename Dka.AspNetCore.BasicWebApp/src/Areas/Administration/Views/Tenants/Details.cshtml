@@ -4,7 +4,7 @@
 @using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService AuthorizationService
 
-@model Dka.AspNetCore.BasicWebApp.ViewModels.Tenants.TenantViewModel
+@model Dka.AspNetCore.BasicWebApp.Areas.Administration.ViewModels.Tenants.TenantViewModel
 @{
     ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "Tenant details";
     ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "Tenant details";
@@ -35,7 +35,7 @@
             
             @if ((await AuthorizationService.AuthorizeAsync(Context.User, Model, new DataOperationRequirement(nameof(Tenant), DataOperationNames.Update))).Succeeded)
             {
-                <a asp-controller="Tenants" asp-action="edit" asp-route-guid="@Model.Guid" class="btn btn-outline-secondary dka-btn">Edit</a>
+                <a asp-controller="Tenants" asp-action="Update" asp-route-id="@Model.Guid" class="btn btn-outline-secondary dka-btn">Edit</a>
             }
         </div>
     </div>

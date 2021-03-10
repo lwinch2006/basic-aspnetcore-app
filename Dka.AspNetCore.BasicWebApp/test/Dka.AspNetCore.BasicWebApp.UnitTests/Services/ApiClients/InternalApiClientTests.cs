@@ -215,7 +215,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
                 var internalApiClient = new InternalApiClient(httpClient, httpContextAccessor);
                 return internalApiClient;
             }
-            catch (Exception e)
+            catch
             {
                 throw;
             }
@@ -322,7 +322,7 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Services.ApiClients
         {
             var internalApiClient = SetupInternalApiClient();
 
-            var result = (await internalApiClient.GetTenants()).ToList();
+            var result = (await internalApiClient.GetTenants()).Items.ToList();
 
             Assert.Equal(3, result.Count);
         }

@@ -1,0 +1,131 @@
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Authorization
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants
+@using Dka.AspNetCore.BasicWebApp.Areas.Administration.ViewModels.Tenants
+@using Dka.AspNetCore.BasicWebApp.Common.Models.Constants
+@using Dka.AspNetCore.BasicWebApp.Models.Constants
+@using Dka.AspNetCore.BasicWebApp.ViewModels.Pagination
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService;
+
+@model Dka.AspNetCore.BasicWebApp.ViewModels.Pagination.PagedResultsViewModel<TenantViewModel>
+
+@{
+    ViewData[ViewDataKeys.HtmlPageHeadSectionTitle] = "Tenant list";
+    ViewData[ViewDataKeys.HtmlPageTopHeaderTitle] = "Tenant list";
+    ViewData[ViewDataKeys.ActiveNavigationLink] = "administration";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        
+    });
+
+    function pageSizeListChanged(selectedPageSize) {
+        var target = '@Url.Action("Index", "Tenants")';
+        var whereParts = [];
+        
+        if (selectedPageSize === undefined) {
+            selectedPageSize = $('#PageSizeList').val();
+        }
+        
+        var pageIndex = '0';
+        var pageSize = selectedPageSize === '@PaginationConstants.Common.Hyphen'
+            ? '@Model.Pagination.PageSize'
+            : selectedPageSize === '@PaginationConstants.Common.All' 
+                ? '0' 
+                : selectedPageSize;        
+        
+        whereParts.push('pageIndex=' + pageIndex);
+        whereParts.push('pageSize=' + pageSize);
+            
+        if (whereParts.length > 0) {
+            target += '?';
+            target += whereParts.join('&');
+        }
+        
+        window.location.href = target;
+    }
+</script>
+
+<div class="row mb-4">
+    <div class="col-sm-12 form-inline">
+        <label asp-for="@Model.Pagination" class="mr-2">Tenants per page:</label>
+        <select id="PageSizeList" asp-for="@Model.Pagination.PageSizeAsString" asp-items="@Model.Pagination.PageSizes" class="form-control" style="max-width: 100px;" onchange="pageSizeListChanged(this.value)"></select>
+    </div>
+</div>
+
+<div class="row mb-2">
+    <div class="col-sm-12">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>
+                    #
+                </th>
+                <th>
+                    Alias
+                </th>
+                <th>
+                    Name
+                </th>
+                <th>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            @{
+                var index = 0;
+
+                foreach (var tenant in Model.Items)
+                {
+                    <tr>
+                        <td>
+                            @(++index)
+                        </td>
+                        <td>
+                            @tenant.Alias
+                        </td>
+                        <td>
+                            @tenant.Name
+                        </td>
+                        <td>
+                            @if ((await AuthorizationService.AuthorizeAsync(Context.User, Model, new DataOperationRequirement(nameof(Tenant), DataOperationNames.Read))).Succeeded)
+                            {
+                                <a asp-controller="Tenants" asp-action="details" asp-route-id="@tenant.Guid">details</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+@if (Model.Pagination.PageSize.GetValueOrDefault(0) > 0)
+{
+    var paginationSharedViewModel = new PaginationSharedViewModel
+    {
+        Controller = "Tenants",
+        Action = "Index",
+        Pagination = Model.Pagination,
+        RouteValues = new Dictionary<string, string>()
+    };
+
+    <div class="row mb-4">
+        <div class="col-sm-12 text-right">
+            <partial name="Pagination" model="paginationSharedViewModel"/>
+        </div>
+    </div>
+}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="d-flex">
+            <a asp-area="" asp-controller="Administration" asp-action="Index" class="btn btn-outline-secondary">Back</a>
+
+            @if ((await AuthorizationService.AuthorizeAsync(Context.User, Model, new DataOperationRequirement(nameof(Tenant), DataOperationNames.Create))).Succeeded)
+            {
+                <a asp-controller="Tenants" asp-action="Create" class="btn btn-outline-secondary ml-auto">Add new tenant</a>
+            }
+        </div>
+    </div>
+</div>

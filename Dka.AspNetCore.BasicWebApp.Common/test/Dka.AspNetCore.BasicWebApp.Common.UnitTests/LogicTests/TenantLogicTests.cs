@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Logic;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Configurations;
+using Dka.AspNetCore.BasicWebApp.Common.Models.Pagination;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Tenants;
 using Dka.AspNetCore.BasicWebApp.Common.Repositories;
 using Moq;
@@ -17,15 +18,28 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
             var databaseConfiguration = new Mock<DatabaseConfiguration>();
             var databaseConnectionFactory = new Mock<DatabaseConnectionFactory>(databaseConfiguration.Object);
             var tenantRepository = new Mock<TenantRepository>(databaseConnectionFactory.Object);
-            tenantRepository.Setup(repository => repository.GetAll()).Returns(Tenant.GetDummyTenantSet);
-            tenantRepository.Setup(repository => repository.GetByGuid(It.IsAny<Guid>())).Returns<Guid>(guid =>
+            
+            tenantRepository.Setup(repository => repository.Get(It.IsAny<Pagination>())).Returns<Pagination>(
+                pagination =>
+                {
+                    var tenants = Tenant.GetDummyTenantSet().GetAwaiter().GetResult();
+                    var result = new PagedResults<Tenant>
+                    {
+                        Items = tenants,
+                        TotalCount = tenants.Count()
+                    };
+
+                    return Task.FromResult(result);
+                });
+        
+            tenantRepository.Setup(repository => repository.Get(It.IsAny<Guid>())).Returns<Guid>(guid =>
             {
                 var tenantList = Tenant.GetDummyTenantSet().GetAwaiter().GetResult().ToList();
 
                 return Task.FromResult(tenantList.FirstOrDefault(record => record.Guid == guid));
             });
             
-            tenantRepository.Setup(repository => repository.CreateNewTenant(It.IsAny<Tenant>())).Returns<Tenant>(tenant =>
+            tenantRepository.Setup(repository => repository.Create(It.IsAny<Tenant>())).Returns<Tenant>(tenant =>
             {
                 var tenantList = Tenant.GetDummyTenantSet().GetAwaiter().GetResult().ToList();
                 tenant.Guid = new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47C2D6");
@@ -35,7 +49,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
                 return Task.FromResult(tenantList[^1].Guid);
             });
             
-            tenantRepository.Setup(repository => repository.EditTenant(It.IsAny<Tenant>())).Returns<Tenant>(tenant =>
+            tenantRepository.Setup(repository => repository.Update(It.IsAny<Tenant>())).Returns<Tenant>(tenant =>
             {
                 var tenantList = Tenant.GetDummyTenantSet().GetAwaiter().GetResult().ToList();
 
@@ -48,7 +62,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
                 return Task.FromResult(0);
             });
             
-            tenantRepository.Setup(repository => repository.DeleteTenant(It.IsAny<Guid>())).Returns<Guid>(guid =>
+            tenantRepository.Setup(repository => repository.Delete(It.IsAny<Guid>())).Returns<Guid>(guid =>
             {
                 var tenantList = Tenant.GetDummyTenantSet().GetAwaiter().GetResult().ToList();
 
@@ -71,7 +85,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
         {
             var tenantLogic = SetupTenantLogic();
 
-            var tenants = (await tenantLogic.GetAll()).ToList();
+            var tenants = (await tenantLogic.Get()).Items.ToList();
 
             Assert.Equal(3, tenants.Count);
             Assert.Equal("Umbrella Corporation", tenants.First().Name);
@@ -81,7 +95,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
         public async Task GetByGuid_PassValidGuid_ReturnsTenant_ShouldPass()
         {
             var tenantLogic = SetupTenantLogic();
-            var tenant = await tenantLogic.GetByGuid(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"));
+            var tenant = await tenantLogic.Get(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"));
 
             Assert.NotNull(tenant);
             Assert.Equal("Umbrella Corporation", tenant.Name);
@@ -91,7 +105,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
         public async Task GetByGuid_PassInvalidGuid_ReturnsTenant_ShouldPass()
         {
             var tenantLogic = SetupTenantLogic();
-            var tenant = await tenantLogic.GetByGuid(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF"));
+            var tenant = await tenantLogic.Get(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF"));
 
             Assert.Null(tenant);
         }
@@ -100,7 +114,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
         public async Task CreateNewTenant_PassValidTenant_ReturnsNewTenantGuid_ShouldPass()
         {
             var tenantLogic = SetupTenantLogic();
-            var tenantGuid = await tenantLogic.CreateNewTenant(new Tenant {Name = "Test company", Alias = "test-company"});
+            var tenantGuid = await tenantLogic.Create(new Tenant {Name = "Test company", Alias = "test-company"});
             
             Assert.Equal(new Guid("DE5BC94F-80E7-44AB-B1EF-BDFF7E47C2D6"), tenantGuid);
         }
@@ -112,7 +126,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
 
             try
             {
-                await tenantLogic.CreateNewTenant(null);
+                await tenantLogic.Create(null);
             }
             catch (NullReferenceException)
             {
@@ -127,7 +141,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
         public async Task EditTenant_PassValidTenant_ReturnsNewTenantGuid_ShouldPass()
         {
             var tenantLogic = SetupTenantLogic();
-            var affectedRows = await tenantLogic.EditTenant(new Tenant {Name = "Test company", Alias = "test-company", Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")});
+            var affectedRows = await tenantLogic.Update(new Tenant {Name = "Test company", Alias = "test-company", Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C")});
             
             Assert.Equal(1, affectedRows);            
         }
@@ -136,7 +150,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
         public async Task EditTenant_PassInvalidTenant_ReturnsNewTenantGuid_ShouldPass()
         {
             var tenantLogic = SetupTenantLogic();
-            var affectedRows = await tenantLogic.EditTenant(new Tenant {Name = "Test company", Alias = "test-company", Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF")});
+            var affectedRows = await tenantLogic.Update(new Tenant {Name = "Test company", Alias = "test-company", Guid = new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF")});
             
             Assert.Equal(0, affectedRows);            
         }
@@ -148,7 +162,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
 
             try
             {
-                await tenantLogic.EditTenant(null);
+                await tenantLogic.Update(null);
             }
             catch (NullReferenceException)
             {
@@ -164,7 +178,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
         {
             var tenantLogic = SetupTenantLogic();
             
-            var affectedRows = await tenantLogic.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"));
+            var affectedRows = await tenantLogic.Delete(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0B11C"));
             
             Assert.Equal(1, affectedRows);
         }
@@ -174,7 +188,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.UnitTests
         {
             var tenantLogic = SetupTenantLogic();
             
-            var affectedRows = await tenantLogic.DeleteTenant(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF"));
+            var affectedRows = await tenantLogic.Delete(new Guid("9D5CC1D7-EA23-43AB-8725-01D8EBF0BFFF"));
             
             Assert.Equal(0, affectedRows);
         }        

@@ -1,0 +1,61 @@
+@model Dka.AspNetCore.BasicWebApp.ViewModels.Pagination.PaginationSharedViewModel
+
+@{
+    if (Model.Pagination.PageSize.GetValueOrDefault(0) > 0)
+    {
+        var pageIndexOffset = 2;
+        var maxNumOfPages = pageIndexOffset * 2 + 1;
+        var numOfPages = Model.Pagination.TotalCount / Model.Pagination.PageSize.Value;
+        var modulus = Model.Pagination.TotalCount % Model.Pagination.PageSize;
+
+        numOfPages = modulus > 0 ? numOfPages + 1 : numOfPages;
+
+        if (numOfPages > 1)
+        {
+            if (!Model.RouteValues.ContainsKey(nameof(Model.Pagination.PageSize)))
+            {
+                Model.RouteValues.Add(nameof(Model.Pagination.PageSize), Model.Pagination.PageSize.Value.ToString());
+            }
+
+            if (!Model.RouteValues.ContainsKey(nameof(Model.Pagination.PageIndex)))
+            {
+                Model.RouteValues.Add(nameof(Model.Pagination.PageIndex), Model.Pagination.PageIndex.ToString());
+            }
+            
+            <div class="text-right">
+                <span style="line-height: 1.2">Pages: </span>
+                @{
+                    Model.RouteValues[nameof(Model.Pagination.PageIndex)] = "0";
+                    <a asp-controller="@Model.Controller" asp-action="Index" asp-all-route-data="@Model.RouteValues" class="btn btn-link my-0 py-0 pr-0 @(Model.Pagination.PageIndex == 0 ? "disabled" : "")">1</a>
+                    
+                    var startI = Math.Max(2, Model.Pagination.PageIndex + 1 - pageIndexOffset);
+                    var endI = Math.Min(numOfPages - 1, startI + maxNumOfPages - 1);
+
+                    if (endI == numOfPages - 1)
+                    {
+                        startI = Math.Max(2, endI - maxNumOfPages + 1);
+                    }
+
+                    if (startI - 1 > 1)
+                    {
+                        <span style="line-height: 1.2" class="pl-3">...</span>
+                    }
+
+                    for (var i = startI; i <= endI; i++)
+                    {
+                        Model.RouteValues[nameof(Model.Pagination.PageIndex)] = (i - 1).ToString();
+                        <a asp-controller="@Model.Controller" asp-action="Index" asp-all-route-data="@Model.RouteValues" class="btn btn-link my-0 py-0 pr-0 @(Model.Pagination.PageIndex + 1 == i ? "disabled" : "")">@i</a>
+                    }
+
+                    if (numOfPages - endI > 1)
+                    {
+                        <span style="line-height: 1.2" class="pl-3">...</span>
+                    }
+                    
+                    Model.RouteValues[nameof(Model.Pagination.PageIndex)] = (numOfPages - 1).ToString();
+                    <a asp-controller="@Model.Controller" asp-action="Index" asp-all-route-data="@Model.RouteValues" class="btn btn-link my-0 py-0 pr-0 @(Model.Pagination.PageIndex == numOfPages - 1 ? "disabled" : "")">@numOfPages</a>
+                }
+            </div>
+        }
+    }
+}

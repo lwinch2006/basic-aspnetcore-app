@@ -13,12 +13,12 @@ namespace Dka.AspNetCore.BasicWebApp.Api.Services.ServiceCollection
             services.AddScoped(sp => new DatabaseConnectionFactory(databaseConfiguration));
             
             // Repositories.
-            services.AddScoped<TenantRepository>();
+            services.AddScoped<ITenantRepository, TenantRepository>();
             services.AddScoped<UserRepository>();
             services.AddScoped<RoleRepository>();
 
             // Logic.
-            services.AddScoped<TenantLogic>();
+            services.AddScoped<ITenantLogic, TenantLogic>();
             services.AddScoped<ApplicationUserStore>();
             services.AddScoped<ApplicationRoleStore>();
         }
