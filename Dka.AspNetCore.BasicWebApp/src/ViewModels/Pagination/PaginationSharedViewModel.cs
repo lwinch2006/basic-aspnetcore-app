@@ -7,6 +7,6 @@ namespace Dka.AspNetCore.BasicWebApp.ViewModels.Pagination
         public PaginationResponseViewModel Pagination { get; set; }
         public string Controller { get; set; }
         public string Action { get; set; }
-        public IDictionary<string, string> RouteValues { get; set; }        
+        public IDictionary<string, object> RouteValues { get; set; }        
     }
 }

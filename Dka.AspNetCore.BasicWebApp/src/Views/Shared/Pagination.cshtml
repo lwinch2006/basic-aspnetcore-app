@@ -26,7 +26,7 @@
                 <span style="line-height: 1.2">Pages: </span>
                 @{
                     Model.RouteValues[nameof(Model.Pagination.PageIndex)] = "0";
-                    <a asp-controller="@Model.Controller" asp-action="Index" asp-all-route-data="@Model.RouteValues" class="btn btn-link my-0 py-0 pr-0 @(Model.Pagination.PageIndex == 0 ? "disabled" : "")">1</a>
+                    @Html.ActionLink("1", Model.Action, Model.Controller, Model.RouteValues, new { @class = $"btn btn-link my-0 py-0 pr-0 {(Model.Pagination.PageIndex == 0 ? "disabled" : string.Empty)}" })
                     
                     var startI = Math.Max(2, Model.Pagination.PageIndex + 1 - pageIndexOffset);
                     var endI = Math.Min(numOfPages - 1, startI + maxNumOfPages - 1);
@@ -44,7 +44,7 @@
                     for (var i = startI; i <= endI; i++)
                     {
                         Model.RouteValues[nameof(Model.Pagination.PageIndex)] = (i - 1).ToString();
-                        <a asp-controller="@Model.Controller" asp-action="Index" asp-all-route-data="@Model.RouteValues" class="btn btn-link my-0 py-0 pr-0 @(Model.Pagination.PageIndex + 1 == i ? "disabled" : "")">@i</a>
+                        @Html.ActionLink(i.ToString(), Model.Action, Model.Controller, Model.RouteValues, new { @class = $"btn btn-link my-0 py-0 pr-0 {(Model.Pagination.PageIndex + 1 == i ? "disabled" : string.Empty)}" })
                     }
 
                     if (numOfPages - endI > 1)
@@ -53,7 +53,7 @@
                     }
                     
                     Model.RouteValues[nameof(Model.Pagination.PageIndex)] = (numOfPages - 1).ToString();
-                    <a asp-controller="@Model.Controller" asp-action="Index" asp-all-route-data="@Model.RouteValues" class="btn btn-link my-0 py-0 pr-0 @(Model.Pagination.PageIndex == numOfPages - 1 ? "disabled" : "")">@numOfPages</a>
+                    @Html.ActionLink(numOfPages.ToString(), Model.Action, Model.Controller, Model.RouteValues, new { @class = $"btn btn-link my-0 py-0 pr-0 {(Model.Pagination.PageIndex == numOfPages - 1 ? "disabled" : string.Empty)}" })
                 }
             </div>
         }

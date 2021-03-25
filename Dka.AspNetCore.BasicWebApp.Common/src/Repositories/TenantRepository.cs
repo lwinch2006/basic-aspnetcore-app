@@ -33,12 +33,7 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
         {
             var dynamicParameters = new DynamicParameters();
             
-            if (pagination?.PageSize > 0 && pagination.PageIndex >= 0)
-            {
-                var pageOffset = pagination.PageIndex * pagination.PageSize;
-                dynamicParameters.Add("@PageOffset", pageOffset);
-                dynamicParameters.Add("@PageSize", pagination.PageSize);
-            }            
+            AddPagination(pagination, dynamicParameters);
             
             var query = $@"
                 SELECT *
@@ -148,5 +143,17 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Repositories
                 return result;
             }
         }
+        
+        private void AddPagination(Pagination pagination, DynamicParameters dynamicParameters)
+        {
+            if (!(pagination?.PageSize > 0) || pagination.PageIndex < 0)
+            {
+                return;
+            }
+            
+            var pageOffset = pagination.PageIndex * pagination.PageSize;
+            dynamicParameters.Add("@PageOffset", pageOffset);
+            dynamicParameters.Add("@PageSize", pagination.PageSize);
+        }        
     }
 }
