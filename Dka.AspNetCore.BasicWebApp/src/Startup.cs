@@ -1,25 +1,20 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Common.Logic;
-using Dka.AspNetCore.BasicWebApp.Common.Logic.Authorization;
-using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Models.AutoMapper;
 using Dka.AspNetCore.BasicWebApp.Models.Configurations;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
+using Dka.AspNetCore.BasicWebApp.Services.ApplicationBuilder;
 using Dka.AspNetCore.BasicWebApp.Services.Pagination;
 using Dka.AspNetCore.BasicWebApp.Services.Unleash;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Serilog;
+using Dka.AspNetCore.BasicWebApp.Services.ServiceCollection;
 
 namespace Dka.AspNetCore.BasicWebApp
 {
@@ -38,56 +33,30 @@ namespace Dka.AspNetCore.BasicWebApp
         
         public void ConfigureServices(IServiceCollection services)
         {
-            AddInternalApiClient(services);
+            services.InsertInternalApiClient(_configuration, _applicationName);
             
             services.AddHttpContextAccessor();
+
             services.AddUnleashClient();
+            
             services.AddAutoMapper(typeof(BasicWebAppProfile));
+
+            services.InsertAuthentication();
+
+            services.InsertAuthorization();
+
+            //services.InsertLocalization();
             
             services
-                .AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.RequireAuthenticatedSignIn = false;
-                })
-                .AddCookie(options =>
-                {
-                    options.SlidingExpiration = true;
-                    options.LoginPath = AuthenticationDefaults.LoginUrl;
-                    options.LogoutPath = AuthenticationDefaults.LogoutUrl;
-                    options.ReturnUrlParameter = AuthenticationDefaults.ReturnUrlParameter;
-                    options.Events.OnRedirectToAccessDenied = context => {
-                        context.Response.StatusCode = 403;
-                        
-                        return Task.CompletedTask;
-                    };
-                });
-
-            services.AddAuthorization();
-            
-            var authorizationOptions = Options.Create(new AuthorizationOptions());
-            
-            services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerForAdministrator>();
-            services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerForSupport>();
-            services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerForPowerUser>();
-            services.AddSingleton<IAuthorizationHandler, DataOperationAuthorizationHandlerBasedOnRight>();
-            services.AddSingleton<IAuthorizationPolicyProvider>(sp => new DataOperationAuthorizationPolicyProvider(CookieAuthenticationDefaults.AuthenticationScheme, authorizationOptions)); 
-            
-            services.AddControllersWithViews(config =>
-            {
-                var authorizationPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-                
-                config.Filters.Add(new AuthorizeFilter(authorizationPolicy));
-                
-            }).AddRazorRuntimeCompilation();
-
-            services.AddRazorPages();
+                .InsertControllers()
+                .InsertLocalization();
         }
 
         public void Configure(IApplicationBuilder app, ILogger<Startup> logger, ILoggerFactory loggerFactory, IHostEnvironment hostEnvironment)
         {
             loggerFactory.AddSerilog();
+
+            app.InsertLocalization(new[] {"en", "ru"});
             
             if (hostEnvironment.IsDevelopment())
             {

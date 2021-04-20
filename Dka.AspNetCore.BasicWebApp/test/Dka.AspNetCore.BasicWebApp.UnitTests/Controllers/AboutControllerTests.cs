@@ -1,11 +1,8 @@
-using System.Net.Http;
-using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Controllers;
-using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
 using Dka.AspNetCore.BasicWebApp.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -18,7 +15,8 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers
         {
             var logger = new Mock<ILogger<AboutController>>();
             var internalApiClient = new Mock<IInternalApiClient>();
-            var aboutController = new AboutController(internalApiClient.Object, logger.Object);
+            var stringLocalizer = new Mock<IStringLocalizer<AboutController>>();
+            var aboutController = new AboutController(internalApiClient.Object, logger.Object, stringLocalizer.Object);
 
             return (aboutController, internalApiClient);
         }
@@ -27,7 +25,8 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers
         {
             var logger = new Mock<ILogger<AboutController>>();
             var internalApiClient = new Mock<IInternalApiClient>();
-            var aboutController = new AboutController(internalApiClient.Object, logger.Object);
+            var stringLocalizer = new Mock<IStringLocalizer<AboutController>>();
+            var aboutController = new AboutController(internalApiClient.Object, logger.Object, stringLocalizer.Object);
 
             return (aboutController, internalApiClient);
         }
