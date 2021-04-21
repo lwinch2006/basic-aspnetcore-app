@@ -12,21 +12,21 @@ namespace Dka.AspNetCore.BasicWebApp.Controllers
     public class AboutController : Controller
     {
         private readonly IInternalApiClient _internalApiClient;
-        private readonly IStringLocalizer<AboutController> _stringLocalizer;
+        private readonly IStringLocalizer<AboutController> T;
         private readonly ILogger<AboutController> _logger;
 
         public AboutController(IInternalApiClient internalApiClient, ILogger<AboutController> logger, IStringLocalizer<AboutController> stringLocalizer)
         {
             _internalApiClient = internalApiClient;
             _logger = logger;
-            _stringLocalizer = stringLocalizer;
+            T = stringLocalizer;
         }
 
         public IActionResult Index()
         {
             try
             {
-                ViewData[ViewDataKeys.HtmlPageNameReceivedFromApi] = _stringLocalizer["About"];
+                ViewData[ViewDataKeys.HtmlPageNameReceivedFromApi] = T["About"];
             }
             catch (ApiConnectionException ex)
             {
