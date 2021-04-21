@@ -6,6 +6,7 @@ using Dka.AspNetCore.BasicWebApp.Common.Logic.Authorization;
 using Dka.AspNetCore.BasicWebApp.Common.Models.Constants;
 using Dka.AspNetCore.BasicWebApp.Models.Configurations;
 using Dka.AspNetCore.BasicWebApp.Services.ApiClients;
+using Dka.AspNetCore.BasicWebApp.Services.LocalizationPO;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Localization;
 
 namespace Dka.AspNetCore.BasicWebApp.Services.ServiceCollection
 {
@@ -106,5 +108,18 @@ namespace Dka.AspNetCore.BasicWebApp.Services.ServiceCollection
 
             return mvcBuilder;
         }
+
+        public static IMvcBuilder InsertLocalizationPO(this IMvcBuilder mvcBuilder)
+        {
+            mvcBuilder.Services.AddPortableObjectLocalization(options => options.ResourcesPath = "LocalizationPO");
+
+            mvcBuilder.Services.AddSingleton<IPluralRuleProvider, TestPluralRuleProvider>();
+            
+            mvcBuilder
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+
+            return mvcBuilder;
+        }
+
     }
 }

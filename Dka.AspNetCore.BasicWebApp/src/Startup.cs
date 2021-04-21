@@ -44,12 +44,10 @@ namespace Dka.AspNetCore.BasicWebApp
             services.InsertAuthentication();
 
             services.InsertAuthorization();
-
-            //services.InsertLocalization();
             
             services
                 .InsertControllers()
-                .InsertLocalization();
+                .InsertLocalizationPO();
         }
 
         public void Configure(IApplicationBuilder app, ILogger<Startup> logger, ILoggerFactory loggerFactory, IHostEnvironment hostEnvironment)
