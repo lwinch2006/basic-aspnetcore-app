@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Dka.AspNetCore.BasicWebApp.Controllers;
 using Dka.AspNetCore.BasicWebApp.Models.ApiClients;
@@ -19,7 +20,12 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers
             var logger = new Mock<ILogger<HomeController>>();
             var internalApiClient = new Mock<IInternalApiClient>();
             
-            var homeController = new HomeController(internalApiClient.Object, logger.Object);
+            var httpContext = GetHttpContextWithClaims();
+            var httpContextAccessor = new HttpContextAccessor {HttpContext = httpContext};
+            var homeController = new HomeController(internalApiClient.Object, logger.Object)
+            {
+                ControllerContext = new ControllerContext {HttpContext = httpContext}
+            };
 
             return (homeController, internalApiClient);
         }
@@ -44,6 +50,20 @@ namespace Dka.AspNetCore.BasicWebApp.UnitTests.Controllers
             var viewResult = Assert.IsType<ViewResult>(result);
 
             Assert.Equal("Home", viewResult.ViewData[ViewDataKeys.HtmlPageNameReceivedFromApi]);
+        }
+        
+        private HttpContext GetHttpContextWithClaims()
+        {
+            var sampleEmail = "sample-user@test.com";
+            
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Email, sampleEmail),
+                new Claim("email", sampleEmail),
+            }, "mock"));
+
+            var sampleHttpContext = new DefaultHttpContext {User = user};
+            return sampleHttpContext;
         }
     }
 }
