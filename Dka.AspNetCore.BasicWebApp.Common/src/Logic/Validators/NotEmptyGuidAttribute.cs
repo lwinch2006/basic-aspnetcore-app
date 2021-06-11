@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Localization;
 
 namespace Dka.AspNetCore.BasicWebApp.Common.Logic.Validators
 {
@@ -12,6 +13,8 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Logic.Validators
         
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
+            SetLocalizedErrorMessage(validationContext);
+            
             var targetGuidAsObject = value;
 
             if (targetGuidAsObject == null || validationContext == null)
@@ -25,5 +28,15 @@ namespace Dka.AspNetCore.BasicWebApp.Common.Logic.Validators
                 ? new ValidationResult(ErrorMessage, new[] {validationContext.MemberName}) 
                 : ValidationResult.Success;
         }
+        
+        private void SetLocalizedErrorMessage(ValidationContext validationContext)
+        {
+            if (validationContext.GetService(typeof(IHtmlLocalizer)) is not IHtmlLocalizer htmlLocalizer)
+            {
+                return;
+            }
+
+            ErrorMessage = htmlLocalizer["profilepicture.modelvalidation.useridempty"].Value;
+        }        
     }
 }
